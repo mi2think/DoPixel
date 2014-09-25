@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DpCommon">
+      <UniqueIdentifier>{ab084571-0c16-45a5-a838-df80dec3e080}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dp3DEngine">
+      <UniqueIdentifier>{2ce2c535-db23-466e-b853-a16cc11ad39e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DpLoadRes">
+      <UniqueIdentifier>{577779e4-e345-4a00-911b-fd33f2437524}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DpVector3.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpUnitTest.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpConsole.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpMath.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpMatrix33.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpMatrix43.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpQuaternion.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpGeometry.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpVector2.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpVector4.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpMatrix44.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpObject.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="DpScopeGuard.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpColor.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpCamera.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="DpDevice.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="DpMaterial.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="DpLight.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="DpNoCopy.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpLoadPLG.h">
+      <Filter>DpLoadRes</Filter>
+    </ClInclude>
+    <ClInclude Include="DpFileStream.h">
+      <Filter>DpLoadRes</Filter>
+    </ClInclude>
+    <ClInclude Include="DpTga.h">
+      <Filter>DpLoadRes</Filter>
+    </ClInclude>
+    <ClInclude Include="DpCore.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpTimer.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DpFps.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DpConsole.cpp">
+      <Filter>DpCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="DpQuaternion.cpp">
+      <Filter>DpCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="DpObject.cpp">
+      <Filter>Dp3DEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="DpDevice.cpp">
+      <Filter>Dp3DEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="DpColor.cpp">
+      <Filter>DpCommon</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

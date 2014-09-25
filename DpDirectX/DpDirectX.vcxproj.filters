@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="DpD3DDevice.h" />
+    <ClInclude Include="DpSprite.h" />
+    <ClInclude Include="DpTextureAlloc.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DpD3DDevice.cpp" />
+    <ClCompile Include="DpSprite.cpp" />
+    <ClCompile Include="DpTextureAlloc.cpp" />
+  </ItemGroup>
+</Project>
