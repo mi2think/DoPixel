@@ -33,7 +33,7 @@ namespace DoPixel
 		void DebugDXTrace(HRESULT hr, const char* file, int line);
 		#define DEBUG_DXTRACE(hr) DebugDXTrace(hr, __FILE__, __LINE__)
 
-		class D3DDevice : public NoCopy
+		class D3DDevice : public NoCopyable
 		{
 		public:
 			D3DDevice();

@@ -13,6 +13,7 @@
 #ifndef __DP_FILE_STREAM__
 #define __DP_FILE_STREAM__
 
+#include "DpNoCopy.h"
 #include <cstdio>
 #include <cassert>
 
@@ -20,7 +21,7 @@ namespace DoPixel
 {
 	namespace Core
 	{
-		class FileStream
+		class FileStream : public NoCopyable
 		{
 		public:
 			enum Mode
@@ -34,10 +35,17 @@ namespace DoPixel
 				BinaryReadWrite,
 			};
 
+			FileStream() : file(nullptr) {}
 			FileStream(const char* fileName, Mode _mode)
-				: mode(_mode)
 			{
-				const char* fmt = NULL;
+				Open(fileName, _mode);
+			}
+			~FileStream() { Close(); }
+
+			bool Open(const char* fileName, Mode _mode)
+			{
+				mode = _mode;
+				const char* fmt = nullptr;
 				switch (mode)
 				{
 				case TextRead:
@@ -59,23 +67,23 @@ namespace DoPixel
 					fmt = "r+b";
 					break;
 				}
-
-				assert(fopen_s(&file, fileName, fmt) == 0);
+				int ret = fopen_s(&file, fileName, fmt);
+				assert(ret == 0);
+				return ret == 0;
 			}
-			~FileStream() { Close(); }
 
 			void Close()
 			{
 				if (file)
 				{
 					fclose(file);
-					file = NULL;
+					file = nullptr;
 				}
 			}
 
 			fpos_t Size() const
 			{
-				assert(file != NULL);
+				assert(file != nullptr);
 
 				fpos_t pos = Position();
 				if (pos != -1)
@@ -93,7 +101,7 @@ namespace DoPixel
 
 			fpos_t Position() const
 			{
-				assert(file != NULL);
+				assert(file != nullptr);
 
 				fpos_t pos = 0;
 				if (fgetpos(file, &pos) == 0)
@@ -105,7 +113,7 @@ namespace DoPixel
 
 			void Seek(fpos_t size)
 			{
-				assert (file != NULL);
+				assert(file != nullptr);
 
 				fpos_t pos = Position();
 				if (pos + size > Size())
@@ -118,7 +126,7 @@ namespace DoPixel
 
 			unsigned int Read(void* buffer, unsigned int size)
 			{
-				assert (file != NULL && buffer != NULL);
+				assert(file != nullptr && buffer != nullptr);
 				assert (mode == TextRead || mode == BinaryRead || mode == TextReadWrite || mode == BinaryReadWrite);
 
 				return fread(buffer, 1, size, file);
@@ -126,7 +134,7 @@ namespace DoPixel
 
 			unsigned int Write(void* buffer, unsigned int size)
 			{
-				assert (file != NULL && buffer != NULL);
+				assert(file != nullptr && buffer != nullptr);
 				assert (mode == TextWrite || mode == BinaryWrite || mode == TextReadWrite || mode == BinaryReadWrite);
 
 				return fwrite(buffer, 1, size, file);

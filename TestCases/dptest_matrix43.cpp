@@ -83,7 +83,7 @@ DPTEST(Matrix43)
 	MatrixRotationY(m15, 90 * M_PI / 180);
 	Vector3f v2(1, 1, 0);
 	Vector3f v3 = v2 * m15;
-	EXPECT_EQ(v3, Vector3f(0, 1, 1));
+	EXPECT_EQ(v3, Vector3f(0, 1, -1));
 
 	float f = sqrt(2.0f) / 2.0f;
 	Quaternion q(0.0f, f, 0.0f, f);

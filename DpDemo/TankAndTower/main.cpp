@@ -1,5 +1,4 @@
 #include "DemoApp.h"
-#include "DpLoadPLG.h"
 
 #define TANK_NUM	24
 #define TOWER_NUM	96

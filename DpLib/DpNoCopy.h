@@ -7,7 +7,7 @@
 	file ext:	h
 	author:		mi2think@gmail.com
 	
-	purpose:	No copy class def
+	purpose:	No copyable class def
 *********************************************************************/
 
 #ifndef __DP_NO_COPY__
@@ -17,12 +17,12 @@ namespace DoPixel
 {
 	namespace Core
 	{
-		class NoCopy
+		class NoCopyable
 		{
 		public:
-			NoCopy() {}
-			NoCopy(const NoCopy&) = delete;
-			NoCopy& operator=(const NoCopy&) = delete;
+			NoCopyable() {}
+			NoCopyable(const NoCopyable&) = delete;
+			NoCopyable& operator=(const NoCopyable&) = delete;
 		};
 	}
 }

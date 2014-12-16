@@ -9,6 +9,9 @@
     <ClCompile Include="dptest_vector4.cpp" />
     <ClCompile Include="dptest_quaternion.cpp" />
     <ClCompile Include="dptest_matrix44.cpp" />
-    <ClCompile Include="dptest_loadplg.cpp" />
+    <ClCompile Include="dptest_strutility.cpp" />
+    <ClCompile Include="dptest_fileparser.cpp" />
+    <ClCompile Include="dptest_regex.cpp" />
+    <ClCompile Include="dptest_loadmodel.cpp" />
   </ItemGroup>
 </Project>

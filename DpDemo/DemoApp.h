@@ -7,6 +7,7 @@
 #include "DpCamera.h"
 #include "DpObject.h"
 #include "DpLight.h"
+#include "DpLoadModel.h"
 
 #include <windows.h>
 #include <map>
@@ -38,7 +39,7 @@ public:
 protected:
 	Device device;
 
-	LightFactory lightFactory;
+	LightManager lightFactory;
 
 	int clientWidth;
 	int clientHeight;

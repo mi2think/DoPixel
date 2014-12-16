@@ -70,7 +70,7 @@ namespace DoPixel
 			}
 		};
 
-		class LightFactory
+		class LightManager
 		{
 		public:
 			inline void Clear();
@@ -91,14 +91,14 @@ namespace DoPixel
 			unsigned int lightID;
 		};
 		
-		inline void LightFactory::Clear()
+		inline void LightManager::Clear()
 		{
 			lights.clear();
 
 			lightID = 0;
 		}
 
-		inline unsigned int LightFactory::AddAmbientLight(const Color& color)
+		inline unsigned int LightManager::AddAmbientLight(const Color& color)
 		{
 			Light light;
 
@@ -111,7 +111,7 @@ namespace DoPixel
 			return light.id;
 		}
 
-		inline unsigned int LightFactory::AddSunLight(const Vector4f& dir, const Color& color)
+		inline unsigned int LightManager::AddSunLight(const Vector4f& dir, const Color& color)
 		{
 			Light light;
 
@@ -126,7 +126,7 @@ namespace DoPixel
 			return light.id;
 		}
 
-		inline unsigned int LightFactory::AddPointLight(const Vector4f& pos, const Color& color, float kc, float kl, float kq)
+		inline unsigned int LightManager::AddPointLight(const Vector4f& pos, const Color& color, float kc, float kl, float kq)
 		{
 			Light light;
 
@@ -143,7 +143,7 @@ namespace DoPixel
 			return light.id;
 		}
 
-		inline unsigned int LightFactory::AddSpotLight(int attr, const Vector4f& pos, const Vector4f& dir, const Color& color, float kc, float kl, float kq, float angleInner, float angleOuter, float pf)
+		inline unsigned int LightManager::AddSpotLight(int attr, const Vector4f& pos, const Vector4f& dir, const Color& color, float kc, float kl, float kq, float angleInner, float angleOuter, float pf)
 		{
 			assert(attr == Light::ATTR_SPOTLIGHT1 || attr == Light::ATTR_SPOTLIGHT2);
 
@@ -167,7 +167,7 @@ namespace DoPixel
 			return light.id;
 		}
 
-		inline Light* LightFactory::GetLight(unsigned int lightId)
+		inline Light* LightManager::GetLight(unsigned int lightId)
 		{
 			for (unsigned int i = 0; i < lights.size(); ++i)
 			{

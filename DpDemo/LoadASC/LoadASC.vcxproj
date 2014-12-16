@@ -11,12 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4C95835D-13E9-4AD4-9311-0112334FEE13}</ProjectGuid>
-    <RootNamespace>DpLib</RootNamespace>
+    <ProjectGuid>{79AF5987-8975-4EFD-AE4C-2850A66356A5}</ProjectGuid>
+    <RootNamespace>LoadASC</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -38,22 +38,19 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(DXSDK_DIR)\include;..\;..\..\DpLib\;..\..\DpDirectX\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)\Lib\x86;..\..\Debug\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>4201;4127;4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <Lib>
-      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -62,7 +59,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <DisableSpecificWarnings>4201</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -71,43 +67,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DpCamera.h" />
-    <ClInclude Include="DpColor.h" />
-    <ClInclude Include="DpConsole.h" />
-    <ClInclude Include="DpCore.h" />
-    <ClInclude Include="DpDevice.h" />
-    <ClInclude Include="DpFileParser.h" />
-    <ClInclude Include="DpFileStream.h" />
-    <ClInclude Include="DpFps.h" />
-    <ClInclude Include="DpGeometry.h" />
-    <ClInclude Include="DpLight.h" />
-    <ClInclude Include="DpMaterial.h" />
-    <ClInclude Include="DpLoadModel.h" />
-    <ClInclude Include="DpMath.h" />
-    <ClInclude Include="DpMatrix33.h" />
-    <ClInclude Include="DpMatrix43.h" />
-    <ClInclude Include="DpMatrix44.h" />
-    <ClInclude Include="DpNoCopy.h" />
-    <ClInclude Include="DpObject.h" />
-    <ClInclude Include="DpQuaternion.h" />
-    <ClInclude Include="DpScopeGuard.h" />
-    <ClInclude Include="DpStrUtility.h" />
-    <ClInclude Include="DpTga.h" />
-    <ClInclude Include="DpTimer.h" />
-    <ClInclude Include="DpUnitTest.h" />
-    <ClInclude Include="DpVector2.h" />
-    <ClInclude Include="DpVector3.h" />
-    <ClInclude Include="DpVector4.h" />
+    <ClCompile Include="..\DemoApp.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DpColor.cpp" />
-    <ClCompile Include="DpConsole.cpp" />
-    <ClCompile Include="DpDevice.cpp" />
-    <ClCompile Include="DpFileParser.cpp" />
-    <ClCompile Include="DpLoadModel.cpp" />
-    <ClCompile Include="DpObject.cpp" />
-    <ClCompile Include="DpQuaternion.cpp" />
-    <ClCompile Include="DpStrUtility.cpp" />
+    <ClInclude Include="..\DemoApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

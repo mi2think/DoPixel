@@ -13,16 +13,34 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DpDemo", "DpDemo", "{20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SingleTriangle", "DpDemo\SingleTriangle\SingleTriangle.vcxproj", "{0D1224A6-B29A-4681-996D-E09A03EE32B7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C95835D-13E9-4AD4-9311-0112334FEE13} = {4C95835D-13E9-4AD4-9311-0112334FEE13}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WireCube", "DpDemo\WireCube\WireCube.vcxproj", "{B646B311-C652-4DF3-AFDE-67AE8E9991D9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C95835D-13E9-4AD4-9311-0112334FEE13} = {4C95835D-13E9-4AD4-9311-0112334FEE13}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tank", "DpDemo\Tank\Tank.vcxproj", "{010BDB88-8AF9-43F4-8F2D-C23C8B7AC1BD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C95835D-13E9-4AD4-9311-0112334FEE13} = {4C95835D-13E9-4AD4-9311-0112334FEE13}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TankUVN", "DpDemo\TankUVN\TankUVN.vcxproj", "{0AB30B9C-36F2-4E53-BAAF-9503CB7DDB0C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C95835D-13E9-4AD4-9311-0112334FEE13} = {4C95835D-13E9-4AD4-9311-0112334FEE13}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TankAndTower", "DpDemo\TankAndTower\TankAndTower.vcxproj", "{E2047C5B-51EB-42BC-ABC1-481ABD0FAA63}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C95835D-13E9-4AD4-9311-0112334FEE13} = {4C95835D-13E9-4AD4-9311-0112334FEE13}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SolidTriangle", "DpDemo\SolidTriangle\SolidTriangle.vcxproj", "{8AD5C5D2-7E59-47D6-9D01-ED62D96A40D9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C95835D-13E9-4AD4-9311-0112334FEE13} = {4C95835D-13E9-4AD4-9311-0112334FEE13}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DpDirectXDemo", "DpDirectXDemo", "{C89F52F7-985A-47F7-9499-DE8C5780D304}"
 EndProject
@@ -32,6 +50,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JoySlot", "DpDirectXDemo\Jo
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DpDirectX", "DpDirectX\DpDirectX.vcxproj", "{57246EBD-0740-4527-8760-DF3571EE2EFB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoadASC", "DpDemo\LoadASC\LoadASC.vcxproj", "{79AF5987-8975-4EFD-AE4C-2850A66356A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +99,10 @@ Global
 		{57246EBD-0740-4527-8760-DF3571EE2EFB}.Debug|Win32.Build.0 = Debug|Win32
 		{57246EBD-0740-4527-8760-DF3571EE2EFB}.Release|Win32.ActiveCfg = Release|Win32
 		{57246EBD-0740-4527-8760-DF3571EE2EFB}.Release|Win32.Build.0 = Release|Win32
+		{79AF5987-8975-4EFD-AE4C-2850A66356A5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{79AF5987-8975-4EFD-AE4C-2850A66356A5}.Debug|Win32.Build.0 = Debug|Win32
+		{79AF5987-8975-4EFD-AE4C-2850A66356A5}.Release|Win32.ActiveCfg = Release|Win32
+		{79AF5987-8975-4EFD-AE4C-2850A66356A5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,5 +115,6 @@ Global
 		{E2047C5B-51EB-42BC-ABC1-481ABD0FAA63} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
 		{8AD5C5D2-7E59-47D6-9D01-ED62D96A40D9} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
 		{30742C21-9A12-4899-94DF-EF166F915F13} = {C89F52F7-985A-47F7-9499-DE8C5780D304}
+		{79AF5987-8975-4EFD-AE4C-2850A66356A5} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
 	EndGlobalSection
 EndGlobal

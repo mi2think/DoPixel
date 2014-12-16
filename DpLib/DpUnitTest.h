@@ -15,13 +15,12 @@
 
 #include "DpConsole.h"
 #include <vector>
+using namespace DoPixel::Console;
 
 namespace DoPixel
 {
 	namespace DpTest
-	{
-		using namespace Console;
-		
+	{	
 		class TestCase
 		{
 		public:
@@ -65,15 +64,15 @@ namespace DoPixel
 					nPassed += e->nPassed;
 					nFailed += e->nFailed;
 					
-					cout << White << ">>>>>>>> "<< currTestCase->testCaseName << endl;
-					cout << "*************************************" << endl;
+					os_cout << White << ">>>>>>>> "<< currTestCase->testCaseName << endl;
+					os_cout << "*************************************" << endl;
 				}
 
-				cout << White << "Run Tests:" << nPassed + nFailed << endl;
-				cout << Green << "Passed:" << nPassed << endl;
+				os_cout << White << "Run Tests:" << nPassed + nFailed << endl;
+				os_cout << Green << "Passed:" << nPassed << endl;
 				if (nFailed > 0)
-					cout << Red;
-				cout << "Failed:" << nFailed << endl;
+					os_cout << Red;
+				os_cout << "Failed:" << nFailed << endl;
 			}
 
 			static void MarkCurrentTestCase(bool b)
@@ -115,12 +114,12 @@ namespace DoPixel
 			if (a op b) \
 			{ \
 				UnitTest::MarkCurrentTestCase(true); \
-				cout << Green << "!>" << currTestCase->testCaseName << " SUCCESS:\t" << a << " " #op " " << b << endl; \
+				os_cout << Green << "!>" << currTestCase->testCaseName << " SUCCESS:\t" << a << " " #op " " << b << endl; \
 			} \
 			else \
 			{ \
 				UnitTest::MarkCurrentTestCase(false); \
-				cout << Red << "!>" << currTestCase->testCaseName << " FAILED:\t" << a << " " #op " " << b << endl; \
+				os_cout << Red << "!>" << currTestCase->testCaseName << " FAILED:\t" << a << " " #op " " << b << endl; \
 			} \
 		}
 
@@ -130,12 +129,12 @@ namespace DoPixel
 			if (cond == b) \
 			{ \
 				UnitTest::MarkCurrentTestCase(true); \
-				cout << Green << "!>" << currTestCase->testCaseName << " SUCCESS:\t" #context " " << endl; \
+				os_cout << Green << "!>" << currTestCase->testCaseName << " SUCCESS:\t" #context " " << endl; \
 			} \
 			else \
 			{ \
 				UnitTest::MarkCurrentTestCase(false); \
-				cout << Red << "!>" << currTestCase->testCaseName << " FAILED:\t" #context " " << endl; \
+				os_cout << Red << "!>" << currTestCase->testCaseName << " FAILED:\t" #context " " << endl; \
 			} \
 		}
 

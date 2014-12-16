@@ -28,7 +28,7 @@ namespace DoPixel
 		public:
 			T x, y, z;
 
-			Vector3(){}
+			Vector3() : x(0), y(0), z(0){}
 			Vector3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
 			Vector3(const Vector3& vec3) : x(vec3.x), y(vec3.y), z(vec3.z) {}
 			Vector3& operator=(const Vector3& vec3) { x = vec3.x; y = vec3.y; z = vec3.z; return *this; }

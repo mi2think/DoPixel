@@ -22,6 +22,17 @@ namespace DoPixel
 {
 	namespace Core
 	{
+		Object::Object()
+			: id(0)
+			, state(STATE_VISIBLE | STATE_ACTIVE)
+			, attr(0)
+			, avgRadius(0)
+			, maxRadius(0)
+			, numVertices(0)
+		{
+
+		}
+
 		void Object::Transform(const Matrix44f& m, int transform, bool transformBase)
 		{
 			for (int i = 0; i < numVertices; ++i)

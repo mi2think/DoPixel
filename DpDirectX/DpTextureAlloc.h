@@ -23,7 +23,7 @@ namespace DoPixel
 {
 	namespace D3D
 	{
-		class TextureAlloc : public Core::NoCopy
+		class TextureAlloc : public Core::NoCopyable
 		{
 		public:
 			// Create Tex by file name

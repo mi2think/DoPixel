@@ -1,5 +1,4 @@
 #include "DemoApp.h"
-#include "DpLoadPLG.h"
 
 #define NUM_OBJECTS     16
 #define OBJECT_SPACING  250

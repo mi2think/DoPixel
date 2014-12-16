@@ -86,7 +86,7 @@ namespace DoPixel
 		class Object
 		{
 		public:
-			enum { MAX_VERTICES = 64, MAX_PLOYS = 128 };
+			enum { MAX_VERTICES = 2048, MAX_PLOYS = 2048 };
 			enum { STATE_VISIBLE = 0x1, STATE_ACTIVE = 0x2, STATE_CULLED = 0x4 };
 
 			int id;
@@ -111,6 +111,8 @@ namespace DoPixel
 
 			int numPolys;		// poly num of object
 			Poly pList[MAX_PLOYS];
+
+			Object();
 
 			// Use m to transform obj
 			// transformBase: true for transform ux,uy,uz of object

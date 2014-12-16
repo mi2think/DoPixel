@@ -48,7 +48,7 @@
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>..\DpLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4201</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4201;4100</DisableSpecificWarnings>
       <FloatingPointModel>Strict</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -72,12 +72,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="dptest_loadplg.cpp" />
+    <ClCompile Include="dptest_fileparser.cpp" />
+    <ClCompile Include="dptest_loadmodel.cpp" />
     <ClCompile Include="dptest_main.cpp" />
     <ClCompile Include="dptest_matrix33.cpp" />
     <ClCompile Include="dptest_matrix43.cpp" />
     <ClCompile Include="dptest_matrix44.cpp" />
     <ClCompile Include="dptest_quaternion.cpp" />
+    <ClCompile Include="dptest_regex.cpp" />
+    <ClCompile Include="dptest_strutility.cpp" />
     <ClCompile Include="dptest_vector2.cpp" />
     <ClCompile Include="dptest_vector3.cpp" />
     <ClCompile Include="dptest_vector4.cpp" />

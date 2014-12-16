@@ -1,5 +1,4 @@
 #include "DemoApp.h"
-#include "DpLoadPLG.h"
 
 class CWireCube : public DemoApp
 {

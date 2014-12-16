@@ -28,7 +28,7 @@ namespace DoPixel
 		public:
 			T x, y, z, w;
 
-			Vector4(){}
+			Vector4() : x(0), y(0), z(0), w(1){}
 			Vector4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
 			Vector4(const Vector4& vec4) : x(vec4.x), y(vec4.y), z(vec4.z), w(vec4.w) {}
 			Vector4& operator=(const Vector4& vec4) { x = vec4.x; y = vec4.y; z = vec4.z; w = vec4.w; return *this; }

@@ -74,7 +74,7 @@ namespace DoPixel
 			return os;
 		}
 
-		extern OStreamHelper cout;
+		extern OStreamHelper os_cout;
 	}
 }
 

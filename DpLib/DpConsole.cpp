@@ -38,6 +38,6 @@ namespace DoPixel
 			}
 		}
 
-		OStreamHelper cout;
+		OStreamHelper os_cout;
 	}
 }

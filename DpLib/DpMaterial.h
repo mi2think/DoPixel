@@ -78,13 +78,13 @@ namespace DoPixel
 			}
 		};
 
-		class MaterialFactory
+		class MaterialManager
 		{
 		public:
 			const int MAX_MATERIALS = 128;
 			Material materials[MAX_MATERIALS];
 
-			void ResetMaterials()
+			void MaterialManager()
 			{
 				for (int i = 0; i < MAX_MATERIALS; ++i)
 				{

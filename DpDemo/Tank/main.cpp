@@ -1,5 +1,4 @@
 #include "DemoApp.h"
-#include "DpLoadPLG.h"
 
 #define NUM_OBJECTS     2       // number of objects on a row
 #define OBJECT_SPACING  250     // spacing between objects
