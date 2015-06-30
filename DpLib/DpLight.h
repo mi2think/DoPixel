@@ -27,9 +27,9 @@ namespace DoPixel
 		public:
 			enum
 			{
-				ATTR_AMBIENT	= 0x1,
-				ATTR_INFINITE	= 0x2,
-				ATTR_POINT		= 0x4,
+				ATTR_AMBIENT	= 0x1,	// Basic ambient light
+				ATTR_INFINITE	= 0x2,	// Infinite light
+				ATTR_POINT		= 0x4,	// Point light
 				ATTR_SPOTLIGHT1 = 0x8,	// Simple spot light (Use point light with dir)
 				ATTR_SPOTLIGHT2 = 0x10,	// Simple spot light
 

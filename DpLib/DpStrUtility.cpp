@@ -83,6 +83,9 @@ namespace DoPixel
 			void StrRegexReplace(std::string& strDest, const std::string& strSrc, const std::string& strRegexPattern, const std::string& strReplace)
 			{
 				strDest.clear();
+
+				std::regex r(strRegexPattern);
+				strDest = std::regex_replace(strSrc, r, strReplace);
 			}
 
 			void StrReplace(std::string& strDest, const std::string& strSrc, const std::string& strPattern, const std::string& strReplace)
@@ -103,6 +106,35 @@ namespace DoPixel
 				if (begin != strSrc.size())
 				{
 					strDest += strSrc.substr(begin, strSrc.size() - begin);
+				}
+			}
+
+			void StrSplit(std::vector<std::string>& vec, const std::string& str, char ch)
+			{
+				vec.clear();
+				if (str.empty())
+					return;
+
+				std::string::size_type pos = 0;
+				std::string::size_type begin = pos;
+				while ((pos = str.find(ch, pos)) != std::string::npos)
+				{
+					std::string strTemp = str.substr(begin, pos - begin);
+					if (!strTemp.empty())
+					{
+						vec.push_back(strTemp);
+					}
+					pos += sizeof(char);
+					begin = pos;
+				}
+
+				if (begin != str.size())
+				{
+					std::string strTemp = str.substr(begin, str.size() - begin);
+					if (!strTemp.empty())
+					{
+						vec.push_back(strTemp);
+					}
 				}
 			}
 
@@ -146,7 +178,6 @@ namespace DoPixel
 				{
 					str = str.substr(0, pos + 1);
 				}
-				return;
 			}
 
 			bool ToFloat(float& f, const char* strNum)

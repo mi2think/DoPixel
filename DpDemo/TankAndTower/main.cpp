@@ -108,10 +108,9 @@ void TankAndTower::Run(float fElapsedTime)
 	{
 		tower.ResetCull();
 
-		tower.worldPos = towerPos[i];
-		if (!tower.Cull(camera, Camera::CULL_PLANE_XYZ))
+		if (!tower.Cull(camera, towerPos[i], Camera::CULL_PLANE_XYZ))
 		{
-			tower.ModelToWorld(tower.worldPos);
+			tower.ModelToWorld(towerPos[i]);
 
 			renderList.InsertObject(tower);
 		}
@@ -122,17 +121,17 @@ void TankAndTower::Run(float fElapsedTime)
 	{
 		tank.ResetCull();
 
-		tank.worldPos = tankPos[i];
-		tank.worldPos.w = 1;
+		Vector4f worldPos = tankPos[i];
+		worldPos.w = 1;
 
 		MatrixRotationY(mRot, angle2radian(tankPos[i].w));
 
 		tank.Transform(mRot, TRANSFORM_LOCAL_TO_TRANS, true);
 
-		if (! tank.Cull(camera, Camera::CULL_PLANE_XYZ))
+		if (!tank.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
 		{
 			// Since local has transformed(rotate) 
-			tank.ModelToWorld(tank.worldPos, TRANSFORM_TRANS_ONLY);
+			tank.ModelToWorld(worldPos, TRANSFORM_TRANS_ONLY);
 
 			renderList.InsertObject(tank);
 		}
@@ -162,11 +161,12 @@ void TankAndTower::Run(float fElapsedTime)
 		{
 			maker.ResetCull();
 
-			maker.worldPos.x = float(RandRange(-100, 100) - UNIVERSE_RADIUS + x * POINT_SIZE);
-			maker.worldPos.y = float(maker.maxRadius);
-			maker.worldPos.z = float(RandRange(-100, 100) - UNIVERSE_RADIUS + z * POINT_SIZE);
+			Vector4f worldPos;
+			worldPos.x = float(RandRange(-100, 100) - UNIVERSE_RADIUS + x * POINT_SIZE);
+			worldPos.y = float(maker.maxRadius);
+			worldPos.z = float(RandRange(-100, 100) - UNIVERSE_RADIUS + z * POINT_SIZE);
 
-			if (! maker.Cull(camera, Camera::CULL_PLANE_XYZ))
+			if (!maker.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
 			{
 				maker.ModelToWorld(maker.worldPos);
 				renderList.InsertObject(maker);

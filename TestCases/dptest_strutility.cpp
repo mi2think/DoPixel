@@ -86,4 +86,11 @@ DPTEST(StrUtility)
 	float f;
 	bool b = StrUtility::ToFloat(f, "0.2345f");
 	EXPECT_TRUE(b);
+
+	// StrUtility::StrSplit
+	std::string str6 = "LookAtOffset:(0,0,0);LookFromOffset:(0,0,0);CameraType:1";
+	std::vector<std::string> vec;
+	StrUtility::StrSplit(vec, str6, ';');
+	EXPECT_TRUE(vec.size() == 3);
+	EXPECT_TRUE(vec[1] == "LookFromOffset:(0,0,0)");
 }

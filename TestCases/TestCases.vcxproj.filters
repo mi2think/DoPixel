@@ -13,5 +13,6 @@
     <ClCompile Include="dptest_fileparser.cpp" />
     <ClCompile Include="dptest_regex.cpp" />
     <ClCompile Include="dptest_loadmodel.cpp" />
+    <ClCompile Include="dptest_ref.cpp" />
   </ItemGroup>
 </Project>

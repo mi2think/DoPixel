@@ -11,8 +11,13 @@
 *********************************************************************/
 
 #include "DpFileParser.h"
+#include <regex>
 
 #define PRINT_REGEX_MATCH_INFO
+#ifdef PRINT_REGEX_MATCH_INFO
+#include "DpConsole.h"
+using namespace DoPixel::Console;
+#endif
 
 namespace DoPixel
 {

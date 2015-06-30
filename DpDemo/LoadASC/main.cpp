@@ -40,7 +40,8 @@ void LoadASC::Run(float fElapsedTime)
 
 	renderList.Reset();
 
-	camera.BuildCameraMatrixEuler(Camera::ROTATE_SEQ_ZYX);
+//	camera.BuildCameraMatrixEuler(Camera::ROTATE_SEQ_ZYX);
+	camera.BuildCameraMatrixUVN(Camera::MODEL_UVNSimple);
 
 	// Try to cull object
 	object.ResetCull();

@@ -46,7 +46,7 @@ namespace DoPixel
 		bool LoadObjectFromPLG(Object& obj, const char* fileName, const Vector4f& scale, const Vector4f& pos);
 
 		//////////////////////////////////////////////////////////////////////////
-		// .ASC file
+		// Vertex flags
 
 		#define VERTEX_FLAGS_INVERT_X				0x1
 		#define VERTEX_FLAGS_INVERT_Y				0x2
@@ -56,6 +56,12 @@ namespace DoPixel
 		#define VERTEX_FLAGS_SWAP_XY				0x20
 		#define VERTEX_FLAGS_INVERT_WINDING_ORDER	0x40
 
+		#define VERTEX_FLAGS_TRANSFORM_LOCAL         512  // if file format has local transform then do it!
+		#define VERTEX_FLAGS_TRANSFORM_LOCAL_WORLD  1024  // if file format has local to world then do it!
+
+		//////////////////////////////////////////////////////////////////////////
+		// .ASC file
+
 		// Load object from .ASC file
 		// Success return true, else false
 		// scale: initial scale
@@ -63,6 +69,17 @@ namespace DoPixel
 		// rot: initial rotate
 		// vertexFlag: vertex flag
 		bool LoadObjectFrom3DSASC(Object& obj, const char* fileName, const Vector4f& scale, const Vector4f& pos, const Vector4f& rot, int vertexFlag);
+
+		//////////////////////////////////////////////////////////////////////////
+		// .COB file
+
+		// Load object from .COB file
+		// Success return true, else false
+		// scale: initial scale
+		// pos: initial pos
+		// rot: initial rotate
+		// vertexFlag: vertex flag
+		bool LoadObjectFromCOB(Object& object, const char* fileName, const Vector4f& scale, const Vector4f& pos, const Vector4f& rot, int vertexFlag);
 	}
 }
 

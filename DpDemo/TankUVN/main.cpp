@@ -59,11 +59,12 @@ void TankUVN::Run(float fElapsedTime)
 		{
 			object.ResetCull();
 
-			object.worldPos.x = float(x * OBJECT_SPACING + OBJECT_SPACING / 2);
-			object.worldPos.y = 0;
-			object.worldPos.z = float(z * OBJECT_SPACING + OBJECT_SPACING / 2);
+			Vector4f worldPos;
+			worldPos.x = float(x * OBJECT_SPACING + OBJECT_SPACING / 2);
+			worldPos.y = 0;
+			worldPos.z = float(z * OBJECT_SPACING + OBJECT_SPACING / 2);
 
-			if (! object.Cull(camera, Camera::CULL_PLANE_XYZ))
+			if (!object.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
 			{
 				object.ModelToWorld(object.worldPos);
 

@@ -16,12 +16,6 @@
 #include "DpNoCopy.h"
 #include "DpFileStream.h"
 #include "DpStrUtility.h"
-#include <regex>
-
-#ifdef _DEBUG
-#include "DpConsole.h"
-using namespace DoPixel::Console;
-#endif
 
 namespace DoPixel
 {
@@ -93,11 +87,7 @@ namespace DoPixel
 			std::vector<int>			matchInts;
 			std::vector<float>			matchFloats;
 			std::vector<std::string>	matchStrings;
-
-			// For gen pattern regex, temp
 		};
-
-	
 	}
 }
 

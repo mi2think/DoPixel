@@ -311,6 +311,24 @@ namespace DoPixel
 			return n;
 		}
 
+		template <typename T>
+		inline Matrix44<T>& MatrixRotationXYZ(Matrix44<T>& m, float angleX, float angleY, float angleZ)
+		{
+			Matrix44<T> mx;
+			MatrixRotationX(mx, angleX);
+			
+			Matrix44<T> my;
+			MatrixRotationX(my, angleY);
+
+			Matrix44<T> mz;
+			MatrixRotationZ(mz, angleZ);
+
+			Matrix44<T> n;
+			MatrixMultiply(n, mx, my);
+
+			return MatrixMultiply(m, n, mz);
+		}
+
 		// Assume v through the origin, v must be normal Vector
 		template <typename T>
 		inline Matrix44<T>& MatrixRotationAxis(Matrix44<T>& n, const Vector4<T>& v, float angle)

@@ -81,10 +81,10 @@ namespace DoPixel
 		class MaterialManager
 		{
 		public:
-			const int MAX_MATERIALS = 128;
+			static const int MAX_MATERIALS = 128;
 			Material materials[MAX_MATERIALS];
 
-			void MaterialManager()
+			MaterialManager()
 			{
 				for (int i = 0; i < MAX_MATERIALS; ++i)
 				{

@@ -15,13 +15,13 @@ namespace DoPixel
 {
 	namespace Core
 	{
-		#define Round(x) ((int)((x) + 0.5))
+#define Round(x) ((int)((x) + 0.5))
 
 		void Device::DrawLineDDA(const Point& p0, const Point& p1, const Color& color) const
 		{
 			Point pc0;
 			Point pc1;
-			if (! ClipLine(pc0, pc1, p0, p1))
+			if (!ClipLine(pc0, pc1, p0, p1))
 				return;
 
 			float dx = pc1.x - pc0.x;
@@ -71,7 +71,7 @@ namespace DoPixel
 		{
 			Point pc0;
 			Point pc1;
-			if (! ClipLine(pc0, pc1, p0, p1))
+			if (!ClipLine(pc0, pc1, p0, p1))
 				return;
 
 			int x0 = Round(pc0.x);
@@ -105,7 +105,7 @@ namespace DoPixel
 						d += incre;
 						xstart += xadd;
 					}
-					else 
+					else
 					{
 						// choose ne
 						d += incrne;
@@ -117,7 +117,7 @@ namespace DoPixel
 			else
 			{
 				// symmetry on y = x, or y = -x
-				
+
 				// d start = 2dx - dy
 				int d = 2 * dx - dy;
 				int incre = 2 * dx;
@@ -152,17 +152,17 @@ namespace DoPixel
 			//	-------------------
 			//	0101  | 0100  | 0110
 
-			#define CODE_CENTER		0x0000
-			#define CODE_TOP		0x0008
-			#define CODE_LEFT		0x0001
-			#define CODE_RIGHT		0x0002
-			#define CODE_BOTTOM		0x0004
-			#define CODE_TOPLEFT	(CODE_TOP | CODE_LEFT)
-			#define CODE_TOPRIGHT	(CODE_TOP | CODE_RIGHT)
-			#define CODE_BOTTOMLEFT (CODE_BOTTOM | CODE_LEFT)
-			#define CODE_BOTTOMRIGHT (CODE_BOTTOM | CODE_RIGHT)  
+#define CODE_CENTER		0x0000
+#define CODE_TOP		0x0008
+#define CODE_LEFT		0x0001
+#define CODE_RIGHT		0x0002
+#define CODE_BOTTOM		0x0004
+#define CODE_TOPLEFT	(CODE_TOP | CODE_LEFT)
+#define CODE_TOPRIGHT	(CODE_TOP | CODE_RIGHT)
+#define CODE_BOTTOMLEFT (CODE_BOTTOM | CODE_LEFT)
+#define CODE_BOTTOMRIGHT (CODE_BOTTOM | CODE_RIGHT)  
 
-			auto fnCode = [this](const Point& pt) -> int 
+			auto fnCode = [this](const Point& pt) -> int
 			{
 				int code = 0;
 				if (pt.x < clipRect.left)
@@ -218,7 +218,7 @@ namespace DoPixel
 					pc.y = pt.y + (p1.y - p0.y) * (pc.x - p0.x) / (p1.x - p0.x);
 					break;
 				case CODE_RIGHT:
-					pc.x =(float)clipRect.right;
+					pc.x = (float)clipRect.right;
 					pc.y = pt.y + (p1.y - p0.y) * (pc.x - p0.x) / (p1.x - p0.x);
 					break;
 				case CODE_TOPLEFT:
@@ -245,7 +245,7 @@ namespace DoPixel
 				case CODE_BOTTOMLEFT:
 					// first clip bottom
 					pc.y = (float)clipRect.bottom;
-					pc.x = pt.x + (p1.x - p0.x) * (pc.y - p0.y) / (p1.y - p0.y);		
+					pc.x = pt.x + (p1.x - p0.x) * (pc.y - p0.y) / (p1.y - p0.y);
 					// if the x is less than left, then clip left
 					if (pc.x < clipRect.left || pc.x > clipRect.right)
 					{
@@ -256,7 +256,7 @@ namespace DoPixel
 				case CODE_BOTTOMRIGHT:
 					// first clip bottom
 					pc.y = (float)clipRect.bottom;
-					pc.x = pt.x + (p1.x - p0.x) * (pc.y - p0.y) / (p1.y - p0.y);		
+					pc.x = pt.x + (p1.x - p0.x) * (pc.y - p0.y) / (p1.y - p0.y);
 					if (pc.x > clipRect.right || pc.x < clipRect.left)
 					{
 						pc.x = (float)clipRect.right;
@@ -270,12 +270,12 @@ namespace DoPixel
 			pc0 = fnClip(p0, p0, p1, code0);
 			pc1 = fnClip(p1, p1, p0, code1);
 
-			if (! clipRect.PtInRect(pc0) || ! clipRect.PtInRect(pc1))
+			if (!clipRect.PtInRect(pc0) || !clipRect.PtInRect(pc1))
 				return false;
 
 			return true;
 		}
-	
+
 		void Device::DrawTriangle(const Point& p0, const Point& p1, const Point& p2, const Color& color) const
 		{
 			auto fnDrawFlatTop = [&](const Point& p0, const Point& p1, const Point& p2) -> void
@@ -367,6 +367,11 @@ namespace DoPixel
 				fnDrawFlatBottom(_p0, Point(xnew, _p1.y), _p1);
 				fnDrawFlatTop(_p1, Point(xnew, _p1.y), _p2);
 			}
+		}
+
+		void Device::DrawTriangle(const Point& p0, const Point& p1, const Point& p2, const Color& color0, const Color& color1, const Color& color2) const
+		{
+			// TODO: draw triangle with gouraud shading
 		}
 	}
 }

@@ -93,6 +93,9 @@
     <ClInclude Include="DpLoadModel.h">
       <Filter>DpLoadRes</Filter>
     </ClInclude>
+    <ClInclude Include="DpRef.h">
+      <Filter>DpCommon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">

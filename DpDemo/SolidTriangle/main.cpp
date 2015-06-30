@@ -30,11 +30,10 @@ void SolidTriangle::OnCreate()
 	polyFace.state = POLY_STATE_ACTIVE;
 	polyFace.attr = 0;
 	polyFace.color = Color(255,0,0);
-	polyFace.shadeColor = polyFace.color;
 
-	polyFace.vlist[0] = Vector4f(0, 50, 0, 1);
-	polyFace.vlist[1] = Vector4f(50, -50, 0, 1);
-	polyFace.vlist[2] = Vector4f(-50, -50, 0, 1);
+	polyFace.vlist[0].v = Vector4f(0, 50, 0, 1);
+	polyFace.vlist[1].v = Vector4f(50, -50, 0, 1);
+	polyFace.vlist[2].v = Vector4f(-50, -50, 0, 1);
 
 	polyPos = Vector4f(0, 0, 100, 1);
 

@@ -19,23 +19,6 @@ namespace DoPixel
 {
 	namespace Core
 	{
-		void CalcObjectRadius(Object& obj)
-		{
-			obj.avgRadius = 0;
-			obj.maxRadius = 0;
-
-			float totalRadius = 0;
-			for (int i = 0; i < obj.numVertices; ++i)
-			{
-				float distVertex = obj.vListLocal[i].Length();
-				if (distVertex >= obj.maxRadius)
-					obj.maxRadius = int(distVertex);
-				totalRadius += distVertex;
-			}
-
-			obj.avgRadius = int(totalRadius / obj.numVertices);
-		}
-
 		/* For .PLG file, format.
 
 		# This is comments
@@ -110,7 +93,7 @@ namespace DoPixel
 			}
 
 			// Calc avg radius and max radius
-			CalcObjectRadius(obj);
+			obj.UpdateRadius();
 
 			// Load ploy list
 			int polySurfaceDesc = 0;
@@ -154,7 +137,6 @@ namespace DoPixel
 				{
 					obj.pList[i].attr |= POLY_ATTR_8BITCOLOR;
 					obj.pList[i].color = Color(polySurfaceDesc & 0x00ff);
-					obj.pList[i].shadeColor = obj.pList[i].color;
 				}
 
 				int shadeMode = (polySurfaceDesc & PLX_SHADE_MODE_MASK);
@@ -178,7 +160,7 @@ namespace DoPixel
 
 				obj.pList[i].state = POLY_STATE_ACTIVE;
 			}
-			return 0;
+			return true;
 		}
 
 		/* For .ASC file, format
@@ -293,12 +275,12 @@ namespace DoPixel
 					y *= scale.y;
 					z *= scale.z;
 
-					obj.vListLocal[i] = Vector4f(x, y, z, 1);
+					obj.vListLocal[i].v = Vector4f(x, y, z, 1);
 					++i;
 				}
 			}
 
-			CalcObjectRadius(obj);
+			obj.UpdateRadius();
 
 			// Get polygons
 			
@@ -346,7 +328,6 @@ namespace DoPixel
 						a = 255;
 
 						poly.color = Color((unsigned char)r, (unsigned char)g, (unsigned char)b, (unsigned char)a);
-						poly.shadeColor = poly.color;
 						poly.attr = POLY_ATTR_SHADE_FLAT;
 						poly.state = POLY_STATE_ACTIVE;
 					}
@@ -355,6 +336,219 @@ namespace DoPixel
 				}
 			}
 
+			return true;
+		}
+
+		/* For .COB file, format
+
+		Name Cube,1
+		center 0 0 0
+		x axis 1 0 0
+		y axis 0 1 0
+		z axis 0 0 1
+		Transform
+		0.953972 0 0.299895 0
+		0 1 0 0
+		- 0.299895 0 0.953972 0
+		0 0 0 1
+		World Vertices 8
+		- 1.000000 - 1.000000 - 1.000000
+		- 1.000000 - 1.000000 1.000000
+		1.000000 - 1.000000 - 1.000000
+		1.000000 - 1.000000 1.000000
+		- 1.000000 1.000000 - 1.000000
+		1.000000 1.000000 - 1.000000
+		1.000000 1.000000 1.000000
+		- 1.000000 1.000000 1.000000
+		Texture Vertices 6
+		0.000000 0.000000
+		0.000000 1.000000
+		0.000000 0.000000
+		0.000000 1.000000
+		1.000000 0.000000
+		1.000000 1.000000
+		Faces 12
+		Face verts 3 flags 0 mat 4
+		< 0, 0 > <1, 1> <3, 5>
+		Face verts 3 flags 0 mat 4
+		< 0, 0 > <3, 5> <2, 4>
+		...
+		*/
+	
+		bool LoadObjectFromCOB(Object& object, const char* fileName, const Vector4f& scale, const Vector4f& pos, const Vector4f& rot, int vertexFlag)
+		{
+			object.worldPos = pos;
+
+			FileParser parser;
+			if (!parser.Open(fileName))
+				return false;
+
+			auto fnGetLine = [&parser](std::string& strLine) -> bool
+			{
+				while (true)
+				{
+					if (!parser.GetLine(strLine))
+						return false;
+					break;
+				}
+				return true;
+			};
+
+			std::string strLine;
+			FileParser::RegexInfo regexInfo;
+			
+			//Find object name
+			regexInfo.GenRegexInfo("['Name'] [s]");
+			while (true)
+			{
+				if (!parser.GetLine(strLine))
+					return false;
+				
+				if (parser.RegexPatternMatch(strLine, regexInfo))
+				{
+					auto name = parser.GetMatchedVal<std::string>(1);
+					strncpy_s(object.name, name.c_str(), sizeof(object.name));
+					break;
+				}
+			}
+			
+			// local matrix
+			// center 0 0 0
+			// x axis 1 0 0
+			// y axis 0 1 0
+			// z axis 0 0 1
+			Matrix44f matrixLocal;
+			matrixLocal.Identity();
+			regexInfo.GenRegexInfo("['center'] [f] [f] [f]");
+			while (true)
+			{
+				if (!parser.GetLine(strLine))
+					return false;
+				
+				if (parser.RegexPatternMatch(strLine, regexInfo))
+				{
+					matrixLocal.m41 = parser.GetMatchedVal<float>(0);	// center x
+					matrixLocal.m42 = parser.GetMatchedVal<float>(1);	// center y
+					matrixLocal.m43 = parser.GetMatchedVal<float>(2);	// center z
+
+					// x axis
+					fnGetLine(strLine);
+					regexInfo.GenRegexInfo("['x'] ['axis'] [f] [f] [f]");
+					bool b = parser.RegexPatternMatch(strLine, regexInfo);
+					assert(b);
+					matrixLocal.m11 = parser.GetMatchedVal<float>(0);
+					matrixLocal.m12 = parser.GetMatchedVal<float>(1);
+					matrixLocal.m13 = parser.GetMatchedVal<float>(2);
+
+					// y axis
+					fnGetLine(strLine);
+					regexInfo.GenRegexInfo("['y'] ['axis'] [f] [f] [f]");
+					b = parser.RegexPatternMatch(strLine, regexInfo);
+					assert(b);
+					matrixLocal.m21 = parser.GetMatchedVal<float>(0);
+					matrixLocal.m22 = parser.GetMatchedVal<float>(1);
+					matrixLocal.m23 = parser.GetMatchedVal<float>(2);
+
+					// z axis
+					fnGetLine(strLine);
+					regexInfo.GenRegexInfo("['z'] ['axis'] [f] [f] [f]");
+					b = parser.RegexPatternMatch(strLine, regexInfo);
+					assert(b);
+					matrixLocal.m31 = parser.GetMatchedVal<float>(0);
+					matrixLocal.m32 = parser.GetMatchedVal<float>(1);
+					matrixLocal.m33 = parser.GetMatchedVal<float>(2);
+					break;
+				}
+			}
+
+			//transforms
+			Matrix44f matrixWorld;
+			matrixWorld.Identity();
+			regexInfo.GenRegexInfo("['Transform']");
+			while (true)
+			{
+				if (!parser.GetLine(strLine))
+					return false;
+
+				if (parser.RegexPatternMatch(strLine, regexInfo))
+				{
+					// x axis
+					fnGetLine(strLine);
+					regexInfo.GenRegexInfo("[f] [f] [f] [f]");
+					bool b = parser.RegexPatternMatch(strLine, regexInfo);
+					assert(b);
+					matrixWorld.m11 = parser.GetMatchedVal<float>(0);
+					matrixWorld.m12 = parser.GetMatchedVal<float>(1);
+					matrixWorld.m13 = parser.GetMatchedVal<float>(2);
+					matrixWorld.m14 = parser.GetMatchedVal<float>(3);
+
+					// y axis
+					fnGetLine(strLine);
+					regexInfo.GenRegexInfo("[f] [f] [f] [f]");
+					b = parser.RegexPatternMatch(strLine, regexInfo);
+					assert(b);
+					matrixWorld.m21 = parser.GetMatchedVal<float>(0);
+					matrixWorld.m22 = parser.GetMatchedVal<float>(1);
+					matrixWorld.m23 = parser.GetMatchedVal<float>(2);
+					matrixWorld.m24 = parser.GetMatchedVal<float>(3);
+
+					// z axis
+					fnGetLine(strLine);
+					regexInfo.GenRegexInfo("[f] [f] [f] [f]");
+					b = parser.RegexPatternMatch(strLine, regexInfo);
+					assert(b);
+					matrixWorld.m31 = parser.GetMatchedVal<float>(0);
+					matrixWorld.m32 = parser.GetMatchedVal<float>(1);
+					matrixWorld.m33 = parser.GetMatchedVal<float>(2);
+					matrixWorld.m34 = parser.GetMatchedVal<float>(3);
+
+					//transform
+					fnGetLine(strLine);
+					regexInfo.GenRegexInfo("[f] [f] [f] [f]");
+					b = parser.RegexPatternMatch(strLine, regexInfo);
+					assert(b);
+					matrixWorld.m41 = parser.GetMatchedVal<float>(0);
+					matrixWorld.m42 = parser.GetMatchedVal<float>(1);
+					matrixWorld.m43 = parser.GetMatchedVal<float>(2);
+					matrixWorld.m44 = parser.GetMatchedVal<float>(3);
+					break;
+				}
+			}
+
+			// Number of vertex
+			regexInfo.GenRegexInfo("['World'] ['Vertices'] [i]");
+			while (true)
+			{
+				if (!parser.GetLine(strLine))
+					return false;
+
+				if (parser.RegexPatternMatch(strLine, regexInfo))
+				{
+					object.numVertices = parser.GetMatchedVal<int>(0);
+					break;
+				}
+			}
+
+			// Load vertex
+			regexInfo.GenRegexInfo("[f] [f] [f]");
+			for (int i = 0; i < object.numVertices;)
+			{
+				fnGetLine(strLine);
+
+				if (parser.RegexPatternMatch(strLine, regexInfo))
+				{
+					auto x = parser.GetMatchedVal<float>(0);
+					auto y = parser.GetMatchedVal<float>(1);
+					auto z = parser.GetMatchedVal<float>(2);
+
+					object.vListLocal[i].v = Vector4f(x, y, z, 1);
+					++i;
+				}
+			}
+
+			// Since trueSpace do not change vertex position when move or rotation for keep precision,
+			// We need to apply transform vertex
+			// TODO
 			return true;
 		}
 	}

@@ -14,6 +14,7 @@
 #define __DP_STR_UTILITY__
 
 #include <string>
+#include <vector>
 
 namespace DoPixel
 {
@@ -30,6 +31,8 @@ namespace DoPixel
 			void StrReplace(std::string& strDest, const std::string& strSrc, const std::string& strPattern, const std::string& strReplace);
 
 			void StrRegexReplace(std::string& strDest, const std::string& strSrc, const std::string& strRegexPattern, const std::string& strReplace);
+
+			void StrSplit(std::vector<std::string>& vec, const std::string& str, char ch);
 
 			void StrTrimLeft(std::string& str);
 

@@ -28,12 +28,12 @@ namespace DoPixel
 #define MIN(a,b)    (((a) < (b)) ? (a) : (b))
 
 		template <typename T>
-		inline bool Equal(T a, T b)
+		inline bool Equal(const T& a, const T& b)
 		{
 			return a == b;
 		}
 		
-		inline bool Equal(float a, float b)
+		inline bool Equal(const float& a, const float& b)
 		{
 			return abs(a - b) < eps;
 		}
@@ -57,6 +57,17 @@ namespace DoPixel
 		inline int RandRange(int min, int max)
 		{
 			return min + rand() % (max - min + 1);
+		}
+
+		template <typename T>
+		inline T Clamp(const T& val, const T& minVal, const T& maxVal)
+		{
+			T _val = val;
+			if (val < minVal)
+				_val = minVal;
+			else if (val > maxVal)
+				_val = maxVal;
+			return _val;
 		}
 	}
 }

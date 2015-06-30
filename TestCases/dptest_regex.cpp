@@ -154,6 +154,15 @@ void test_regex_func()
 		}
 		EXPECT_TRUE(it2 == expect.end());
 	}
+
+	// regex replace
+	{
+		string pattern = "[0-9]+";
+		string test_str = "abc 234 ee12 acd2kl0";
+		regex r(pattern);
+
+		os_cout << regex_replace(test_str, r, "_");
+	}
 }
 
 DPTEST(Regex)

@@ -90,6 +90,7 @@
     <ClInclude Include="DpNoCopy.h" />
     <ClInclude Include="DpObject.h" />
     <ClInclude Include="DpQuaternion.h" />
+    <ClInclude Include="DpRef.h" />
     <ClInclude Include="DpScopeGuard.h" />
     <ClInclude Include="DpStrUtility.h" />
     <ClInclude Include="DpTga.h" />
