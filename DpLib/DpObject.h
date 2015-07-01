@@ -76,12 +76,13 @@ namespace DoPixel
 			POLY_ATTR_8BITCOLOR		= 0x4,
 			POLY_ATTR_RGB16			= 0x8,
 			POLY_ATTR_RGB24			= 0x10,
+			POLY_ATTR_RGB32			= 0x20,
 
-			POLY_ATTR_SHADE_PURE	= 0x20,  // Constant, Emissive
-			POLY_ATTR_SHADE_FLAT    = 0x40,
-			POLY_ATTR_SHADE_GOURAUD = 0x80,
-			POLY_ATTR_SHADE_PHONG	= 0x100,
-			POLY_ATTR_SHADE_TEXTURE = 0x200,
+			POLY_ATTR_SHADE_PURE	= 0x40,  // Constant, Emissive
+			POLY_ATTR_SHADE_FLAT    = 0x80,
+			POLY_ATTR_SHADE_GOURAUD = 0x100,
+			POLY_ATTR_SHADE_PHONG	= 0x200,
+			POLY_ATTR_SHADE_TEXTURE = 0x400,
 
 			POLY_STATE_ACTIVE		= 0x1,
 			POLY_STATE_CLIPPED		= 0x2,
@@ -334,6 +335,10 @@ namespace DoPixel
 		{
 		public:
 			static void Lighting(const Camera& camera, const std::vector<Light>& lights, Poly& poly);
+
+			static void Lighting(const Camera& camera, const std::vector<Light>& lights, PolyFace& polyFace);
+		private:
+			static void InternalLighting(Color* litColor, const Camera& camera, const std::vector<Light>& lights, int shadeType, const Vertex& vertex0, const Vertex& vertex1, const Vertex& vertex2, const Color& color);
 		};
 	}
 }

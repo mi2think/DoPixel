@@ -60,15 +60,20 @@ namespace DoPixel
 			this->numFrames = numFrames;
 			this->totalVertices = this->numVertices * this->numFrames;
 
-			vListLocalHead = new Vertex[numVertices * numFrames];
-			vListTransHead = new Vertex[numVertices * numFrames];
+			vListLocalHead = new Vertex[totalVertices];
+			vListTransHead = new Vertex[totalVertices];
+			memset(vListLocalHead, 0, sizeof(Vertex) * totalVertices);
+			memset(vListTransHead, 0, sizeof(Vertex) * totalVertices);
 
 			pList = new Poly[numPolys];
+			memset(pList, 0, sizeof(Poly) * numPolys);
 
 			coordlist = new Vector2f[numPolys * 3];
 
 			avgRadius = new float[numFrames];
 			maxRadius = new float[numFrames];
+			memset(avgRadius, 0, sizeof(float) * numFrames);
+			memset(maxRadius, 0, sizeof(float) * numFrames);
 
 			SetFrame(0);
 		}
@@ -539,8 +544,11 @@ namespace DoPixel
 			for (int i = 0; i < numPolys; ++i)
 			{
 				Poly* poly = &pList[i];
+				poly->vlist = vListTrans;
 	
 				TLBase::Lighting(camera, lights, *poly);
+
+				poly->vlist = vListLocal;
 			}
 		}
 
@@ -561,9 +569,9 @@ namespace DoPixel
 				int i1 = p->vert[1];
 				int i2 = p->vert[2];
 
-				device.DrawLine(Point(vListTrans[i0].x, vListTrans[i0].y), Point(vListTrans[i1].x, vListTrans[i1].y), p->color);
-				device.DrawLine(Point(vListTrans[i1].x, vListTrans[i1].y), Point(vListTrans[i2].x, vListTrans[i2].y), p->color);
-				device.DrawLine(Point(vListTrans[i2].x, vListTrans[i2].y), Point(vListTrans[i0].x, vListTrans[i0].y), p->color);
+				device.DrawLine(Point(vListTrans[i0].x, vListTrans[i0].y), Point(vListTrans[i1].x, vListTrans[i1].y), p->litColor[0]);
+				device.DrawLine(Point(vListTrans[i1].x, vListTrans[i1].y), Point(vListTrans[i2].x, vListTrans[i2].y), p->litColor[0]);
+				device.DrawLine(Point(vListTrans[i2].x, vListTrans[i2].y), Point(vListTrans[i0].x, vListTrans[i0].y), p->litColor[0]);
 			}
 		}
 
@@ -920,18 +928,7 @@ namespace DoPixel
 				if (! (pf->state & POLY_STATE_ACTIVE) || (pf->state & POLY_STATE_BACKFACE) || (pf->state & POLY_STATE_CLIPPED))
 					continue;
 
-				//Poly poly;
-				//poly.attr = pf->attr;
-				//poly.color = pf->color;
-				//poly.state = pf->state;
-				//poly.vert[0] = 0;
-				//poly.vert[1] = 1;
-				//poly.vert[2] = 2;
-				//poly.vlist = pf->tlist;
-
-				//TLBase::Lighting(camera, lights, poly);
-
-				//pf->shadeColor = poly.shadeColor;
+				TLBase::Lighting(camera, lights, *polyFace);
 			}
 		}
 
@@ -943,9 +940,9 @@ namespace DoPixel
 				if (! pf || ! (pf->state & POLY_STATE_ACTIVE) || (pf->state & POLY_STATE_CLIPPED) || (pf->state & POLY_STATE_BACKFACE))
 					continue;
 
-				device.DrawLine(Point(pf->tlist[0].x, pf->tlist[0].y), Point(pf->tlist[1].x, pf->tlist[1].y), pf->color);
-				device.DrawLine(Point(pf->tlist[1].x, pf->tlist[1].y), Point(pf->tlist[2].x, pf->tlist[2].y), pf->color);
-				device.DrawLine(Point(pf->tlist[2].x, pf->tlist[2].y), Point(pf->tlist[0].x, pf->tlist[0].y), pf->color);
+				device.DrawLine(Point(pf->tlist[0].x, pf->tlist[0].y), Point(pf->tlist[1].x, pf->tlist[1].y), pf->litColor[0]);
+				device.DrawLine(Point(pf->tlist[1].x, pf->tlist[1].y), Point(pf->tlist[2].x, pf->tlist[2].y), pf->litColor[0]);
+				device.DrawLine(Point(pf->tlist[2].x, pf->tlist[2].y), Point(pf->tlist[0].x, pf->tlist[0].y), pf->litColor[0]);
 			}
 		}
 
@@ -962,28 +959,37 @@ namespace DoPixel
 		}
 
 		//////////////////////////////////////////////////////////////////////////
-		// Now just calc diffuse light model.
-		// Rsdiffuse: diffuse color of material, assume every surface has a material
-		// Idiffuse: intensity of diffuse color of light.
-
 		void TLBase::Lighting(const Camera& camera, const std::vector<Light>& lights, Poly& poly)
 		{
-			if (!(poly.state & POLY_STATE_ACTIVE) || (poly.state & POLY_STATE_CLIPPED) || (poly.state & POLY_STATE_BACKFACE))
-				return;
-
 			poly.state |= POLY_STATE_LIT;
-
-			int rBase = poly.color.r;
-			int gBase = poly.color.g;
-			int bBase = poly.color.b;
 
 			int i0 = poly.vert[0];
 			int i1 = poly.vert[1];
 			int i2 = poly.vert[2];
 
-			const Vector4f& v0 = poly.vlist[i0].v;
-			const Vector4f& v1 = poly.vlist[i1].v;
-			const Vector4f& v2 = poly.vlist[i2].v;
+			InternalLighting(poly.litColor, camera, lights, poly.attr, poly.vlist[i0], poly.vlist[i1], poly.vlist[i2], poly.color);
+		}
+
+		void TLBase::Lighting(const Camera& camera, const std::vector<Light>& lights, PolyFace& polyFace)
+		{
+			polyFace.state |= POLY_STATE_LIT;
+
+			InternalLighting(polyFace.litColor, camera, lights, polyFace.attr, polyFace.tlist[0], polyFace.tlist[1], polyFace.tlist[2], polyFace.color);
+		}
+
+		// Now just calc diffuse light model.
+		// Rsdiffuse: diffuse color of material, assume every surface has a material
+		// Idiffuse: intensity of diffuse color of light.
+
+		void TLBase::InternalLighting(Color* litColor, const Camera& camera, const std::vector<Light>& lights, int shadeType, const Vertex& vertex0, const Vertex& vertex1, const Vertex& vertex2, const Color& color)
+		{
+			int rBase = color.r;
+			int gBase = color.g;
+			int bBase = color.b;
+
+			const Vector4f& v0 = vertex0.v;
+			const Vector4f& v1 = vertex1.v;
+			const Vector4f& v2 = vertex2.v;
 
 			// Normal vector
 			Vector4f u = v1 - v0;
@@ -1027,7 +1033,7 @@ namespace DoPixel
 
 				// diffuse model
 				// Itotald = Rsdiffuse * Idiffuse * (n . l)
-				
+
 				Vector4f l = light.pos - v;
 				float dp = DotProduct(n, l);
 				if (dp > 0)
@@ -1115,7 +1121,7 @@ namespace DoPixel
 				}
 			};
 
-			if ((poly.attr & POLY_ATTR_SHADE_FLAT) != 0)
+			if ((shadeType & POLY_ATTR_SHADE_FLAT) != 0)
 			{
 				// Init color
 				int rSum = 0;
@@ -1155,13 +1161,13 @@ namespace DoPixel
 				gSum = Math::Clamp(gSum, 0, 255);
 				bSum = Math::Clamp(bSum, 0, 255);
 
-				poly.litColor[0] = Color((unsigned char)rSum, (unsigned char)gSum, (unsigned char)bSum);
+				litColor[0] = Color((unsigned char)rSum, (unsigned char)gSum, (unsigned char)bSum);
 			}
-			else if ((poly.attr & POLY_ATTR_SHADE_GOURAUD) != 0)
+			else if ((shadeType & POLY_ATTR_SHADE_GOURAUD) != 0)
 			{
-				const Vector4f& n0 = poly.vlist[i0].n;
-				const Vector4f& n1 = poly.vlist[i1].n;
-				const Vector4f& n2 = poly.vlist[i2].n;
+				const Vector4f& n0 = vertex0.n;
+				const Vector4f& n1 = vertex1.n;
+				const Vector4f& n2 = vertex2.n;
 
 				// Init color
 				int rSum0 = 0;
@@ -1262,14 +1268,14 @@ namespace DoPixel
 				gSum2 = Math::Clamp(gSum2, 0, 255);
 				bSum2 = Math::Clamp(bSum2, 0, 255);
 
-				poly.litColor[0] = Color((unsigned char)rSum0, (unsigned char)gSum0, (unsigned char)bSum0);
-				poly.litColor[1] = Color((unsigned char)rSum1, (unsigned char)gSum1, (unsigned char)bSum1);
-				poly.litColor[2] = Color((unsigned char)rSum2, (unsigned char)gSum2, (unsigned char)bSum2);
+				litColor[0] = Color((unsigned char)rSum0, (unsigned char)gSum0, (unsigned char)bSum0);
+				litColor[1] = Color((unsigned char)rSum1, (unsigned char)gSum1, (unsigned char)bSum1);
+				litColor[2] = Color((unsigned char)rSum2, (unsigned char)gSum2, (unsigned char)bSum2);
 			}
 			else
 			{
 				// emmisive shading only, do nothing
-				poly.litColor[0] = poly.color;
+				litColor[0] = color;
 			}
 		}
 	}
