@@ -34,7 +34,7 @@ namespace DoPixel
 		#define PLX_2SIDE_FLAG					0x1000
 		#define PLX_1SIDE_FLAG					0x0000
 
-		#define PLX_SHADE_MODE_PURE_FLAG		0x0000
+		#define PLX_SHADE_MODE_PURE_FLAG		0x0000	//alias: EMISSIVE, CONSTANT
 		#define PLX_SHADE_MODE_FLAT_FLAG		0x2000
 		#define PLX_SHADE_MODE_GUARD_FLAG		0x4000
 		#define PLX_SHADE_MODE_PHONG_FLAG		0x6000
@@ -58,6 +58,12 @@ namespace DoPixel
 
 		#define VERTEX_FLAGS_TRANSFORM_LOCAL         512  // if file format has local transform then do it!
 		#define VERTEX_FLAGS_TRANSFORM_LOCAL_WORLD  1024  // if file format has local to world then do it!
+
+		#define VERTEX_FLAGS_OVERRIDE_MASK          0xf000 // this masks these bits to extract them
+		#define VERTEX_FLAGS_OVERRIDE_PURE          0x1000
+		#define VERTEX_FLAGS_OVERRIDE_FLAT          0x2000
+		#define VERTEX_FLAGS_OVERRIDE_GOURAUD       0x4000
+		#define VERTEX_FLAGS_OVERRIDE_TEXTURE       0x8000
 
 		//////////////////////////////////////////////////////////////////////////
 		// .ASC file

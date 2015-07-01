@@ -240,6 +240,8 @@ namespace DoPixel
 				}
 			}
 
+			obj.Init(obj.numVertices, obj.numPolys, obj.numFrames);
+
 			// Get vertex list
 			regexInfo.GenRegexInfo("['Vertex'] [i] ['X'] [f] ['Y'] [f] ['Z'] [f]");
 			for (int i = 0; i < obj.numVertices;)
@@ -276,6 +278,7 @@ namespace DoPixel
 					z *= scale.z;
 
 					obj.vListLocal[i].v = Vector4f(x, y, z, 1);
+					obj.vListLocal[i].attr |= Vertex::Attr_Point;
 					++i;
 				}
 			}
@@ -313,6 +316,9 @@ namespace DoPixel
 					if ((vertexFlag & VERTEX_FLAGS_INVERT_WINDING_ORDER) != 0)
 						std::swap(poly.vert[0], poly.vert[2]);
 
+					poly.vlist = obj.vListLocal;
+					poly.clist = obj.coordlist;
+
 					// Get material
 					fnGetLine(strLine);
 					
@@ -328,9 +334,31 @@ namespace DoPixel
 						a = 255;
 
 						poly.color = Color((unsigned char)r, (unsigned char)g, (unsigned char)b, (unsigned char)a);
-						poly.attr = POLY_ATTR_SHADE_FLAT;
-						poly.state = POLY_STATE_ACTIVE;
+						poly.attr |= POLY_ATTR_RGB32;
 					}
+
+					// Vertex overrides
+					int vertexOverrides = vertexFlag & VERTEX_FLAGS_OVERRIDE_MASK;	
+
+					if ((vertexOverrides & VERTEX_FLAGS_OVERRIDE_PURE) != 0)
+						poly.attr |= POLY_ATTR_SHADE_PURE;					
+					else if ((vertexOverrides & VERTEX_FLAGS_OVERRIDE_FLAT) != 0)
+						poly.attr |= POLY_ATTR_SHADE_FLAT;
+					else if ((vertexOverrides & VERTEX_FLAGS_OVERRIDE_GOURAUD) != 0)
+					{
+						poly.attr |= POLY_ATTR_SHADE_GOURAUD;
+						// need normals
+						poly.vlist[poly.vert[0]].attr |= Vertex::Attr_Normal;
+						poly.vlist[poly.vert[1]].attr |= Vertex::Attr_Normal;
+						poly.vlist[poly.vert[2]].attr |= Vertex::Attr_Normal;
+					}
+					else if ((vertexOverrides & VERTEX_FLAGS_OVERRIDE_TEXTURE) != 0)
+						poly.attr |= POLY_ATTR_SHADE_TEXTURE;
+					else
+						// default
+						poly.attr |= POLY_ATTR_SHADE_FLAT;
+
+					poly.state = POLY_STATE_ACTIVE;
 
 					++i;
 				}

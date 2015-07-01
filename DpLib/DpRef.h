@@ -150,7 +150,7 @@ namespace DoPixel
 				return !operator>(r);
 			}
 		private:
-			Ref(T* p, mutable int* c) : ptr(p), counter(c)
+			Ref(T* p, int* c) : ptr(p), counter(c)
 			{
 				IncRef();
 			}

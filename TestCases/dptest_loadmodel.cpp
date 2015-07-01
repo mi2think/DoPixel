@@ -33,7 +33,7 @@ void LoadPLG()
 	EXPECT_EQ(obj.numVertices, 21);
 	EXPECT_EQ(obj.numPolys, 19);
 
-	EXPECT_EQ(obj.vListLocal[17], Vector4f(30, 10, 100, 1));
+	EXPECT_EQ(obj.vListLocal[17].v, Vector4f(30, 10, 100, 1));
 }
 
 void LoadASC()

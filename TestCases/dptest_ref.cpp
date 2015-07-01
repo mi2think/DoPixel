@@ -32,6 +32,6 @@ public:
 
 DPTEST(Ref)
 {
-	Ref<int> r1 = 1;
+	Ref<int> r1(new int(1));
 	EXPECT_TRUE(r1.Count() == 1);
 }
