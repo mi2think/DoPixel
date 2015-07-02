@@ -45,7 +45,7 @@ namespace DoPixel
 
 				struct  
 				{
-					float x, y, z, w;		// point
+					float x, y, z, w;		// position
 					float nx, ny, nz, nw;	// normal
 					float u0, v0;			// texture coord
 
@@ -55,8 +55,8 @@ namespace DoPixel
 
 				struct
 				{
-					Vector4f v;		// the vertex
-					Vector4f n;		// the normal
+					Vector4f v;		// position
+					Vector4f n;		// normal
 					Vector2f uv0;	// texture coord
 				};
 			};
@@ -119,6 +119,18 @@ namespace DoPixel
 			int coord[3];		// index of texture coord list
 
 			float nlength;		// length of normal vector
+
+			Vector4f GetFacetNormal() const
+			{
+				const auto& v0 = vlist[vert[0]];
+				const auto& v1 = vlist[vert[1]];
+				const auto& v2 = vlist[vert[2]];
+
+				Vector4f u = v1.v - v0.v;
+				Vector4f v = v2.v - v0.v;
+				Vector4f n = CrossProduct(u, v);
+				return n;
+			}
 		};
 
 		// using inner vertex list
@@ -241,6 +253,8 @@ namespace DoPixel
 			void Scale(const Vector4f& scale, bool allFrames);
 
 			void UpdateRadius(bool allFrames = true);
+
+			void ComputeVertexNormals();
 
 			// Use m to transform obj
 			// transformBase: true for transform ux,uy,uz of object

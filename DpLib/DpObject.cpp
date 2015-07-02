@@ -15,6 +15,7 @@
 #include "DpDevice.h"
 #include "DpLight.h"
 #include <cassert>
+#include <map>
 
 using namespace DoPixel::Math;
 
@@ -231,6 +232,67 @@ namespace DoPixel
 			else
 			{
 				fn(avgRadius[currFrame], maxRadius[currFrame], vListLocal, numVertices);
+			}
+		}
+
+		void Object::ComputeVertexNormals()
+		{
+			// vertex normals of each poly are commonly used for lighting compute for gouraud shading.
+			// we want to average the normals of all poly that are adjacent to a given vertex
+
+			const double threshold = cos(angle2radian(90));
+
+			// k: vertex index
+			// v: poly index which share the same vertex 
+			std::map<int, std::vector<int>> vertexSharedByPolys;
+
+			// for each poly, find vertex shared by poly
+			for (int i = 0; i < numPolys; ++i)
+			{
+				Poly& poly = pList[i];
+				if ((poly.attr & POLY_ATTR_SHADE_GOURAUD) != 0)
+				{
+					// vertex index - shared poly index
+					int i0 = poly.vert[0];
+					int i1 = poly.vert[1];
+					int i2 = poly.vert[2];
+
+					vertexSharedByPolys[i0].push_back(i);
+					vertexSharedByPolys[i1].push_back(i);
+					vertexSharedByPolys[i2].push_back(i);
+				}
+			}
+
+			if (vertexSharedByPolys.empty())
+				return;
+
+			// for each vertex, compute vertex average normal
+			for (int i = 0; i < totalVertices; ++i)
+			{
+				auto it = vertexSharedByPolys.find(i);
+				if (it == vertexSharedByPolys.end())
+					continue;
+
+				auto& polyIndexList = vertexSharedByPolys[i];
+				assert(polyIndexList.size() > 0);
+
+				// technically vertex belong to
+				Poly& poly0 = pList[polyIndexList[0]];
+				Vector4f n0 = poly0.GetFacetNormal();
+
+				// average normal
+				Vector4f n(0, 0, 0, 1);
+				n += n0;
+				for (unsigned int j = 1; j < polyIndexList.size(); ++j)
+				{
+					Poly& polyj = pList[polyIndexList[j]];
+					Vector4f nj = polyj.GetFacetNormal();
+					if (DotProduct(n0, nj) > threshold)
+						n += nj;
+				}
+				n.Normalize();
+
+				vListLocal[i].n = n;
 			}
 		}
 
@@ -993,7 +1055,7 @@ namespace DoPixel
 
 			// Normal vector
 			Vector4f u = v1 - v0;
-			Vector4f v = v2 - v1;
+			Vector4f v = v2 - v0;
 			Vector4f n = CrossProduct(u, v);
 			n.Normalize();
 

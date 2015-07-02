@@ -364,6 +364,9 @@ namespace DoPixel
 				}
 			}
 
+			// compute vertex normals for any gouraud shaded polys
+			obj.ComputeVertexNormals();
+
 			return true;
 		}
 
