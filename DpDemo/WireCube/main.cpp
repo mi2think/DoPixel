@@ -27,7 +27,7 @@ void CWireCube::OnCreate()
 	camera.InitCamera(Camera::MODEL_EULER, Vector4f(0, 0, 0, 1), Vector4f(0, 0, 0, 1), Vector4f(0, 0, 0, 0), 50, 500, 90.0f, (float)clientWidth, (float)clientHeight);
 	camera.BuildCameraMatrixEuler(Camera::ROTATE_SEQ_ZYX);
 
-	LoadObjectFromPLG(object, "cube2.plg", Vector4f(5.0, 5.0, 5.0, 1.0), Vector4f(0,0,0,1));
+	LoadObjectFromPLG(object, "cube2.plg", Vector4f(5.0, 5.0, 5.0, 1.0), Vector4f(0, 0, 0, 1), Vector4f(1, 1, 1, 1), 0);
 
 	xangle = 0;
 	yangle = 0;
@@ -49,7 +49,7 @@ void CWireCube::Run(float fElapsedTime)
 	MatrixMultiply(rotation, m, mx);
 
 	object.ResetCull();
-	object.Transform(rotation, TRANSFORM_LOCAL_TO_TRANS, false);
+	object.Transform(rotation, TRANSFORM_LOCAL_TO_TRANS, false, true);
 	object.ModelToWorld(worldPos, TRANSFORM_TRANS_ONLY);
 	object.RemoveBackfaces(camera);
 	object.WorldToCamera(camera);

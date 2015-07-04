@@ -64,20 +64,25 @@ namespace DoPixel
 
 		*/
 
-		bool LoadObjectFromPLG(Object& obj, const char* fileName, const Vector4f& scale, const Vector4f& pos)
+		bool LoadObjectFromPLG(Object& obj, const char* fileName, const Vector4f& scale, const Vector4f& pos, const Vector4f& rot, int vertexFlag)
 		{
-			FileParser fileParser;
-			fileParser.Open(fileName);
-
 			memset(&obj, 0, sizeof(obj));
 			obj.state = Object::STATE_ACTIVE | Object::STATE_VISIBLE;
 			obj.worldPos = pos;
+			obj.attr = Object::ATTR_SINGLE_FRAME;
+			obj.numFrames = 1;
+
+			FileParser fileParser;
+			if (!fileParser.Open(fileName))
+				return false;
 
 			std::string strLine;
 			if (! fileParser.GetLine(strLine))
 				return false;
 
 			sscanf_s(strLine.c_str(), "%s %d %d", obj.name, sizeof(obj.name), &obj.numVertices, &obj.numPolys);
+
+			obj.Init(obj.numVertices, obj.numPolys, obj.numFrames);
 
 			// Load vertex list
 			for (int i = 0; i < obj.numVertices; ++i)
@@ -90,6 +95,8 @@ namespace DoPixel
 				obj.vListLocal[i].x *= scale.x;
 				obj.vListLocal[i].y *= scale.y;
 				obj.vListLocal[i].z *= scale.z;
+
+				obj.vListLocal[i].attr |= Vertex::Attr_Point;
 			}
 
 			// Calc avg radius and max radius
@@ -114,6 +121,8 @@ namespace DoPixel
 				// Let ploy vertex list be object vertex list 
 				obj.pList[i].vlist = obj.vListLocal;
 
+				obj.pList[i].clist = obj.coordlist;
+
 				// Analyze ploy surface desc
 
 				// Side
@@ -123,7 +132,7 @@ namespace DoPixel
 				// Color
 				if (polySurfaceDesc & PLX_COLOR_MODE_RGB_FLAG)
 				{
-					obj.pList[i].attr |= POLY_ATTR_RGB24;
+					obj.pList[i].attr |= POLY_ATTR_RGB32;
 
 					int red = ((polySurfaceDesc & 0x0f00) >> 8);
 					int green = ((polySurfaceDesc & 0x00f0) >> 4);
@@ -131,10 +140,11 @@ namespace DoPixel
 
 					// In file. RGB is 4.4.4, in virtual color system convert 8.8.8 to 5.5.5 or 5.5.6
 					// So, 4.4.4 -> 8.8.8
-					obj.pList[i].color = RGB24(red, green, blue);
+					obj.pList[i].color = Color((unsigned char)red, (unsigned char)green, (unsigned char)blue);
 				}
 				else
 				{
+					//assert(false && "no support for 8-bit color");
 					obj.pList[i].attr |= POLY_ATTR_8BITCOLOR;
 					obj.pList[i].color = Color(polySurfaceDesc & 0x00ff);
 				}
@@ -149,10 +159,22 @@ namespace DoPixel
 					obj.pList[i].attr |= POLY_ATTR_SHADE_FLAT;
 					break;
 				case PLX_SHADE_MODE_GUARD_FLAG:
-					obj.pList[i].attr |= POLY_ATTR_SHADE_GOURAUD;
+					{
+						obj.pList[i].attr |= POLY_ATTR_SHADE_GOURAUD;
+						// set vertex need normals
+						obj.vListLocal[obj.pList[i].vert[0]].attr |= Vertex::Attr_Normal;
+						obj.vListLocal[obj.pList[i].vert[1]].attr |= Vertex::Attr_Normal;
+						obj.vListLocal[obj.pList[i].vert[2]].attr |= Vertex::Attr_Normal;
+					}
 					break;
 				case PLX_SHADE_MODE_PHONG_FLAG:
-					obj.pList[i].attr |= POLY_ATTR_SHADE_PHONG;
+					{
+						obj.pList[i].attr |= POLY_ATTR_SHADE_PHONG;
+						// set vertex need normals
+						obj.vListLocal[obj.pList[i].vert[0]].attr |= Vertex::Attr_Normal;
+						obj.vListLocal[obj.pList[i].vert[1]].attr |= Vertex::Attr_Normal;
+						obj.vListLocal[obj.pList[i].vert[2]].attr |= Vertex::Attr_Normal;
+					}
 					break;
 				default:
 					break;
@@ -160,6 +182,8 @@ namespace DoPixel
 
 				obj.pList[i].state = POLY_STATE_ACTIVE;
 			}
+
+			obj.ComputeVertexNormals();
 			return true;
 		}
 
@@ -189,7 +213,11 @@ namespace DoPixel
 
 		bool LoadObjectFrom3DSASC(Object& obj, const char* fileName, const Vector4f& scale, const Vector4f& pos, const Vector4f& rot, int vertexFlag)
 		{
+			memset(&obj, 0, sizeof(obj));
+			obj.state = Object::STATE_ACTIVE | Object::STATE_VISIBLE;
 			obj.worldPos = pos;
+			obj.attr = Object::ATTR_SINGLE_FRAME;
+			obj.numFrames = 1;
 
 			FileParser parser;
 			if (!parser.Open(fileName))

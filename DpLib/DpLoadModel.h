@@ -43,7 +43,9 @@ namespace DoPixel
 		// Success return true, else false
 		// scale: initial scale
 		// pos: initial pos
-		bool LoadObjectFromPLG(Object& obj, const char* fileName, const Vector4f& scale, const Vector4f& pos);
+		// rot: initial rotate
+		// vertexFlag: vertex flag
+		bool LoadObjectFromPLG(Object& obj, const char* fileName, const Vector4f& scale, const Vector4f& pos, const Vector4f& rot, int vertexFlag);
 
 		//////////////////////////////////////////////////////////////////////////
 		// Vertex flags

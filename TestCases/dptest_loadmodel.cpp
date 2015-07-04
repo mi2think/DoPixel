@@ -27,7 +27,7 @@ void LoadPLG()
 	sscanf_s(sz, "%s %d %d", ch, sizeof(ch), &x, &y);
 
 	Object obj;
-	bool b = LoadObjectFromPLG(obj, "tank1.plg", Vector4f(1, 1, 1, 1), Vector4f(0, 0, 0, 1));
+	bool b = LoadObjectFromPLG(obj, "tank1.plg", Vector4f(1, 1, 1, 1), Vector4f(0, 0, 0, 1), Vector4f(1, 1, 1, 1), 0);
 	EXPECT_TRUE(b);
 
 	EXPECT_EQ(obj.numVertices, 21);
@@ -54,5 +54,5 @@ DPTEST(LoadModel)
 
 	LoadASC();
 
-	LoadCOB();
+// 	LoadCOB();
 }

@@ -48,10 +48,10 @@ void TankAndTower::OnCreate()
 {
 	camera.InitCamera(Camera::MODEL_EULER, Vector4f(0, 40, 0, 1), Vector4f(0, 0, 0, 1), Vector4f(0, 0, 0, 1), 200, 12000, 120, (float)clientWidth, (float)clientHeight);
 
-	LoadObjectFromPLG(player, "tank3.plg", Vector4f(0.75f, 0.75f, 0.75f, 1), Vector4f(0, 0, 0, 1));
-	LoadObjectFromPLG(tank, "tank2.plg", Vector4f(0.75f, 0.75f, 0.75f, 1), Vector4f(0, 0, 0, 1));
-	LoadObjectFromPLG(tower, "tower1.plg", Vector4f(1.0f, 2.0f, 1.0f, 1), Vector4f(0, 0, 0, 1));
-	LoadObjectFromPLG(maker, "marker1.plg", Vector4f(3.0f, 3.0f, 3.0f, 1), Vector4f(0, 0, 0, 1));
+	LoadObjectFromPLG(player, "tank3.plg", Vector4f(0.75f, 0.75f, 0.75f, 1), Vector4f(0, 0, 0, 1), Vector4f(1, 1, 1, 1), 0);
+	LoadObjectFromPLG(tank, "tank2.plg", Vector4f(0.75f, 0.75f, 0.75f, 1), Vector4f(0, 0, 0, 1), Vector4f(1, 1, 1, 1), 0);
+	LoadObjectFromPLG(tower, "tower1.plg", Vector4f(1.0f, 2.0f, 1.0f, 1), Vector4f(0, 0, 0, 1), Vector4f(1, 1, 1, 1), 0);
+	LoadObjectFromPLG(maker, "marker1.plg", Vector4f(3.0f, 3.0f, 3.0f, 1), Vector4f(0, 0, 0, 1), Vector4f(1, 1, 1, 1), 0);
 
 	for (int i = 0; i < TANK_NUM; ++i)
 	{
@@ -126,7 +126,7 @@ void TankAndTower::Run(float fElapsedTime)
 
 		MatrixRotationY(mRot, angle2radian(tankPos[i].w));
 
-		tank.Transform(mRot, TRANSFORM_LOCAL_TO_TRANS, true);
+		tank.Transform(mRot, TRANSFORM_LOCAL_TO_TRANS, true, true);
 
 		if (!tank.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
 		{
@@ -148,7 +148,7 @@ void TankAndTower::Run(float fElapsedTime)
 	player.worldPos.w = 1;
 
 	MatrixRotationY(mRot, camera.dir.y + angle2radian(turning));
-	player.Transform(mRot, TRANSFORM_LOCAL_TO_TRANS, true);
+	player.Transform(mRot, TRANSFORM_LOCAL_TO_TRANS, true, true);
 	player.ModelToWorld(player.worldPos, TRANSFORM_TRANS_ONLY);
 	renderList.InsertObject(player);
 
@@ -162,13 +162,15 @@ void TankAndTower::Run(float fElapsedTime)
 			maker.ResetCull();
 
 			Vector4f worldPos;
-			worldPos.x = float(RandRange(-100, 100) - UNIVERSE_RADIUS + x * POINT_SIZE);
-			worldPos.y = float(maker.maxRadius);
-			worldPos.z = float(RandRange(-100, 100) - UNIVERSE_RADIUS + z * POINT_SIZE);
+			float r1 = (float)RandRange(-100, 100);
+			float r2 = (float)RandRange(-100, 100);
+			worldPos.x = r1 - UNIVERSE_RADIUS + x * POINT_SIZE;
+			worldPos.y = float(maker.maxRadius[0]);
+			worldPos.z = r2 - UNIVERSE_RADIUS + z * POINT_SIZE;
 
 			if (!maker.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
 			{
-				maker.ModelToWorld(maker.worldPos);
+				maker.ModelToWorld(worldPos);
 				renderList.InsertObject(maker);
 			}
 		}

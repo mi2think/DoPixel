@@ -1,7 +1,7 @@
 #include "DemoApp.h"
 
 #define NUM_OBJECTS     16
-#define OBJECT_SPACING  250
+#define OBJECT_SPACING  256
 
 class TankUVN : public DemoApp
 {
@@ -27,7 +27,7 @@ void TankUVN::OnCreate()
 {
 	camera.InitCamera(Camera::MODEL_UVNSimple, Vector4f(0, 0, 0, 1), Vector4f(0, 0, 0, 1), Vector4f(0, 0, 0, 1), 50, 8000, 90, (float)clientWidth, (float)clientHeight);
 	
-	LoadObjectFromPLG(object, "tank1.plg", Vector4f(1,1,1,1), Vector4f(0,0,0,1));
+	LoadObjectFromPLG(object, "tank1.plg", Vector4f(1,1,1,1), Vector4f(0,0,0,1), Vector4f(1,1,1,1), 0);
 
 	object.worldPos = Vector4f(0,0,0,1);
 
@@ -40,7 +40,7 @@ void TankUVN::Run(float fElapsedTime)
 {
 	MatrixRotationY(rotation, angle2radian(1));
 
-	object.Transform(rotation, TRANSFORM_LOCAL_ONLY, true);
+	object.Transform(rotation, TRANSFORM_LOCAL_ONLY, true, true);
 
 	const int cameraDist = 1750;
 
@@ -66,7 +66,7 @@ void TankUVN::Run(float fElapsedTime)
 
 			if (!object.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
 			{
-				object.ModelToWorld(object.worldPos);
+				object.ModelToWorld(worldPos);
 
 				renderList.InsertObject(object);
 			}

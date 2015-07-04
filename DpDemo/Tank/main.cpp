@@ -25,7 +25,7 @@ void Tank::OnCreate()
 {
 	camera.InitCamera(Camera::MODEL_EULER, Vector4f(0,200,0,1), Vector4f(0,0,0,1), Vector4f(0,0,0,0), 50, 1000, 90, (float)clientWidth, (float)clientHeight);
 
-	LoadObjectFromPLG(object, "tank1.plg", Vector4f(1,1,1,1), Vector4f(0,0,0,1));
+	LoadObjectFromPLG(object, "tank1.plg", Vector4f(1, 1, 1, 1), Vector4f(0, 0, 0, 1), Vector4f(1, 1, 1, 1), 0);
 
 	object.worldPos = Vector4f(0, 0, 400, 1);
 }
@@ -34,7 +34,7 @@ void Tank::Run(float fElapsedTime)
 {
 	MatrixRotationY(rotation, angle2radian(1));
 
-	object.Transform(rotation, TRANSFORM_LOCAL_ONLY, true);
+	object.Transform(rotation, TRANSFORM_LOCAL_ONLY, true, false);
 
 	renderList.Reset();
 
