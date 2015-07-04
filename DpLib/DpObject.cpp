@@ -524,6 +524,8 @@ namespace DoPixel
 			for (int i = 0; i < numVertices; ++i)
 			{
 				float z = vListTrans[i].z;
+				assert(z != 0);
+
 				vListTrans[i].x = vListTrans[i].x * camera.viewDist / z;
 				vListTrans[i].y = vListTrans[i].y * camera.viewDist * camera.aspectRatio / z;
 			}
@@ -551,14 +553,21 @@ namespace DoPixel
 
 			// Assume the coordinate of object is normalied, range is [-1,1]
 			// Then Scale it by viewport, and reverse Y axis
+			
+			// Results: 
+			// x: [0, viewportWidth]
+			// y: [0, viewportHeight]
 
-			float alpha = 0.5f * camera.viewportWidth - 0.5f;
-			float beta = 0.5f * camera.viewportHeight - 0.5f;
+			// So:
+			// x -> (x + 1) * viewportWidth / 2
+			// y -> viewportHeight - (y + 1) * viewportHeight / 2
+			// the results is same with book "Introduction to 3D Game Programming with DirectX 9.0". :)
 
 			for (int i = 0; i < numVertices; ++i)
 			{
-				vListTrans[i].x = alpha + alpha * vListTrans[i].x;
-				vListTrans[i].y = beta - beta * vListTrans[i].y;
+				vListTrans[i].x = (vListTrans[i].x + 1) * camera.viewportWidth / 2;
+				vListTrans[i].y = (1 - vListTrans[i].y) * camera.viewportHeight / 2;
+
 			}
 		}
 
@@ -566,9 +575,6 @@ namespace DoPixel
 		{
 			// You may not keep object in this stage of pipeline
 			// Just a demo
-
-			float alpha = 0.5f * camera.viewportWidth - 0.5f;
-			float beta = 0.5f * camera.viewportHeight - 0.5f;
 
 			for (int i = 0; i < numVertices; ++i)
 			{
@@ -580,20 +586,9 @@ namespace DoPixel
 				vListTrans[i].x = vListTrans[i].x * camera.viewDist / z;
 				vListTrans[i].y = vListTrans[i].y * camera.viewDist * camera.aspectRatio / z;
 				
-				// Then We need reverse Y axis
-				// Xper = Xper
-				// Yper = (camera.viewportHeight - 1) - Yper
-
-				// Now, the pos range:
-				// Xper:(-(camera.viewportWidth - 1) / 2, (camera.viewportWidth - 1) / 2)
-				// Yper:(-(camera.viewportHeight - 1) / 2,(camera.viewportHeight - 1) / 2)
-				// Then, we need to translate it to screen
-				
-				// Xscreen = Xper + (camera.viewportWidth - 1) / 2
-				// Yscreen = -Yper + (camera.viewportHeight - 1) / 2
-
-				vListTrans[i].x = alpha + vListTrans[i].x;
-				vListTrans[i].y = beta - vListTrans[i].y;
+				// See PerspectiveToScreen
+				vListTrans[i].x = (vListTrans[i].x + 1) * camera.viewportWidth / 2;
+				vListTrans[i].y = (1 - vListTrans[i].y) * camera.viewportHeight / 2;
 			}
 		}
 
@@ -893,6 +888,8 @@ namespace DoPixel
 				for (int j = 0; j < 3; ++j)
 				{
 					float z = pf->tlist[j].z;
+					assert(z != 0);
+
 					pf->tlist[j].x = pf->tlist[j].x * camera.viewDist / z;
 					pf->tlist[j].y = pf->tlist[j].y * camera.viewDist * camera.aspectRatio / z;
 				}
@@ -926,28 +923,31 @@ namespace DoPixel
 			// Assume the coordinate of object is normalized, range is [-1,1]
 			// Then Scale it by viewport, and reverse Y axis
 
+			// Results: 
+			// x: [0, viewportWidth]
+			// y: [0, viewportHeight]
+
+			// So:
+			// x -> (x + 1) * viewportWidth / 2
+			// y -> viewportHeight - (y + 1) * viewportHeight / 2
+			// the results is same with book "Introduction to 3D Game Programming with DirectX 9.0". :)
+
 			for (int i = 0; i < numPolyFaces; ++i)
 			{
 				PolyFace* pf = pPolyFace[i];
 				if (! pf || ! (pf->state & POLY_STATE_ACTIVE) || (pf->state & POLY_STATE_BACKFACE) || (pf->state & POLY_STATE_CLIPPED))
 					continue;
 
-				float alpha = 0.5f * camera.viewportWidth - 0.5f;
-				float beta = 0.5f * camera.viewportHeight - 0.5f;
-
 				for (int j = 0; j < 3; ++j)
 				{
-					pf->tlist[j].x = alpha + pf->tlist[j].x * alpha;
-					pf->tlist[j].y = beta - pf->tlist[j].y * beta;
+					pf->tlist[j].x = (pf->tlist[j].x + 1) * camera.viewportWidth / 2;
+					pf->tlist[j].y = (1 - pf->tlist[j].y) * camera.viewportHeight / 2;
 				}
 			}
 		}
 
 		void RenderList::CameraToScreen(const Camera& camera)
 		{
-			float alpha = 0.5f * camera.viewportWidth - 0.5f;
-			float beta  = 0.5f * camera.viewportHeight - 0.5f;
-
 			for (int i = 0; i < numPolyFaces; ++i)
 			{
 				PolyFace* pf = pPolyFace[i];
@@ -963,21 +963,10 @@ namespace DoPixel
 					float z = pf->tlist[j].z;
 					pf->tlist[j].x = pf->tlist[j].x * camera.viewDist / z;
 					pf->tlist[j].y = pf->tlist[j].y * camera.viewDist * camera.aspectRatio / z;
-					
-					// Then We need reverse Y axis
-					// Xper = Xper
-					// Yper = (camera.viewportHeight - 1) - Yper
 
-					// Now, the pos range:
-					// Xper:(-(camera.viewportWidth - 1) / 2, (camera.viewportWidth - 1) / 2)
-					// Yper:(-(camera.viewportHeight - 1) / 2,(camera.viewportHeight - 1) / 2)
-					// Then, we need to translate it to screen
-
-					// Xscreen = Xper + (camera.viewportWidth - 1) / 2
-					// Yscreen = -Yper + (camera.viewportHeight - 1) / 2
-
-					pf->tlist[j].x = alpha + pf->tlist[j].x;
-					pf->tlist[j].y = beta - pf->tlist[j].y;
+					// see PerspectiveToScreen
+					pf->tlist[j].x = (pf->tlist[j].x + 1) * camera.viewportWidth / 2;
+					pf->tlist[j].y = (1 - pf->tlist[j].y) * camera.viewportHeight / 2;
 				}
 			}
 		}

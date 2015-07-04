@@ -198,7 +198,7 @@ namespace DoPixel
 		class Object
 		{
 		public:
-			enum { MAX_VERTICES = 2048, MAX_PLOYS = 2048 };
+			enum { MAX_VERTICES = 10240, MAX_PLOYS = 10240 };
 			enum { STATE_VISIBLE = 0x1, STATE_ACTIVE = 0x2, STATE_CULLED = 0x4, };
 			enum { ATTR_SINGLE_FRAME = 0x1, ATTR_MULTI_FRAME = 0x2, ATTR_TEXTURES = 0x4, };
 
