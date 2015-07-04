@@ -121,8 +121,8 @@ namespace DoPixel
 			this->viewPlaneWidth = 2.0f;
 			this->viewPlaneHeight = 2.0f / aspectRatio;
 
-			// d = (w / 2) * tan(thetah / 2)
-			this->viewDist = 0.5f * viewPlaneWidth * tan(angle2radian(fov / 2));
+			// d = (w / 2) / tan(thetah / 2)
+			this->viewDist = 0.5f * viewPlaneWidth / tan(angle2radian(fov / 2));
 
 			if (fov == 90.0f)
 			{
