@@ -278,33 +278,256 @@ namespace DoPixel
 
 		void Device::DrawTriangle(const Point& p0, const Point& p1, const Point& p2, const Color& color) const
 		{
-			auto fnDrawFlatTop = [&](const Point& p0, const Point& p1, const Point& p2) -> void
-			{
-				float kl = (p2.x - p0.x) / (p2.y - p0.y);
-				float kr = (p2.x - p1.x) / (p2.y - p1.y);
-				float xs = p0.x;
-				float xe = p1.x;
+			if (FCMP(p0.x, p1.x) && FCMP(p1.x, p2.x) || FCMP(p0.y, p1.y) && FCMP(p1.y, p2.y))
+				return;
 
-				for (float y = p0.y; y <= p2.y; ++y)
+			auto fnDrawFlatTop = [&color, this](const Point& p0, const Point& p1, const Point& p2) -> void
+			{
+				//float kl = (p2.x - p0.x) / (p2.y - p0.y);
+				//float kr = (p2.x - p1.x) / (p2.y - p1.y);
+				//float xs = p0.x;
+				//float xe = p1.x;
+
+				//for (float y = p0.y; y <= p2.y; ++y)
+				//{
+				//	DrawLine(Point(xs, y), Point(xe, y), color);
+				//	xs += kl;
+				//	xe += kr;
+				//}
+
+				float x1 = p0.x;
+				float y1 = p0.y;
+				float x2 = p1.x;
+				//float y2 = p1.y;
+				float x3 = p2.x;
+				float y3 = p2.y;
+				
+				if (x1 > x2)
 				{
-					DrawLine(Point(xs, y), Point(xe, y), color);
-					xs += kl;
-					xe += kr;
+					float x_temp = x1;
+					x1 = x2;
+					x2 = x_temp;
+				}
+
+				float height = y3 - y1;
+				float dx_left = (x3 - x1) / height;
+				float dx_right = (x3 - x2) / height;
+
+				// starting points
+				float xs = x1;
+				float xe = x2;
+
+				int iy1, iy3;
+
+				if (y1 < clipRect.top)
+				{
+					// compute new xs and ys
+					xs = xs + dx_left * (clipRect.top - y1);
+					xe = xe + dx_right * (clipRect.top - y1);
+
+					// reset y1
+					y1 = (float)clipRect.top;
+
+					//make sure top left fill convention is observed
+					iy1 = (int)y1;
+				}
+				else
+				{
+					//make sure top left fill convention is observed
+					iy1 = (int)ceil(y1);
+
+					// bump xs and xe appropriately
+					xs = xs + dx_left * (iy1 - y1);
+					xe = xe + dx_right * (iy1 - y1);
+				}
+
+				if (y3 > clipRect.bottom)
+				{
+					// clip y
+					y3 = (float)clipRect.bottom;
+
+					// make sure top left fill convention is observed
+					iy3 = int(y3 - 1);
+				}
+				else
+				{
+					// make sure top left fill convention is observed
+					iy3 = int(ceil(y3) - 1);
+				}
+
+				// test if x clipping is needed
+				if (x1 >= clipRect.left && x1 <= clipRect.right &&
+					x2 >= clipRect.left && x2 <= clipRect.right &&
+					x3 >= clipRect.left && x3 <= clipRect.right)
+				{
+					//draw the triangle
+					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
+					{
+						for (int loop_x = (int)xs; loop_x <= (int)xe; ++loop_x)
+						{
+							this->WritePixel(loop_x, loop_y, color);
+						}
+
+						xs += dx_left;
+						xe += dx_right;
+					}
+				}
+				else
+				{
+					// clip x
+					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
+					{
+						float left = xs;
+						float right = xe;
+
+						xs += dx_left;
+						xe += dx_right;
+
+						// clip line
+						if (left < clipRect.left)
+						{
+							left = (float)clipRect.left;
+							if (right < clipRect.left)
+								continue;
+						}
+
+						if (right > clipRect.right)
+						{
+							right = (float)clipRect.right;
+							if (left > clipRect.right)
+								continue;
+						}
+
+						for (int loop_x = (int)left; loop_x <= (int)right; ++loop_x)
+						{
+							this->WritePixel(loop_x, loop_y, color);
+						}
+					}
 				}
 			};
 
-			auto fnDrawFlatBottom = [&](const Point& p0, const Point& p1, const Point& p2) -> void
+			auto fnDrawFlatBottom = [&color, this](const Point& p0, const Point& p1, const Point& p2) -> void
 			{
-				float kl = (p2.x - p0.x) / (p2.y - p0.y);
-				float kr = (p1.x - p0.x) / (p1.y - p0.y);
-				float xs = p0.x;
-				float xe = p0.x;
+				//float kl = (p2.x - p0.x) / (p2.y - p0.y);
+				//float kr = (p1.x - p0.x) / (p1.y - p0.y);
+				//float xs = p0.x;
+				//float xe = p0.x;
 
-				for (float y = p0.y; y <= p2.y; ++y)
+				//for (float y = p0.y; y <= p2.y; ++y)
+				//{
+				//	DrawLine(Point(xs, y), Point(xe, y), color);
+				//	xs += kl;
+				//	xe += kr;
+				//}
+
+				float x1 = p0.x;
+				float y1 = p0.y;
+				float x2 = p1.x;
+				//float y2 = p1.y;
+				float x3 = p2.x;
+				float y3 = p2.y;
+
+				if (x3 > x2)
 				{
-					DrawLine(Point(xs, y), Point(xe, y), color);
-					xs += kl;
-					xe += kr;
+					float x_temp = x3;
+					x3 = x2;
+					x2 = x_temp;
+				}
+
+				float height = y3 - y1;
+				float dx_left = (x3 - x1) / height;
+				float dx_right = (x2 - x1) / height;
+
+				// starting points
+				float xs = x1;
+				float xe = x1;
+
+				int iy1, iy3;
+
+				if (y1 < clipRect.top)
+				{
+					// compute new xs and ys
+					xs = xs + dx_left * (clipRect.top - y1);
+					xe = xe + dx_right * (clipRect.top - y1);
+
+					// reset y1
+					y1 = (float)clipRect.top;
+
+					//make sure top left fill convention is observed
+					iy1 = (int)y1;
+				}
+				else
+				{
+					//make sure top left fill convention is observed
+					iy1 = (int)ceil(y1);
+
+					// bump xs and xe appropriately
+					xs = xs + dx_left * (iy1 - y1);
+					xe = xe + dx_right * (iy1 - y1);
+				}
+
+				if (y3 > clipRect.bottom)
+				{
+					// clip y
+					y3 = (float)clipRect.bottom;
+
+					// make sure top left fill convention is observed
+					iy3 = int(y3 - 1);
+				}
+				else
+				{
+					// make sure top left fill convention is observed
+					iy3 = int(ceil(y3) - 1);
+				}
+
+				// test if x clipping is needed
+				if (x1 >= clipRect.left && x1 <= clipRect.right &&
+					x2 >= clipRect.left && x2 <= clipRect.right &&
+					x3 >= clipRect.left && x3 <= clipRect.right)
+				{
+					//draw the triangle
+					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
+					{
+						for (int loop_x = (int)xs; loop_x <= (int)xe; ++loop_x)
+						{
+							this->WritePixel(loop_x, loop_y, color);
+						}
+
+						xs += dx_left;
+						xe += dx_right;
+					}
+				}
+				else
+				{
+					// clip x
+					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
+					{
+						float left = xs;
+						float right = xe;
+						
+						xs += dx_left;
+						xe += dx_right;
+
+						// clip line
+						if (left < clipRect.left)
+						{
+							left = (float)clipRect.left;
+							if (right < clipRect.left)
+								continue;
+						}
+
+						if (right > clipRect.right)
+						{
+							right = (float)clipRect.right;
+							if (left > clipRect.right)
+								continue;
+						}
+						
+						for (int loop_x = (int)left; loop_x <= (int)right; ++loop_x)
+						{
+							this->WritePixel(loop_x, loop_y, color);
+						}
+					}
 				}
 			};
 
@@ -334,16 +557,6 @@ namespace DoPixel
 				_p2 = p;
 			}
 
-			int x0 = Round(_p0.x);
-			int x1 = Round(_p1.x);
-			int x2 = Round(_p2.x);
-			int y0 = Round(_p0.y);
-			int y1 = Round(_p1.y);
-			int y2 = Round(_p2.y);
-
-			if (x0 == x1 && x1 == x2 || y0 == y1 && y1 == y2)
-				return;
-
 			// Cull
 			if (_p2.y < clipRect.top || _p0.y > clipRect.bottom)
 				return;
@@ -352,17 +565,20 @@ namespace DoPixel
 			if (_p0.x > clipRect.right && _p1.x > clipRect.right && _p2.x > clipRect.right)
 				return;
 
-			if (y0 == y1)
+			if (FCMP(_p0.y, _p1.y))
 			{
 				fnDrawFlatTop(_p0, _p1, _p2);
 			}
-			else if (y1 == y2)
+			else if (FCMP(_p1.y, _p2.y))
 			{
 				fnDrawFlatBottom(_p0, _p1, _p2);
 			}
 			else
 			{
-				float xnew = _p2.x + (_p0.x - _p2.x) * (_p2.y - _p1.y) / (_p2.y - _p0.y);
+				// Note: p0, p1, p2 have sorted
+				// (xnew - x1) / (x3 - x1) = (y2 - y1) / (y3 - y1)
+
+				float xnew = _p0.x + (_p2.x - _p0.x) * (_p1.y - _p0.y) / (_p2.y - _p0.y);
 
 				fnDrawFlatBottom(_p0, Point(xnew, _p1.y), _p1);
 				fnDrawFlatTop(_p1, Point(xnew, _p1.y), _p2);

@@ -1034,9 +1034,9 @@ namespace DoPixel
 
 		void TLBase::InternalLighting(Color* litColor, const Camera& camera, const std::vector<Light>& lights, int shadeType, const Vertex& vertex0, const Vertex& vertex1, const Vertex& vertex2, const Color& color)
 		{
-			int rBase = color.r;
-			int gBase = color.g;
-			int bBase = color.b;
+			float rBase = color.r;
+			float gBase = color.g;
+			float bBase = color.b;
 
 			const Vector4f& v0 = vertex0.v;
 			const Vector4f& v1 = vertex1.v;
@@ -1049,7 +1049,7 @@ namespace DoPixel
 			n.Normalize();
 
 			// Compute lit
-			auto fnInfiniteLightLit = [&rBase, &gBase, &bBase](int& rSum, int& gSum, int& bSum, const Light& light, const Vector4f& n)
+			auto fnInfiniteLightLit = [&rBase, &gBase, &bBase](float& rSum, float& gSum, float& bSum, const Light& light, const Vector4f& n)
 			{
 				assert(light.attr == Light::ATTR_INFINITE);
 
@@ -1065,13 +1065,13 @@ namespace DoPixel
 				float dp = DotProduct(n, light.dir);
 				if (dp > 0)
 				{
-					rSum += int(light.color.r * rBase * dp / 256);
-					gSum += int(light.color.g * gBase * dp / 256);
-					bSum += int(light.color.b * bBase * dp / 256);
+					rSum += light.color.r * rBase * dp / 256;
+					gSum += light.color.g * gBase * dp / 256;
+					bSum += light.color.b * bBase * dp / 256;
 				}
 			};
 
-			auto fnPointLightLit = [&rBase, &gBase, &bBase](int& rSum, int& gSum, int& bSum, const Light& light, const Vector4f& v, const Vector4f& n)
+			auto fnPointLightLit = [&rBase, &gBase, &bBase](float& rSum, float& gSum, float& bSum, const Light& light, const Vector4f& v, const Vector4f& n)
 			{
 				assert(light.attr == Light::ATTR_POINT);
 
@@ -1096,13 +1096,13 @@ namespace DoPixel
 					// We need to divide d since l isn't unit vector
 					float a = dp / (k * d);
 
-					rSum += int(light.color.r * rBase * a / 256);
-					gSum += int(light.color.g * gBase * a / 256);
-					bSum += int(light.color.b * bBase * a / 256);
+					rSum += light.color.r * rBase * a / 256;
+					gSum += light.color.g * gBase * a / 256;
+					bSum += light.color.b * bBase * a / 256;
 				}
 			};
 
-			auto fnSpotLight1Lit = [&rBase, &gBase, &bBase](int& rSum, int& gSum, int& bSum, const Light& light, const Vector4f& v, const Vector4f& n)
+			auto fnSpotLight1Lit = [&rBase, &gBase, &bBase](float& rSum, float& gSum, float& bSum, const Light& light, const Vector4f& v, const Vector4f& n)
 			{
 				assert(light.attr == Light::ATTR_SPOTLIGHT1);
 
@@ -1124,13 +1124,13 @@ namespace DoPixel
 
 					float a = dp / k;
 
-					rSum += int(light.color.r * rBase * a / 256);
-					gSum += int(light.color.g * gBase * a / 256);
-					bSum += int(light.color.b * bBase * a / 256);
+					rSum += light.color.r * rBase * a / 256;
+					gSum += light.color.g * gBase * a / 256;
+					bSum += light.color.b * bBase * a / 256;
 				}
 			};
 
-			auto fnSpotLight2Lit = [&rBase, &gBase, &bBase](int& rSum, int& gSum, int& bSum, const Light& light, const Vector4f& v, const Vector4f& n)
+			auto fnSpotLight2Lit = [&rBase, &gBase, &bBase](float& rSum, float& gSum, float& bSum, const Light& light, const Vector4f& v, const Vector4f& n)
 			{
 				assert(light.attr == Light::ATTR_SPOTLIGHT2);
 
@@ -1165,9 +1165,9 @@ namespace DoPixel
 
 						float a = dp * dpsl_exp / k;
 
-						rSum += int(light.color.r * rBase * a / 256);
-						gSum += int(light.color.g * gBase * a / 256);
-						bSum += int(light.color.b * bBase * a / 256);
+						rSum += light.color.r * rBase * a / 256;
+						gSum += light.color.g * gBase * a / 256;
+						bSum += light.color.b * bBase * a / 256;
 					}
 				}
 			};
@@ -1175,9 +1175,9 @@ namespace DoPixel
 			if ((shadeType & POLY_ATTR_SHADE_FLAT) != 0)
 			{
 				// Init color
-				int rSum = 0;
-				int gSum = 0;
-				int bSum = 0;
+				float rSum = 0;
+				float gSum = 0;
+				float bSum = 0;
 
 				for (const auto& light : lights)
 				{
@@ -1208,9 +1208,9 @@ namespace DoPixel
 					}
 				}
 
-				rSum = Math::Clamp(rSum, 0, 255);
-				gSum = Math::Clamp(gSum, 0, 255);
-				bSum = Math::Clamp(bSum, 0, 255);
+				rSum = Math::Clamp(rSum, 0.0f, 255.0f);
+				gSum = Math::Clamp(gSum, 0.0f, 255.0f);
+				bSum = Math::Clamp(bSum, 0.0f, 255.0f);
 
 				litColor[0] = Color((unsigned char)rSum, (unsigned char)gSum, (unsigned char)bSum);
 			}
@@ -1221,21 +1221,21 @@ namespace DoPixel
 				const Vector4f& n2 = vertex2.n;
 
 				// Init color
-				int rSum0 = 0;
-				int gSum0 = 0;
-				int bSum0 = 0;
+				float rSum0 = 0;
+				float gSum0 = 0;
+				float bSum0 = 0;
 
-				int rSum1 = 0;
-				int gSum1 = 0;
-				int bSum1 = 0;
+				float rSum1 = 0;
+				float gSum1 = 0;
+				float bSum1 = 0;
 
-				int rSum2 = 0;
-				int gSum2 = 0;
-				int bSum2 = 0;
+				float rSum2 = 0;
+				float gSum2 = 0;
+				float bSum2 = 0;
 
-				int ri = 0;
-				int gi = 0;
-				int bi = 0;
+				float ri = 0;
+				float gi = 0;
+				float bi = 0;
 
 				for (const auto& light : lights)
 				{
@@ -1307,17 +1307,17 @@ namespace DoPixel
 					}
 				}
 
-				rSum0 = Math::Clamp(rSum0, 0, 255);
-				gSum0 = Math::Clamp(gSum0, 0, 255);
-				bSum0 = Math::Clamp(bSum0, 0, 255);
+				rSum0 = Math::Clamp(rSum0, 0.0f, 255.0f);
+				gSum0 = Math::Clamp(gSum0, 0.0f, 255.0f);
+				bSum0 = Math::Clamp(bSum0, 0.0f, 255.0f);
 
-				rSum1 = Math::Clamp(rSum1, 0, 255);
-				gSum1 = Math::Clamp(gSum1, 0, 255);
-				bSum1 = Math::Clamp(bSum1, 0, 255);
+				rSum1 = Math::Clamp(rSum1, 0.0f, 255.0f);
+				gSum1 = Math::Clamp(gSum1, 0.0f, 255.0f);
+				bSum1 = Math::Clamp(bSum1, 0.0f, 255.0f);
 
-				rSum2 = Math::Clamp(rSum2, 0, 255);
-				gSum2 = Math::Clamp(gSum2, 0, 255);
-				bSum2 = Math::Clamp(bSum2, 0, 255);
+				rSum2 = Math::Clamp(rSum2, 0.0f, 255.0f);
+				gSum2 = Math::Clamp(gSum2, 0.0f, 255.0f);
+				bSum2 = Math::Clamp(bSum2, 0.0f, 255.0f);
 
 				litColor[0] = Color((unsigned char)rSum0, (unsigned char)gSum0, (unsigned char)bSum0);
 				litColor[1] = Color((unsigned char)rSum1, (unsigned char)gSum1, (unsigned char)bSum1);

@@ -19,13 +19,17 @@ namespace DoPixel
 {
 	namespace Math
 	{
-#define eps 1e-5
+#define EPSILON_E5 (float)(1E-5)
 #define M_PI	3.1415926f
 #define angle2radian(a) ((a) * M_PI / 180)
 #define radian2angle(r) ((r) * 180 / M_PI)
 
 #define MAX(a,b)    (((a) > (b)) ? (a) : (b))
 #define MIN(a,b)    (((a) < (b)) ? (a) : (b))
+
+// floating point comparison
+#define EPSILON_E3 (float)(1E-3)
+#define FCMP(a,b) ( (fabs(a-b) < EPSILON_E3) ? 1 : 0)
 
 		template <typename T>
 		inline bool Equal(const T& a, const T& b)
@@ -35,7 +39,7 @@ namespace DoPixel
 		
 		inline bool Equal(const float& a, const float& b)
 		{
-			return abs(a - b) < eps;
+			return abs(a - b) < EPSILON_E5;
 		}
 
 		inline void SinCos(float& retSin, float& retCos, float angle)
