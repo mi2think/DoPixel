@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DpLib", "DpLib\DpLib.vcxproj", "{4C95835D-13E9-4AD4-9311-0112334FEE13}"
 EndProject
@@ -53,6 +53,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DpDirectX", "DpDirectX\DpDi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoadASC", "DpDemo\LoadASC\LoadASC.vcxproj", "{79AF5987-8975-4EFD-AE4C-2850A66356A5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GouraudTriangle", "DpDirectXDemo\GouraudTriangle\GouraudTriangle.vcxproj", "{EA0B3003-649A-4C23-BDED-DB038569E668}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -103,6 +105,10 @@ Global
 		{79AF5987-8975-4EFD-AE4C-2850A66356A5}.Debug|Win32.Build.0 = Debug|Win32
 		{79AF5987-8975-4EFD-AE4C-2850A66356A5}.Release|Win32.ActiveCfg = Release|Win32
 		{79AF5987-8975-4EFD-AE4C-2850A66356A5}.Release|Win32.Build.0 = Release|Win32
+		{EA0B3003-649A-4C23-BDED-DB038569E668}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EA0B3003-649A-4C23-BDED-DB038569E668}.Debug|Win32.Build.0 = Debug|Win32
+		{EA0B3003-649A-4C23-BDED-DB038569E668}.Release|Win32.ActiveCfg = Release|Win32
+		{EA0B3003-649A-4C23-BDED-DB038569E668}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,5 +122,6 @@ Global
 		{8AD5C5D2-7E59-47D6-9D01-ED62D96A40D9} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
 		{30742C21-9A12-4899-94DF-EF166F915F13} = {C89F52F7-985A-47F7-9499-DE8C5780D304}
 		{79AF5987-8975-4EFD-AE4C-2850A66356A5} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
+		{EA0B3003-649A-4C23-BDED-DB038569E668} = {C89F52F7-985A-47F7-9499-DE8C5780D304}
 	EndGlobalSection
 EndGlobal

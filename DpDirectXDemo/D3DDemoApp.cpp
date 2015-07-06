@@ -22,6 +22,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
+D3DDemoApp::D3DDemoApp()
+	: clientWidth(0)
+	, clientHeight(0)
+	, device(nullptr)
+{}
+
 void D3DDemoApp::Create(int wndWidth, int wndHeight, const char* wndName, bool bWindow)
 {
 	WNDCLASS wc;
@@ -80,6 +86,8 @@ void D3DDemoApp::Create(int wndWidth, int wndHeight, const char* wndName, bool b
 
 	GetD3DDevice()->Init(g_hwnd, clientWidth, clientHeight, bWindow);
 	GetD3DDevice()->SetClipRect(RectF(0, 0, clientWidth - 1, clientHeight - 1));
+
+	device = GetD3DDevice()->GetD3DD();
 
 	OnCreate();
 }

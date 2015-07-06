@@ -1,0 +1,96 @@
+#include "D3DDemoApp.h"
+
+struct ColorVertex
+{
+	ColorVertex(float _x, float _y, float _z, D3DCOLOR _color)
+		: x(_x)
+		, y(_y)
+		, z(_z)
+		, color(_color)
+	{
+	}
+
+	float x, y, z;
+	D3DCOLOR color;
+	static const DWORD FVF;
+};
+
+const DWORD ColorVertex::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE;
+
+
+class GouraudTriangle : public D3DDemoApp
+{
+public:
+	GouraudTriangle() : vertexBuffer(nullptr) {}
+
+	void OnCreate();
+
+	void Run(float fElapsedTime);
+
+	void Render(float fElapsedTime);
+private:
+	IDirect3DVertexBuffer9*  vertexBuffer;
+	D3DXMATRIX worldMatrix;
+};
+
+void GouraudTriangle::Run(float fElapsedTime)
+{
+
+}
+
+void GouraudTriangle::OnCreate()
+{
+	// Create vertex buffer
+	device->CreateVertexBuffer(3 * sizeof(ColorVertex), D3DUSAGE_WRITEONLY, ColorVertex::FVF, D3DPOOL_MANAGED, &vertexBuffer, nullptr);
+
+	// Fill buffer with triangle data
+	ColorVertex* v;
+	vertexBuffer->Lock(0, 0, (void**)&v, 0);
+
+	v[0] = ColorVertex(-1.0f, 0.0f, 2.0f, D3DCOLOR_XRGB(255, 0, 0));
+	v[1] = ColorVertex( 0.0f, 1.0f, 2.0f, D3DCOLOR_XRGB(0, 255, 0));
+	v[2] = ColorVertex( 1.0f, 0.0f, 2.0f, D3DCOLOR_XRGB(0, 0, 255));
+
+	vertexBuffer->Unlock();
+
+	// Set the view matrix
+	D3DXMATRIX view;
+	D3DXMatrixLookAtLH(&view, &D3DXVECTOR3(0, 0, 0), &D3DXVECTOR3(0, 0, 1), &D3DXVECTOR3(0, 1, 0));
+	device->SetTransform(D3DTS_VIEW, &view);
+
+	// Set the projection matrix
+	D3DXMATRIX proj;
+	D3DXMatrixPerspectiveFovLH(&proj, D3DX_PI * 0.5f, (float)clientWidth / (float)clientHeight, 1.0f, 1000.0f);
+	device->SetTransform(D3DTS_PROJECTION, &proj);
+
+	// Turn off lighting
+	device->SetRenderState(D3DRS_LIGHTING, false);
+}
+
+void GouraudTriangle::Render(float fElapsedTime)
+{
+	device->SetFVF(ColorVertex::FVF);
+
+	device->SetStreamSource(0, vertexBuffer, 0, sizeof(ColorVertex));
+
+	// draw the triangle with flat shading
+	D3DXMatrixTranslation(&worldMatrix, -1.25f, 0.0f, 0.0f);
+	device->SetTransform(D3DTS_WORLD, &worldMatrix);
+	device->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_FLAT);
+	device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+
+	// draw the triangle with grouraud shading
+	D3DXMatrixTranslation(&worldMatrix, 1.25f, 0.0f, 0.0f);
+	device->SetTransform(D3DTS_WORLD, &worldMatrix);
+	device->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
+	device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+}
+
+int main()
+{
+	GouraudTriangle app;
+	app.Create(640, 480, "GouraudTriangle");
+	app.Loop();
+
+	return 0;
+}

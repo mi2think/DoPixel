@@ -266,7 +266,7 @@ namespace DoPixel
 
 		void D3DDevice::BeginScene(Color color)
 		{
-			m_pD3DD->Clear(0, NULL, D3DCLEAR_TARGET, color.value, 1.0f, 0);
+			m_pD3DD->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, color.value, 1.0f, 0);
 			m_pD3DD->BeginScene();
 			m_dwIBOffset = 0;
 			m_dwVBOffset = 0;

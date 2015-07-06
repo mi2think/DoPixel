@@ -16,7 +16,7 @@ using namespace DoPixel::Math;
 class D3DDemoApp
 {
 public:
-	D3DDemoApp() {}
+	D3DDemoApp();
 	virtual ~D3DDemoApp() {}
 
 	void Create(int wndWidth, int wndHeight, const char* wndName, bool bWindow = true);
@@ -38,6 +38,8 @@ protected:
 
 	Timer timer;
 	Fps fps;
+
+	IDirect3DDevice9* device;
 };
 
 
