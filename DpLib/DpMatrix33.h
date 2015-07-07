@@ -221,7 +221,7 @@ namespace DoPixel
 		{
 			float det = MatrixDeterminant(_m);
 
-			assert(abs(det) > eps);
+			assert(abs(det) > EPSILON_E5);
 			
 			n.m11 = + (_m.m22 * _m.m33 - _m.m32 * _m.m23);
 			n.m12 = - (_m.m21 * _m.m33 - _m.m31 * _m.m23);
