@@ -59,8 +59,8 @@ DPTEST(Vector2)
 
 	Vector2f v13 = v9;
 	float len_v13 = v13.Length();
-	EXPECT_TRUE(fabs(3.00239904f - len_v13) < eps);
+	EXPECT_TRUE(fabs(3.00239904f - len_v13) < EPSILON_E5);
 
 	float dp = DotProduct(v1, v2);
-	EXPECT_TRUE(fabs(dp - 33.6f) < eps);
+	EXPECT_TRUE(fabs(dp - 33.6f) < EPSILON_E5);
 }

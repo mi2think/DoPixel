@@ -66,7 +66,7 @@ DPTEST(Matrix43)
 
 	Matrix43f m12(3, -2, 0, 1, 4, -3, -1, 0, 2, 1, 2, 4);
 	float det = MatrixDeterminant(m12);
-	EXPECT_TRUE(abs(det - 22) < eps);
+	EXPECT_TRUE(abs(det - 22) < EPSILON_E5);
 
 	Matrix43f m13;
 	MaxtrixTranslation(m13, v1);

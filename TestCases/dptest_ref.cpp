@@ -18,7 +18,7 @@ using namespace DoPixel::Core;
 class Base
 {
 public:
-	virtual ~Base();
+	virtual ~Base() {}
 
 	virtual int GetId() const { return 1; }
 };
@@ -34,4 +34,28 @@ DPTEST(Ref)
 {
 	Ref<int> r1(new int(1));
 	EXPECT_TRUE(r1.Count() == 1);
+
+	{
+		Ref<int> r2 = r1;
+		EXPECT_TRUE(r1.Count() == 2);
+	}
+	EXPECT_TRUE(r1.Count() == 1);
+
+	Ref<Base> r3(new Base());
+	EXPECT_TRUE(r3->GetId() == 1);
+	EXPECT_TRUE(r3.Count() == 1);
+
+	{
+		Ref<Base> r4(new Derived());
+		EXPECT_TRUE(r4->GetId() == 2);
+		EXPECT_TRUE(r4.Count() == 1);
+
+		r3 = r4;
+		EXPECT_TRUE(r3->GetId() == 2);
+		EXPECT_TRUE(r3.Count() == 2);
+		EXPECT_TRUE(r4.Count() == 2);
+	}
+
+	EXPECT_TRUE(r3->GetId() == 2);
+	EXPECT_TRUE(r3.Count() == 1);
 }

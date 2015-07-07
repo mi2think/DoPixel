@@ -44,7 +44,7 @@ DPTEST(Matrix33)
 
 	Matrix33f m4(3, -2, 0, 1, 4, -3, -1, 0, 2);
 	float det = MatrixDeterminant(m4);
-	EXPECT_TRUE(abs(det - 22) < eps);
+	EXPECT_TRUE(abs(det - 22) < EPSILON_E5);
 
 	Matrix33f m5;
 	MatrixTranspose(m5, m4);
