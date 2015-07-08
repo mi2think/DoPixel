@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{EA0B3003-649A-4C23-BDED-DB038569E668}</ProjectGuid>
+    <ProjectGuid>{7B44CA32-2E31-4F87-B2C8-23D09B2D03EE}</ProjectGuid>
     <RootNamespace>GouraudTriangle</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -39,9 +39,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(DXSDK_DIR)\include;..\..\DpLib\;..\..\DpDirectX\;..\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)\Lib\x86;..\..\Debug;$(LibraryPath)</LibraryPath>
-    <TargetName>$(ProjectName)_DX</TargetName>
+    <IncludePath>$(DXSDK_DIR)\include;..\;..\..\DpLib\;..\..\DpDirectX\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)\Lib\x86;..\..\Debug\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -68,11 +67,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\D3DDemoApp.cpp" />
+    <ClCompile Include="..\DemoApp.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\D3DDemoApp.h" />
+    <ClInclude Include="..\DemoApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
