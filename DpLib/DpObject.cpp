@@ -521,13 +521,25 @@ namespace DoPixel
 			// You may not keep object in this stage of pipeline
 			// Just a demo
 
+			float k = 1.0f / tan(angle2radian(camera.fov * 0.5f));
+
 			for (int i = 0; i < numVertices; ++i)
 			{
 				float z = vListTrans[i].z;
 				assert(z != 0);
+				
+				// First we need transform to projection plane, (x, y) -> (x', y')
+				// like this:
+				//vListTrans[i].x = vListTrans[i].x * camera.viewDist / z;
+				//vListTrans[i].y = vListTrans[i].y * camera.viewDist * camera.aspectRatio / z;
+				
+				// Then we get x:[-1, 1], y:[-1.0/ar, 1.0/ar], we need scale it to x:[-1, 1], y:[-1,1]
+				// (x', y') -> (x'', y'')
+				// Assume projection height is H, and the result height is 2, So:
+				// y' / y'' = H / 2 -> y'' = y' / (H / 2)
 
-				vListTrans[i].x = vListTrans[i].x * camera.viewDist / z;
-				vListTrans[i].y = vListTrans[i].y * camera.viewDist * camera.aspectRatio / z;
+				vListTrans[i].x = vListTrans[i].x * k / (camera.aspectRatio * z);
+				vListTrans[i].y = vListTrans[i].y * k / z;
 			}
 		}
 
@@ -879,6 +891,8 @@ namespace DoPixel
 			// Assume the poly in render list has been transformed to camera,
 			// And stored in tlist
 
+			float k = 1.0f / tan(angle2radian(camera.fov * 0.5f));
+
 			for (int i = 0; i < numPolyFaces; ++i)
 			{
 				PolyFace* pf = pPolyFace[i];
@@ -890,8 +904,18 @@ namespace DoPixel
 					float z = pf->tlist[j].z;
 					assert(z != 0);
 
-					pf->tlist[j].x = pf->tlist[j].x * camera.viewDist / z;
-					pf->tlist[j].y = pf->tlist[j].y * camera.viewDist * camera.aspectRatio / z;
+					// First we need transform to projection plane, (x, y) -> (x', y')
+					// like this:
+					//pf->tlist[j].x = pf->tlist[j].x * camera.viewDist / z;
+					//pf->tlist[j].y = pf->tlist[j].y * camera.viewDist * camera.aspectRatio / z;
+
+					// Then we get x:[-1, 1], y:[-1.0/ar, 1.0/ar], we need scale it to x:[-1, 1], y:[-1,1]
+					// (x', y') -> (x'', y'')
+					// Assume projection height is H, and the result height is 2, So:
+					// y' / y'' = H / 2 -> y'' = y' / (H / 2)
+
+					pf->tlist[j].x = pf->tlist[j].x * k / (camera.aspectRatio * z);
+					pf->tlist[j].y = pf->tlist[j].y * k / z;
 				}
 			}
 		}
