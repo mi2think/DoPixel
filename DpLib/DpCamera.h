@@ -260,39 +260,33 @@ namespace DoPixel
 
 		inline void Camera::BuildCameraToPerspective(Matrix44f& m) const
 		{
-			m = Matrix44f(viewDist, 0, 0, 0,
-				          0, viewDist * aspectRatio, 0, 0,
+			float k = 1.0f / tan(angle2radian(fov * 0.5f));
+
+			m = Matrix44f(k / aspectRatio, 0, 0, 0,
+				          0, k, 0, 0,
 						  0, 0, 1, 1,
 						  0, 0, 0, 0);
 		}
 
 		inline void Camera::BuildPerspectiveToScreen(Matrix44f& m) const
 		{
-			// By convert perspective pos to screen pos, We want:
-			// Xsceen  = alpha + Xper * alpha
-			// Yscreen = beta - Yper * beta
+			float halfOfWidth  = viewportWidth * 0.5f;
+			float halfOfHeight = viewportHeight * 0.5f;
 
-			float alpha = 0.5f * viewportWidth - 0.5f;
-			float beta  = 0.5f * viewportHeight - 0.5f;
-
-			m = Matrix44f(alpha, 0, 0, 0,
-				          0, -beta, 0, 0,
+			m = Matrix44f(halfOfWidth, 0, 0, 0,
+						  0, -halfOfHeight, 0, 0,
 						  0, 0, 1, 0,
-						  alpha, beta, 0, 1);
+						  halfOfWidth, halfOfHeight, 0, 1);
 		}
 
 		inline void Camera::BuildCamerToScreen(Matrix44f& m) const
 		{
-			// Xscreen = alpha + d * Xc / Zc
-			// Yscreen = beta - d * Yc / Zc
+			Matrix44f m1;
+			BuildCameraToPerspective(m1);
+			Matrix44f m2;
+			BuildPerspectiveToScreen(m2);
 
-			float alpha = 0.5f * viewportWidth - 0.5f;
-			float beta  = 0.5f * viewportHeight - 0.5f;
-
-			m = Matrix44f(viewDist, 0, 0, 0,
-						  0, -viewDist, 0, 0,
-						  alpha, beta, 1, 1,
-						  0, 0, 0, 0);
+			MatrixMultiply(m, m1, m2);
 		}
 	}
 }

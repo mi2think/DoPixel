@@ -536,7 +536,8 @@ namespace DoPixel
 				// Then we get x:[-1, 1], y:[-1.0/ar, 1.0/ar], we need scale it to x:[-1, 1], y:[-1,1]
 				// (x', y') -> (x'', y'')
 				// Assume projection height is H, and the result height is 2, So:
-				// y' / y'' = H / 2 -> y'' = y' / (H / 2)
+				// y' / y'' = H / 2      -> y'' = y' / (H / 2)
+				// x' / x'' = H * ar / 2 -> x'' = x' / (H * ar / 2)
 
 				vListTrans[i].x = vListTrans[i].x * k / (camera.aspectRatio * z);
 				vListTrans[i].y = vListTrans[i].y * k / z;
@@ -588,15 +589,14 @@ namespace DoPixel
 			// You may not keep object in this stage of pipeline
 			// Just a demo
 
+			float k = 1.0f / tan(angle2radian(camera.fov * 0.5f));
+
 			for (int i = 0; i < numVertices; ++i)
 			{
 				// First, camera to perspective
-				// Here, d also called camera.viewDist, is (camera.viewportWidth) * tan(theta) / 2
-				// So: Xper = (d * Xc) / Zc
-				//	   Yper = (d * Yc) / Zc
 				float z = vListTrans[i].z;
-				vListTrans[i].x = vListTrans[i].x * camera.viewDist / z;
-				vListTrans[i].y = vListTrans[i].y * camera.viewDist * camera.aspectRatio / z;
+				vListTrans[i].x = vListTrans[i].x * k / (camera.aspectRatio * z);
+				vListTrans[i].y = vListTrans[i].y * k / z;
 				
 				// See PerspectiveToScreen
 				vListTrans[i].x = (vListTrans[i].x + 1) * camera.viewportWidth / 2;
@@ -912,7 +912,8 @@ namespace DoPixel
 					// Then we get x:[-1, 1], y:[-1.0/ar, 1.0/ar], we need scale it to x:[-1, 1], y:[-1,1]
 					// (x', y') -> (x'', y'')
 					// Assume projection height is H, and the result height is 2, So:
-					// y' / y'' = H / 2 -> y'' = y' / (H / 2)
+					// y' / y'' = H / 2      -> y'' = y' / (H / 2)
+					// x' / x'' = H * ar / 2 -> x'' = x' / (H * ar / 2)
 
 					pf->tlist[j].x = pf->tlist[j].x * k / (camera.aspectRatio * z);
 					pf->tlist[j].y = pf->tlist[j].y * k / z;
@@ -972,6 +973,8 @@ namespace DoPixel
 
 		void RenderList::CameraToScreen(const Camera& camera)
 		{
+			float k = 1.0f / tan(angle2radian(camera.fov * 0.5f));
+
 			for (int i = 0; i < numPolyFaces; ++i)
 			{
 				PolyFace* pf = pPolyFace[i];
@@ -981,12 +984,9 @@ namespace DoPixel
 				for (int j = 0; j < 3; ++j)
 				{
 					// First, camera to perspective
-					// Here, d also called camera.viewDist, is (camera.viewportWidth) * tan(theta) / 2
-					// So: Xper = (d * Xc) / Zc
-					//	   Yper = (d * Yc) / Zc
 					float z = pf->tlist[j].z;
-					pf->tlist[j].x = pf->tlist[j].x * camera.viewDist / z;
-					pf->tlist[j].y = pf->tlist[j].y * camera.viewDist * camera.aspectRatio / z;
+					pf->tlist[j].x = pf->tlist[j].x * k / (camera.aspectRatio * z);
+					pf->tlist[j].y = pf->tlist[j].y * k / z;
 
 					// see PerspectiveToScreen
 					pf->tlist[j].x = (pf->tlist[j].x + 1) * camera.viewportWidth / 2;
