@@ -64,6 +64,15 @@ namespace DoPixel
 			memcpy(pDest, pSrc, len);
 			*(pDest + len - 1) = 0;
 		}
+
+		// Swap
+		template<typename T>
+		inline void Swap(T& left, T& right)
+		{
+			T tmp = left;
+			left = right;
+			right = tmp;
+		}
 	}
 }
 

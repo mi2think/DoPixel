@@ -10,6 +10,7 @@
 	purpose:	Device, For Rasterization
 *********************************************************************/
 #include "DpDevice.h"
+#include "DpCore.h"
 
 namespace DoPixel
 {
@@ -278,9 +279,6 @@ namespace DoPixel
 
 		void Device::DrawTriangle(const Point& p0, const Point& p1, const Point& p2, const Color& color) const
 		{
-			if (FCMP(p0.x, p1.x) && FCMP(p1.x, p2.x) || FCMP(p0.y, p1.y) && FCMP(p1.y, p2.y))
-				return;
-
 			auto fnDrawFlatTop = [&color, this](const Point& p0, const Point& p1, const Point& p2) -> void
 			{
 				//float kl = (p2.x - p0.x) / (p2.y - p0.y);
@@ -531,63 +529,570 @@ namespace DoPixel
 				}
 			};
 
-			// Sort p0, p1, p2 in ascending y order
-			Point _p0 = p0;
-			Point _p1 = p1;
-			Point _p2 = p2;
+			if (FCMP(p0.x, p1.x) && FCMP(p1.x, p2.x) || FCMP(p0.y, p1.y) && FCMP(p1.y, p2.y))
+				return;
 
-			if (_p1.y < _p0.y)
-			{
-				Point p = _p0;
-				_p0 = _p1;
-				_p1 = p;
-			}
+			// Sort v0, v1, v2 in ascending y order
+			Point v0 = p0;
+			Point v1 = p1;
+			Point v2 = p2;
 
-			if (_p2.y < _p0.y)
-			{
-				Point p = _p0;
-				_p0 = _p2;
-				_p2 = p;
-			}
+			if (v1.y < v0.y)
+				Swap(v1, v0);
 
-			if (_p2.y < _p1.y)
-			{
-				Point p = _p1;
-				_p1 = _p2;
-				_p2 = p;
-			}
+			if (v2.y < v0.y)
+				Swap(v0, v2);
+
+			if (v2.y < v1.y)
+				Swap(v2, v1);
 
 			// Cull
-			if (_p2.y < clipRect.top || _p0.y > clipRect.bottom)
-				return;
-			if (_p0.x < clipRect.left && _p1.x < clipRect.left && _p2.x < clipRect.left)
-				return;
-			if (_p0.x > clipRect.right && _p1.x > clipRect.right && _p2.x > clipRect.right)
+			if (v2.y < clipRect.top || v0.y > clipRect.bottom ||
+				v0.x < clipRect.left && v1.x < clipRect.left && v2.x < clipRect.left ||
+				v0.x > clipRect.right && v1.x > clipRect.right && v2.x > clipRect.right)
 				return;
 
-			if (FCMP(_p0.y, _p1.y))
+			if (FCMP(v0.y, v1.y))
 			{
-				fnDrawFlatTop(_p0, _p1, _p2);
+				fnDrawFlatTop(v0, v1, v2);
 			}
-			else if (FCMP(_p1.y, _p2.y))
+			else if (FCMP(v1.y, v2.y))
 			{
-				fnDrawFlatBottom(_p0, _p1, _p2);
+				fnDrawFlatBottom(v0, v1, v2);
 			}
 			else
 			{
-				// Note: p0, p1, p2 have sorted
+				// Note: v0, v1, v2 have sorted
 				// (xnew - x1) / (x3 - x1) = (y2 - y1) / (y3 - y1)
 
-				float xnew = _p0.x + (_p2.x - _p0.x) * (_p1.y - _p0.y) / (_p2.y - _p0.y);
+				float xnew = v0.x + (v2.x - v0.x) * (v1.y - v0.y) / (v2.y - v0.y);
 
-				fnDrawFlatBottom(_p0, Point(xnew, _p1.y), _p1);
-				fnDrawFlatTop(_p1, Point(xnew, _p1.y), _p2);
+				fnDrawFlatBottom(v0, Point(xnew, v1.y), v1);
+				fnDrawFlatTop(v1, Point(xnew, v1.y), v2);
 			}
 		}
 
 		void Device::DrawTriangle(const Point& p0, const Point& p1, const Point& p2, const Color& color0, const Color& color1, const Color& color2) const
 		{
-			// TODO: draw triangle with gouraud shading
+			if (FCMP(p0.x, p1.x) && FCMP(p1.x, p2.x) || FCMP(p0.y, p1.y) && FCMP(p1.y, p2.y))
+				return;
+
+			auto fnDrawFlatTop = [this](const Point& v0, const Point& v1, const Point& v2, const Color& color0, const Color& color1, const Color& color2)
+			{
+				float x1 = v0.x;
+				float y1 = v0.y;
+				float x2 = v1.x;
+				//float y2 = v1.y;
+				float x3 = v2.x;
+				float y3 = v2.y;
+
+				float r1 = color0.r;
+				float g1 = color0.g;
+				float b1 = color0.b;
+				float r2 = color1.r;
+				float g2 = color1.g;
+				float b2 = color1.b;
+				float r3 = color2.r;
+				float g3 = color2.g;
+				float b3 = color2.b;
+
+				float height = y3 - y1;
+				float dx_left = (x3 - x1) / height;
+				float dx_right = (x3 - x2) / height;
+				
+				float di_r_left  = (r3 - r1) / height;
+				float di_g_left  = (g3 - g1) / height;
+				float di_b_left  = (b3 - b1) / height;
+				float di_r_right = (r3 - r2) / height;
+				float di_g_right = (g3 - g2) / height;
+				float di_b_right = (b3 - b2) / height;
+
+				// starting points
+				float xs = x1;
+				float xe = x2;
+
+				float is_r = r1;
+				float is_g = g1;
+				float is_b = b1;
+				float ie_r = r2;
+				float ie_g = g2;
+				float ie_b = b2;
+
+				int iy1, iy3;
+
+				// check y1
+				float dy = 0.0f;
+				if (y1 < clipRect.top)
+				{
+					dy = clipRect.top - y1;
+
+					// reset y1
+					y1 = (float)clipRect.top;
+
+					//make sure top left fill convention is observed
+					iy1 = (int)y1;
+				}
+				else
+				{
+					//make sure top left fill convention is observed
+					iy1 = (int)ceil(y1);
+
+					dy = iy1 - y1;
+				}
+				// compute new xs and ys
+				xs = xs + dx_left * dy;
+				is_r = is_r + di_r_left * dy;
+				is_g = is_g + di_g_left * dy;
+				is_b = is_b + di_b_left * dy;
+
+				xe = xe + dx_right * dy;
+				ie_r = ie_r + di_r_right * dy;
+				ie_g = ie_g + di_g_right * dy;
+				ie_b = ie_b + di_b_right * dy;
+
+				// check y3
+				if (y3 > clipRect.bottom)
+				{
+					// clip y
+					y3 = (float)clipRect.bottom;
+
+					// make sure top left fill convention is observed
+					iy3 = int(y3 - 1);
+				}
+				else
+				{
+					// make sure top left fill convention is observed
+					iy3 = int(ceil(y3) - 1);
+				}
+
+				// check x
+				if (x1 >= clipRect.left && x1 <= clipRect.right &&
+					x2 >= clipRect.left && x2 <= clipRect.right &&
+					x3 >= clipRect.left && x3 <= clipRect.right)
+				{
+					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
+					{
+						// color step
+						float di_r = 0.0f;
+						float di_g = 0.0f;
+						float di_b = 0.0f;
+
+						float dx = xe - xs;
+						if (dx > 0)
+						{
+							di_r = (ie_r - is_r) / dx;
+							di_g = (ie_g - is_g) / dx;
+							di_b = (ie_b - is_b) / dx;
+						}
+						else
+						{
+							di_r = ie_r - is_r;
+							di_g = ie_g - is_g;
+							di_b = ie_b - is_b;
+						}
+
+						// point start
+						int xstart = (int)ceil(xs);
+						int xend = int(ceil(xe) - 1);
+
+						// color start
+						float dx2 = xstart - xs;
+						float istart_r = is_r + dx2 * di_r;
+						float istart_g = is_g + dx2 * di_g;
+						float istart_b = is_b + dx2 * di_b;
+
+						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
+						{
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+							
+							istart_r += di_r;
+							istart_g += di_g;
+							istart_b += di_b;
+						}
+
+						xs += dx_left;
+						xe += dx_right;
+
+						is_r += di_r_left;
+						is_g += di_g_left;
+						is_b += di_b_left;
+						ie_r += di_r_right;
+						ie_g += di_g_right;
+						ie_b += di_b_right;
+					}
+				}
+				else
+				{
+					// clip x
+					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
+					{
+						// clip test
+						float xs_clip = xs;
+						float xe_clip = xe;
+						float dx_clip = 0.0f;
+
+						if (xs_clip < clipRect.left)
+						{
+							dx_clip = clipRect.left - xs_clip;
+							xs_clip = (float)clipRect.left;
+							if (xe_clip < clipRect.left)
+								continue;
+						}
+
+						if (xe_clip > clipRect.right)
+						{
+							xe_clip = (float)clipRect.right;
+							if (xs_clip > clipRect.right)
+								continue;
+						}
+
+						// color step
+						float di_r = 0.0f;
+						float di_g = 0.0f;
+						float di_b = 0.0f;
+
+						float dx = xe - xs;
+						if (dx > 0)
+						{
+							di_r = (ie_r - is_r) / dx;
+							di_g = (ie_g - is_g) / dx;
+							di_b = (ie_b - is_b) / dx;
+						}
+						else
+						{
+							di_r = ie_r - is_r;
+							di_g = ie_g - is_g;
+							di_b = ie_b - is_b;
+						}
+
+						// point start
+						int xstart = 0;
+						int xend = 0;
+						
+						if (FCMP(xs_clip, xs))
+							xstart = (int)ceil(xs);
+						else
+							xstart = (int)xs_clip;
+
+						if (FCMP(xe_clip, xe))
+							xend = int(ceil(xe) - 1);
+						else
+							xend = (int)xe_clip;
+
+						// color start
+						float dx2 = xstart - xs;
+						float istart_r = is_r + dx2 * di_r;
+						float istart_g = is_g + dx2 * di_g;
+						float istart_b = is_b + dx2 * di_b;
+
+						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
+						{
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+
+							istart_r += di_r;
+							istart_g += di_g;
+							istart_b += di_b;
+						}
+
+						xs += dx_left;
+						xe += dx_right;
+
+						is_r += di_r_left;
+						is_g += di_g_left;
+						is_b += di_b_left;
+						ie_r += di_r_right;
+						ie_g += di_g_right;
+						ie_b += di_b_right;
+					}
+				}
+			};
+
+			auto fnDrawFlatBottom = [this](const Point& v0, const Point& v1, const Point& v2, const Color& color0, const Color& color1, const Color& color2)
+			{
+				float x1 = v0.x;
+				float y1 = v0.y;
+				float x2 = v1.x;
+				//float y2 = v1.y;
+				float x3 = v2.x;
+				float y3 = v2.y;
+
+				float r1 = color0.r;
+				float g1 = color0.g;
+				float b1 = color0.b;
+				float r2 = color1.r;
+				float g2 = color1.g;
+				float b2 = color1.b;
+				float r3 = color2.r;
+				float g3 = color2.g;
+				float b3 = color2.b;
+
+				float height = y3 - y1;
+				float dx_left = (x2 - x1) / height;
+				float dx_right = (x3 - x1) / height;
+
+				float di_r_left  = (r2 - r1) / height;
+				float di_g_left  = (g2 - g1) / height;
+				float di_b_left  = (b2 - b1) / height;
+				float di_r_right = (r3 - r1) / height;
+				float di_g_right = (g3 - g1) / height;
+				float di_b_right = (b3 - b1) / height;
+
+				// starting points
+				float xs = x1;
+				float xe = x1;
+
+				float is_r = r1;
+				float is_g = g1;
+				float is_b = b1;
+				float ie_r = r1;
+				float ie_g = g1;
+				float ie_b = b1;
+
+				int iy1, iy3;
+
+				// check y1
+				float dy = 0.0f;
+				if (y1 < clipRect.top)
+				{
+					dy = clipRect.top - y1;
+
+					// reset y1
+					y1 = (float)clipRect.top;
+
+					//make sure top left fill convention is observed
+					iy1 = (int)y1;
+				}
+				else
+				{
+					//make sure top left fill convention is observed
+					iy1 = (int)ceil(y1);
+
+					dy = iy1 - y1;
+				}
+				// compute new xs and ys
+				xs = xs + dx_left * dy;
+				is_r = is_r + di_r_left * dy;
+				is_g = is_g + di_g_left * dy;
+				is_b = is_b + di_b_left * dy;
+
+				xe = xe + dx_right * dy;
+				ie_r = ie_r + di_r_right * dy;
+				ie_g = ie_g + di_g_right * dy;
+				ie_b = ie_b + di_b_right * dy;
+
+				// check y3
+				if (y3 > clipRect.bottom)
+				{
+					// clip y
+					y3 = (float)clipRect.bottom;
+
+					// make sure top left fill convention is observed
+					iy3 = int(y3 - 1);
+				}
+				else
+				{
+					// make sure top left fill convention is observed
+					iy3 = int(ceil(y3) - 1);
+				}
+
+				// check x
+				if (x1 >= clipRect.left && x1 <= clipRect.right &&
+					x2 >= clipRect.left && x2 <= clipRect.right &&
+					x3 >= clipRect.left && x3 <= clipRect.right)
+				{
+					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
+					{
+						// color step
+						float di_r = 0.0f;
+						float di_g = 0.0f;
+						float di_b = 0.0f;
+
+						float dx = xe - xs;
+						if (dx > 0)
+						{
+							di_r = (ie_r - is_r) / dx;
+							di_g = (ie_g - is_g) / dx;
+							di_b = (ie_b - is_b) / dx;
+						}
+						else
+						{
+							di_r = ie_r - is_r;
+							di_g = ie_g - is_g;
+							di_b = ie_b - is_b;
+						}
+
+						// point start
+						int xstart = (int)ceil(xs);
+						int xend = int(ceil(xe) - 1);
+
+						// color start
+						float dx2 = xstart - xs;
+						float istart_r = is_r + dx2 * di_r;
+						float istart_g = is_g + dx2 * di_g;
+						float istart_b = is_b + dx2 * di_b;
+
+						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
+						{
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+
+							istart_r += di_r;
+							istart_g += di_g;
+							istart_b += di_b;
+						}
+
+						xs += dx_left;
+						xe += dx_right;
+
+						is_r += di_r_left;
+						is_g += di_g_left;
+						is_b += di_b_left;
+						ie_r += di_r_right;
+						ie_g += di_g_right;
+						ie_b += di_b_right;
+					}
+				}
+				else
+				{
+					// clip x
+					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
+					{
+						// clip test
+						float xs_clip = xs;
+						float xe_clip = xe;
+						float dx_clip = 0.0f;
+
+						if (xs_clip < clipRect.left)
+						{
+							dx_clip = clipRect.left - xs_clip;
+							xs_clip = (float)clipRect.left;
+							if (xe_clip < clipRect.left)
+								continue;
+						}
+
+						if (xe_clip > clipRect.right)
+						{
+							xe_clip = (float)clipRect.right;
+							if (xs_clip > clipRect.right)
+								continue;
+						}
+
+						// color step
+						float di_r = 0.0f;
+						float di_g = 0.0f;
+						float di_b = 0.0f;
+
+						float dx = xe - xs;
+						if (dx > 0)
+						{
+							di_r = (ie_r - is_r) / dx;
+							di_g = (ie_g - is_g) / dx;
+							di_b = (ie_b - is_b) / dx;
+						}
+						else
+						{
+							di_r = ie_r - is_r;
+							di_g = ie_g - is_g;
+							di_b = ie_b - is_b;
+						}
+
+						// point start
+						int xstart = 0;
+						int xend = 0;
+
+						if (FCMP(xs_clip, xs))
+							xstart = (int)ceil(xs);
+						else
+							xstart = (int)xs_clip;
+
+						if (FCMP(xe_clip, xe))
+							xend = int(ceil(xe) - 1);
+						else
+							xend = (int)xe_clip;
+
+						// color start
+						float dx2 = xstart - xs;
+						float istart_r = is_r + dx2 * di_r;
+						float istart_g = is_g + dx2 * di_g;
+						float istart_b = is_b + dx2 * di_b;
+
+						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
+						{
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+
+							istart_r += di_r;
+							istart_g += di_g;
+							istart_b += di_b;
+						}
+
+						xs += dx_left;
+						xe += dx_right;
+
+						is_r += di_r_left;
+						is_g += di_g_left;
+						is_b += di_b_left;
+						ie_r += di_r_right;
+						ie_g += di_g_right;
+						ie_b += di_b_right;
+					}
+				}
+			};
+
+			// Sort v0, v1, v2 in ascending y order
+			Point v0 = p0;
+			Point v1 = p1;
+			Point v2 = p2;
+			Color c0 = color0;
+			Color c1 = color1;
+			Color c2 = color2;
+
+			if (v1.y < v0.y)
+			{
+				Swap(v1, v0);
+				Swap(c1, c0);
+			}
+
+			if (v2.y < v0.y)
+			{
+				Swap(v0, v2);
+				Swap(c0, c2);
+			}
+
+			if (v2.y < v1.y)
+			{
+				Swap(v2, v1);
+				Swap(c2, c1);
+			}
+
+			// Cull
+			if (v2.y < clipRect.top || v0.y > clipRect.bottom ||
+				v0.x < clipRect.left && v1.x < clipRect.left && v2.x < clipRect.left ||
+				v0.x > clipRect.right && v1.x > clipRect.right && v2.x > clipRect.right)
+				return;
+
+			if (FCMP(v0.y, v1.y))
+			{
+				if (v1.x < v0.x)
+				{
+					Swap(v1, v0);
+					Swap(c1, c0);
+				}
+
+				fnDrawFlatTop(v0, v1, v2, c0, c1, c2);
+			}
+			else if (FCMP(v1.y, v2.y))
+			{
+				if (v2.x < v1.x)
+				{
+					Swap(v2, v1);
+					Swap(c2, c1);
+				}
+
+				fnDrawFlatBottom(v0, v1, v2, c0, c1, c2);
+			}
+			else
+			{
+			//	fnDrawGeneral(v0, v1, v2);
+			}
 		}
 	}
 }

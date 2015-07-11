@@ -89,7 +89,7 @@ void GouraudTriangle::Render(float fElapsedTime)
 int main()
 {
 	GouraudTriangle app;
-	app.Create(640, 480, "GouraudTriangle");
+	app.Create(640, 480, "Gouraud Triangle");
 	app.Loop();
 
 	return 0;

@@ -47,7 +47,7 @@ namespace DoPixel
 			// Draw a triangle
 			void DrawTriangle(const Point& p0, const Point& p1, const Point& p2, const Color& color) const;
 
-			// Draw a triangle
+			// Draw a gouraud triangle
 			void DrawTriangle(const Point& p0, const Point& p1, const Point& p2, const Color& color0, const Color& color1, const Color& color2) const;
 		private:
 			unsigned char* frameBuffer;

@@ -664,6 +664,26 @@ namespace DoPixel
 			}
 		}
 
+		void Object::RenderGouraud(const Device& device) const
+		{
+			if (state & STATE_CULLED)
+				return;
+
+			for (int i = 0; i < numPolys; ++i)
+			{
+				const Poly* p = &pList[i];
+
+				if ((p->state & POLY_STATE_BACKFACE) || (p->state & POLY_STATE_CLIPPED))
+					continue;
+
+				int i0 = p->vert[0];
+				int i1 = p->vert[1];
+				int i2 = p->vert[2];
+
+				device.DrawTriangle(Point(vListTrans[i0].x, vListTrans[i0].y), Point(vListTrans[i1].x, vListTrans[i1].y), Point(vListTrans[i2].x, vListTrans[i2].y), p->litColor[0], p->litColor[1], p->litColor[2]);
+			}
+		}
+
 		//////////////////////////////////////////////////////////////////////////
 
 		bool RenderList::InsertPolyFace(const PolyFace& polyFace)
@@ -1029,7 +1049,19 @@ namespace DoPixel
 				if (!pf || !(pf->state & POLY_STATE_ACTIVE) || (pf->state & POLY_STATE_CLIPPED) || (pf->state & POLY_STATE_BACKFACE))
 					continue;
 
-				device.DrawTriangle(Point(pf->tlist[0].x, pf->tlist[0].y), Point(pf->tlist[1].x, pf->tlist[1].y), Point(pf->tlist[2].x, pf->tlist[2].y), pf->color);
+				device.DrawTriangle(Point(pf->tlist[0].x, pf->tlist[0].y), Point(pf->tlist[1].x, pf->tlist[1].y), Point(pf->tlist[2].x, pf->tlist[2].y), pf->litColor[0]);
+			}
+		}
+
+		void RenderList::RenderGouraud(const Device& device) const
+		{
+			for (int i = 0; i < numPolyFaces; ++i)
+			{
+				PolyFace* pf = pPolyFace[i];
+				if (!pf || !(pf->state & POLY_STATE_ACTIVE) || (pf->state & POLY_STATE_CLIPPED) || (pf->state & POLY_STATE_BACKFACE))
+					continue;
+
+				device.DrawTriangle(Point(pf->tlist[0].x, pf->tlist[0].y), Point(pf->tlist[1].x, pf->tlist[1].y), Point(pf->tlist[2].x, pf->tlist[2].y), pf->litColor[0], pf->litColor[1], pf->litColor[2]);
 			}
 		}
 

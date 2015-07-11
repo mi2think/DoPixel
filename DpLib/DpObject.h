@@ -289,6 +289,8 @@ namespace DoPixel
 			void RenderWire(const Device& device) const;
 
 			void RenderSolid(const Device& device) const;
+
+			void RenderGouraud(const Device& device) const;
 		};
 
 		class RenderList
@@ -342,6 +344,8 @@ namespace DoPixel
 			void RenderWire(const Device& device) const;
 
 			void RenderSolid(const Device& device) const;
+
+			void RenderGouraud(const Device& device) const;
 		};
 
 		// Transformation & Lighting
