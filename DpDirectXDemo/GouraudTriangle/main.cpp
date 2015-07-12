@@ -41,15 +41,27 @@ void GouraudTriangle::Run(float fElapsedTime)
 void GouraudTriangle::OnCreate()
 {
 	// Create vertex buffer
-	device->CreateVertexBuffer(3 * sizeof(ColorVertex), D3DUSAGE_WRITEONLY, ColorVertex::FVF, D3DPOOL_MANAGED, &vertexBuffer, nullptr);
+	device->CreateVertexBuffer(12 * sizeof(ColorVertex), D3DUSAGE_WRITEONLY, ColorVertex::FVF, D3DPOOL_MANAGED, &vertexBuffer, nullptr);
 
 	// Fill buffer with triangle data
 	ColorVertex* v;
 	vertexBuffer->Lock(0, 0, (void**)&v, 0);
 
-	v[0] = ColorVertex(-1.0f, 0.0f, 2.0f, D3DCOLOR_XRGB(255, 0, 0));
-	v[1] = ColorVertex( 0.0f, 1.0f, 2.0f, D3DCOLOR_XRGB(0, 255, 0));
-	v[2] = ColorVertex( 1.0f, 0.0f, 2.0f, D3DCOLOR_XRGB(0, 0, 255));
+	v[0] = ColorVertex(-2.25f, 0.0f, 2.0f, D3DCOLOR_XRGB(255, 0, 0));
+	v[1] = ColorVertex(-1.25f, 1.0f, 2.0f, D3DCOLOR_XRGB(0, 255, 0));
+	v[2] = ColorVertex(-0.25f, 0.0f, 2.0f, D3DCOLOR_XRGB(0, 0, 255));
+
+	v[3] = ColorVertex(0.25f, 0.0f, 2.0f, D3DCOLOR_XRGB(255, 0, 0));
+	v[4] = ColorVertex(1.25f, 1.0f, 2.0f, D3DCOLOR_XRGB(0, 255, 0));
+	v[5] = ColorVertex(2.25f, 0.0f, 2.0f, D3DCOLOR_XRGB(0, 0, 255));
+
+	v[6] = ColorVertex(-2.25f, -1.0f, 2.0f, D3DCOLOR_XRGB(255, 0, 0));
+	v[7] = ColorVertex(-1.25f,  0.0f, 2.0f, D3DCOLOR_XRGB(0, 255, 0));
+	v[8] = ColorVertex(-0.25f, -1.5f, 2.0f, D3DCOLOR_XRGB(0, 0, 255));
+
+	v[9]  = ColorVertex(0.25f, -1.5f, 2.0f, D3DCOLOR_XRGB(255, 0, 0));
+	v[10] = ColorVertex(1.25f,  0.0f, 2.0f, D3DCOLOR_XRGB(0, 255, 0));
+	v[11] = ColorVertex(2.25f, -1.0f, 2.0f, D3DCOLOR_XRGB(0, 0, 255));
 
 	vertexBuffer->Unlock();
 
@@ -73,17 +85,16 @@ void GouraudTriangle::Render(float fElapsedTime)
 
 	device->SetStreamSource(0, vertexBuffer, 0, sizeof(ColorVertex));
 
-	// draw the triangle with flat shading
-	D3DXMatrixTranslation(&worldMatrix, -1.25f, 0.0f, 0.0f);
+	D3DXMatrixTranslation(&worldMatrix, 0.0f, 0.0f, 0.0f);
 	device->SetTransform(D3DTS_WORLD, &worldMatrix);
+
+	// draw the triangle with flat shading
 	device->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_FLAT);
 	device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
 
 	// draw the triangle with grouraud shading
-	D3DXMatrixTranslation(&worldMatrix, 1.25f, 0.0f, 0.0f);
-	device->SetTransform(D3DTS_WORLD, &worldMatrix);
 	device->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
-	device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+	device->DrawPrimitive(D3DPT_TRIANGLELIST, 3, 3);
 }
 
 int main()
