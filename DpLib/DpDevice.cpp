@@ -1241,17 +1241,6 @@ namespace DoPixel
 								is_b += di_b_left;
 							}
 						}
-
-						static int debug = 1000;
-						if (loop_y == ynew + debug)
-						{
-							int iii = 0;
-							++iii;
-						}
-						if (loop_y == ynew + debug + 1)
-						{
-							break;
-						}
 					}
 				}
 				else
@@ -1320,12 +1309,26 @@ namespace DoPixel
 
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
-							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+							float istart_r_c = Clamp<float>(istart_r, 0, 255);
+							float istart_g_c = Clamp<float>(istart_g, 0, 255);
+							float istart_b_c = Clamp<float>(istart_b, 0, 255);
+
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r_c, (unsigned char)istart_g_c, (unsigned char)istart_b_c));
 
 							istart_r += di_r;
 							istart_g += di_g;
 							istart_b += di_b;
 						}
+
+						xs += dx_left;
+						xe += dx_right;
+
+						is_r += di_r_left;
+						is_g += di_g_left;
+						is_b += di_b_left;
+						ie_r += di_r_right;
+						ie_g += di_g_right;
+						ie_b += di_b_right;
 
 						// test for loop_y hitting second region, if so change interpolant
 						if (loop_y == ynew)
@@ -1339,6 +1342,16 @@ namespace DoPixel
 								di_r_right = (r3 - r2) / height_new;
 								di_g_right = (g3 - g2) / height_new;
 								di_b_right = (b3 - b2) / height_new;
+
+								xe = x2;
+								ie_r = r2;
+								ie_g = g2;
+								ie_b = b2;
+
+								xe += dx_right;
+								ie_r += di_r_right;
+								ie_g += di_g_right;
+								ie_b += di_b_right;
 							}
 							else
 							{
@@ -1347,18 +1360,18 @@ namespace DoPixel
 								di_r_left = (r3 - r2) / height_new;
 								di_g_left = (g3 - g2) / height_new;
 								di_b_left = (b3 - b2) / height_new;
+
+								xs = x2;
+								is_r = r2;
+								is_g = g2;
+								is_b = b2;
+
+								xs += dx_left;
+								is_r += di_r_left;
+								is_g += di_g_left;
+								is_b += di_b_left;
 							}
 						}
-
-						xs += dx_left;
-						xe += dx_right;
-
-						is_r += di_r_left;
-						is_g += di_g_left;
-						is_b += di_b_left;
-						ie_r += di_r_right;
-						ie_g += di_g_right;
-						ie_b += di_b_right;
 					}
 				}
 			};
