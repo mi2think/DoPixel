@@ -281,18 +281,6 @@ namespace DoPixel
 		{
 			auto fnDrawFlatTop = [&color, this](const Point& p0, const Point& p1, const Point& p2) -> void
 			{
-				//float kl = (p2.x - p0.x) / (p2.y - p0.y);
-				//float kr = (p2.x - p1.x) / (p2.y - p1.y);
-				//float xs = p0.x;
-				//float xe = p1.x;
-
-				//for (float y = p0.y; y <= p2.y; ++y)
-				//{
-				//	DrawLine(Point(xs, y), Point(xe, y), color);
-				//	xs += kl;
-				//	xe += kr;
-				//}
-
 				float x1 = p0.x;
 				float y1 = p0.y;
 				float x2 = p1.x;
@@ -301,11 +289,7 @@ namespace DoPixel
 				float y3 = p2.y;
 				
 				if (x1 > x2)
-				{
-					float x_temp = x1;
-					x1 = x2;
-					x2 = x_temp;
-				}
+					Swap(x1, x2);
 
 				float height = y3 - y1;
 				float dx_left = (x3 - x1) / height;
@@ -317,11 +301,11 @@ namespace DoPixel
 
 				int iy1, iy3;
 
+				// check y1
+				float dy = 0.0f;
 				if (y1 < clipRect.top)
 				{
-					// compute new xs and ys
-					xs = xs + dx_left * (clipRect.top - y1);
-					xe = xe + dx_right * (clipRect.top - y1);
+					dy = clipRect.top - y1;
 
 					// reset y1
 					y1 = (float)clipRect.top;
@@ -334,11 +318,13 @@ namespace DoPixel
 					//make sure top left fill convention is observed
 					iy1 = (int)ceil(y1);
 
-					// bump xs and xe appropriately
-					xs = xs + dx_left * (iy1 - y1);
-					xe = xe + dx_right * (iy1 - y1);
+					dy = iy1 - y1;
 				}
-
+				// compute new xs and ys
+				xs = xs + dx_left * dy;
+				xe = xe + dx_right * dy;
+				
+				// check y3
 				if (y3 > clipRect.bottom)
 				{
 					// clip y
@@ -350,7 +336,7 @@ namespace DoPixel
 				else
 				{
 					// make sure top left fill convention is observed
-					iy3 = int(ceil(y3) - 1);
+					iy3 = (int)ceil(y3) - 1;
 				}
 
 				// test if x clipping is needed
@@ -361,7 +347,11 @@ namespace DoPixel
 					//draw the triangle
 					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
 					{
-						for (int loop_x = (int)xs; loop_x <= (int)xe; ++loop_x)
+						// point start
+						int xstart = (int)ceil(xs);
+						int xend = (int)ceil(xe) - 1;
+
+						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
 							this->WritePixel(loop_x, loop_y, color);
 						}
@@ -375,49 +365,51 @@ namespace DoPixel
 					// clip x
 					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
 					{
-						float left = xs;
-						float right = xe;
+						// clip test
+						float xs_clip = xs;
+						float xe_clip = xe;
 
-						xs += dx_left;
-						xe += dx_right;
-
-						// clip line
-						if (left < clipRect.left)
+						if (xs_clip < clipRect.left)
 						{
-							left = (float)clipRect.left;
-							if (right < clipRect.left)
+							xs_clip = (float)clipRect.left;
+							if (xe_clip < clipRect.left)
 								continue;
 						}
 
-						if (right > clipRect.right)
+						if (xe_clip > clipRect.right)
 						{
-							right = (float)clipRect.right;
-							if (left > clipRect.right)
+							xe_clip = (float)clipRect.right;
+							if (xs_clip > clipRect.right)
 								continue;
 						}
 
-						for (int loop_x = (int)left; loop_x <= (int)right; ++loop_x)
+						// point start
+						int xstart = 0;
+						int xend = 0;
+
+						if (FCMP(xs_clip, xs))
+							xstart = (int)ceil(xs);
+						else
+							xstart = (int)xs_clip;
+
+						if (FCMP(xe_clip, xe))
+							xend = (int)ceil(xe) - 1;
+						else
+							xend = (int)xe_clip;
+
+						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
 							this->WritePixel(loop_x, loop_y, color);
 						}
+
+						xs += dx_left;
+						xe += dx_right;
 					}
 				}
 			};
 
 			auto fnDrawFlatBottom = [&color, this](const Point& p0, const Point& p1, const Point& p2) -> void
 			{
-				//float kl = (p2.x - p0.x) / (p2.y - p0.y);
-				//float kr = (p1.x - p0.x) / (p1.y - p0.y);
-				//float xs = p0.x;
-				//float xe = p0.x;
-
-				//for (float y = p0.y; y <= p2.y; ++y)
-				//{
-				//	DrawLine(Point(xs, y), Point(xe, y), color);
-				//	xs += kl;
-				//	xe += kr;
-				//}
-
 				float x1 = p0.x;
 				float y1 = p0.y;
 				float x2 = p1.x;
@@ -426,11 +418,7 @@ namespace DoPixel
 				float y3 = p2.y;
 
 				if (x3 > x2)
-				{
-					float x_temp = x3;
-					x3 = x2;
-					x2 = x_temp;
-				}
+					Swap(x2, x3);
 
 				float height = y3 - y1;
 				float dx_left = (x3 - x1) / height;
@@ -441,12 +429,12 @@ namespace DoPixel
 				float xe = x1;
 
 				int iy1, iy3;
-
+				
+				// check y1
+				float dy = 0.0f;
 				if (y1 < clipRect.top)
 				{
-					// compute new xs and ys
-					xs = xs + dx_left * (clipRect.top - y1);
-					xe = xe + dx_right * (clipRect.top - y1);
+					dy = clipRect.top - y1;
 
 					// reset y1
 					y1 = (float)clipRect.top;
@@ -459,11 +447,13 @@ namespace DoPixel
 					//make sure top left fill convention is observed
 					iy1 = (int)ceil(y1);
 
-					// bump xs and xe appropriately
-					xs = xs + dx_left * (iy1 - y1);
-					xe = xe + dx_right * (iy1 - y1);
+					dy = iy1 - y1;
 				}
+				// compute new xs and xe
+				xs = xs + dx_left * dy;
+				xe = xe + dx_right * dy;
 
+				// check y3
 				if (y3 > clipRect.bottom)
 				{
 					// clip y
@@ -475,7 +465,7 @@ namespace DoPixel
 				else
 				{
 					// make sure top left fill convention is observed
-					iy3 = int(ceil(y3) - 1);
+					iy3 = (int)ceil(y3) - 1;
 				}
 
 				// test if x clipping is needed
@@ -486,7 +476,11 @@ namespace DoPixel
 					//draw the triangle
 					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
 					{
-						for (int loop_x = (int)xs; loop_x <= (int)xe; ++loop_x)
+						// point start
+						int xstart = (int)ceil(xs);
+						int xend = (int)ceil(xe) - 1;
+
+						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
 							this->WritePixel(loop_x, loop_y, color);
 						}
@@ -500,31 +494,45 @@ namespace DoPixel
 					// clip x
 					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
 					{
-						float left = xs;
-						float right = xe;
-						
-						xs += dx_left;
-						xe += dx_right;
+						// clip test
+						float xs_clip = xs;
+						float xe_clip = xe;
 
-						// clip line
-						if (left < clipRect.left)
+						if (xs_clip < clipRect.left)
 						{
-							left = (float)clipRect.left;
-							if (right < clipRect.left)
+							xs_clip = (float)clipRect.left;
+							if (xe_clip < clipRect.left)
 								continue;
 						}
 
-						if (right > clipRect.right)
+						if (xe_clip > clipRect.right)
 						{
-							right = (float)clipRect.right;
-							if (left > clipRect.right)
+							xe_clip = (float)clipRect.right;
+							if (xs_clip > clipRect.right)
 								continue;
 						}
+
+						// point start
+						int xstart = 0;
+						int xend = 0;
+
+						if (FCMP(xs_clip, xs))
+							xstart = (int)ceil(xs);
+						else
+							xstart = (int)xs_clip;
+
+						if (FCMP(xe_clip, xe))
+							xend = (int)ceil(xe) - 1;
+						else
+							xend = (int)xe_clip;
 						
-						for (int loop_x = (int)left; loop_x <= (int)right; ++loop_x)
+						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
 							this->WritePixel(loop_x, loop_y, color);
 						}
+
+						xs += dx_left;
+						xe += dx_right;
 					}
 				}
 			};
@@ -662,7 +670,7 @@ namespace DoPixel
 				else
 				{
 					// make sure top left fill convention is observed
-					iy3 = int(ceil(y3) - 1);
+					iy3 = (int)ceil(y3) - 1;
 				}
 
 				// check x
@@ -693,7 +701,7 @@ namespace DoPixel
 
 						// point start
 						int xstart = (int)ceil(xs);
-						int xend = int(ceil(xe) - 1);
+						int xend = (int)ceil(xe) - 1;
 
 						// color start
 						float dx2 = xstart - xs;
@@ -703,7 +711,11 @@ namespace DoPixel
 
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
-							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+							float istart_r_round = Clamp(istart_r + 0.5f, 0.0f, 255.0f);
+							float istart_g_round = Clamp(istart_g + 0.5f, 0.0f, 255.0f);
+							float istart_b_round = Clamp(istart_b + 0.5f, 0.0f, 255.0f);
+
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r_round, (unsigned char)istart_g_round, (unsigned char)istart_b_round));
 							
 							istart_r += di_r;
 							istart_g += di_g;
@@ -729,11 +741,9 @@ namespace DoPixel
 						// clip test
 						float xs_clip = xs;
 						float xe_clip = xe;
-						float dx_clip = 0.0f;
 
 						if (xs_clip < clipRect.left)
 						{
-							dx_clip = clipRect.left - xs_clip;
 							xs_clip = (float)clipRect.left;
 							if (xe_clip < clipRect.left)
 								continue;
@@ -775,7 +785,7 @@ namespace DoPixel
 							xstart = (int)xs_clip;
 
 						if (FCMP(xe_clip, xe))
-							xend = int(ceil(xe) - 1);
+							xend = (int)ceil(xe) - 1;
 						else
 							xend = (int)xe_clip;
 
@@ -787,7 +797,11 @@ namespace DoPixel
 
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
-							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+							float istart_r_round = Clamp(istart_r + 0.5f, 0.0f, 255.0f);
+							float istart_g_round = Clamp(istart_g + 0.5f, 0.0f, 255.0f);
+							float istart_b_round = Clamp(istart_b + 0.5f, 0.0f, 255.0f);
+
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r_round, (unsigned char)istart_g_round, (unsigned char)istart_b_round));
 
 							istart_r += di_r;
 							istart_g += di_g;
@@ -892,7 +906,7 @@ namespace DoPixel
 				else
 				{
 					// make sure top left fill convention is observed
-					iy3 = int(ceil(y3) - 1);
+					iy3 = (int)ceil(y3) - 1;
 				}
 
 				// check x
@@ -923,7 +937,7 @@ namespace DoPixel
 
 						// point start
 						int xstart = (int)ceil(xs);
-						int xend = int(ceil(xe) - 1);
+						int xend = (int)ceil(xe) - 1;
 
 						// color start
 						float dx2 = xstart - xs;
@@ -933,7 +947,11 @@ namespace DoPixel
 
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
-							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+							float istart_r_round = Clamp(istart_r + 0.5f, 0.0f, 255.0f);
+							float istart_g_round = Clamp(istart_g + 0.5f, 0.0f, 255.0f);
+							float istart_b_round = Clamp(istart_b + 0.5f, 0.0f, 255.0f);
+
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r_round, (unsigned char)istart_g_round, (unsigned char)istart_b_round));
 
 							istart_r += di_r;
 							istart_g += di_g;
@@ -959,11 +977,9 @@ namespace DoPixel
 						// clip test
 						float xs_clip = xs;
 						float xe_clip = xe;
-						float dx_clip = 0.0f;
 
 						if (xs_clip < clipRect.left)
 						{
-							dx_clip = clipRect.left - xs_clip;
 							xs_clip = (float)clipRect.left;
 							if (xe_clip < clipRect.left)
 								continue;
@@ -1005,7 +1021,7 @@ namespace DoPixel
 							xstart = (int)xs_clip;
 
 						if (FCMP(xe_clip, xe))
-							xend = int(ceil(xe) - 1);
+							xend = (int)ceil(xe) - 1;
 						else
 							xend = (int)xe_clip;
 
@@ -1017,7 +1033,11 @@ namespace DoPixel
 
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
-							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+							float istart_r_round = Clamp(istart_r + 0.5f, 0.0f, 255.0f);
+							float istart_g_round = Clamp(istart_g + 0.5f, 0.0f, 255.0f);
+							float istart_b_round = Clamp(istart_b + 0.5f, 0.0f, 255.0f);
+
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r_round, (unsigned char)istart_g_round, (unsigned char)istart_b_round));
 
 							istart_r += di_r;
 							istart_g += di_g;
@@ -1138,7 +1158,7 @@ namespace DoPixel
 				else
 				{
 					// make sure top left fill convention is observed
-					iy3 = int(ceil(y3) - 1);
+					iy3 = (int)ceil(y3) - 1;
 				}
 
 				// check x
@@ -1169,7 +1189,7 @@ namespace DoPixel
 
 						// point start
 						int xstart = (int)ceil(xs);
-						int xend = int(ceil(xe) - 1);
+						int xend = (int)ceil(xe) - 1;
 
 						// color start
 						float dx2 = xstart - xs;
@@ -1178,8 +1198,12 @@ namespace DoPixel
 						float istart_b = is_b + dx2 * di_b;
 
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
-						{							
-							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+						{
+							float istart_r_round = Clamp(istart_r + 0.5f, 0.0f, 255.0f);
+							float istart_g_round = Clamp(istart_g + 0.5f, 0.0f, 255.0f);
+							float istart_b_round = Clamp(istart_b + 0.5f, 0.0f, 255.0f);
+
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r_round, (unsigned char)istart_g_round, (unsigned char)istart_b_round));
 
 							istart_r += di_r;
 							istart_g += di_g;
@@ -1248,11 +1272,9 @@ namespace DoPixel
 						// clip test
 						float xs_clip = xs;
 						float xe_clip = xe;
-						float dx_clip = 0.0f;
 
 						if (xs_clip < clipRect.left)
 						{
-							dx_clip = clipRect.left - xs_clip;
 							xs_clip = (float)clipRect.left;
 							if (xe_clip < clipRect.left)
 								continue;
@@ -1294,7 +1316,7 @@ namespace DoPixel
 							xstart = (int)xs_clip;
 
 						if (FCMP(xe_clip, xe))
-							xend = int(ceil(xe) - 1);
+							xend = (int)ceil(xe) - 1;
 						else
 							xend = (int)xe_clip;
 
@@ -1306,7 +1328,11 @@ namespace DoPixel
 
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
-							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
+							float istart_r_round = Clamp(istart_r + 0.5f, 0.0f, 255.0f);
+							float istart_g_round = Clamp(istart_g + 0.5f, 0.0f, 255.0f);
+							float istart_b_round = Clamp(istart_b + 0.5f, 0.0f, 255.0f);
+
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r_round, (unsigned char)istart_g_round, (unsigned char)istart_b_round));
 
 							istart_r += di_r;
 							istart_g += di_g;
