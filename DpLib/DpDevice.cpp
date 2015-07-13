@@ -1063,16 +1063,17 @@ namespace DoPixel
 				enum TypeNewPoint { TypeLHS, TypeRHS };
 				TypeNewPoint type = xnew > x1 ? TypeRHS : TypeLHS;
 
-				float height = y2 - y1;
-				float dx_left = (x2 - x1) / height;
-				float dx_right = (xnew - x1) / height;
+				float height_left = y2 - y1;
+				float height_right = y3 - y1;
+				float dx_left = (x2 - x1) / height_left;
+				float dx_right = (x3 - x1) / height_right;
 
-				float di_r_left = (r2 - r1) / height;
-				float di_g_left = (g2 - g1) / height;
-				float di_b_left = (b2 - b1) / height;
-				float di_r_right = (r3 - r1) / height;
-				float di_g_right = (g3 - g1) / height;
-				float di_b_right = (b3 - b1) / height;
+				float di_r_left = (r2 - r1) / height_left;
+				float di_g_left = (g2 - g1) / height_left;
+				float di_b_left = (b2 - b1) / height_left;
+				float di_r_right = (r3 - r1) / height_right;
+				float di_g_right = (g3 - g1) / height_right;
+				float di_b_right = (b3 - b1) / height_right;
 
 				if (type == TypeLHS)
 				{
@@ -1178,11 +1179,7 @@ namespace DoPixel
 
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{							
-							float istart_r_c = Clamp<float>(istart_r, 0, 255);
-							float istart_g_c = Clamp<float>(istart_g, 0, 255);
-							float istart_b_c = Clamp<float>(istart_b, 0, 255);
-
-							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r_c, (unsigned char)istart_g_c, (unsigned char)istart_b_c));
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
 
 							istart_r += di_r;
 							istart_g += di_g;
@@ -1309,11 +1306,7 @@ namespace DoPixel
 
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x)
 						{
-							float istart_r_c = Clamp<float>(istart_r, 0, 255);
-							float istart_g_c = Clamp<float>(istart_g, 0, 255);
-							float istart_b_c = Clamp<float>(istart_b, 0, 255);
-
-							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r_c, (unsigned char)istart_g_c, (unsigned char)istart_b_c));
+							this->WritePixel(loop_x, loop_y, Color((unsigned char)istart_r, (unsigned char)istart_g, (unsigned char)istart_b));
 
 							istart_r += di_r;
 							istart_g += di_g;
