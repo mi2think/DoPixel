@@ -107,7 +107,7 @@ namespace DoPixel
 					vecSubExprType.push_back(TypeStr);
 					break;
 				case 'f':
-					regexString += "([+-]?[0-9]+\\.?[0-9]*)";
+					regexString += "([-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?)";
 					vecSubExprType.push_back(TypeFloat);
 					break;
 				case 'i':
@@ -275,10 +275,13 @@ namespace DoPixel
 				os_cout << results.str() << "\n";
 #endif
 				// Save sub expression
-				for (std::smatch::size_type i = 1; i < results.size(); ++i)
+				for (std::smatch::size_type i = 1, index = 1; i < results.size(); ++i)
 				{
 					auto& subExpr = results[i];
-					auto& subExprType = regexInfo.vecSubExprType[i - 1];
+					if (! subExpr.matched)
+						continue;
+
+					auto& subExprType = regexInfo.vecSubExprType[index - 1];
 
 					switch (subExprType)
 					{
@@ -294,6 +297,7 @@ namespace DoPixel
 					default:
 						break;
 					}
+					++index;
 #ifdef PRINT_REGEX_MATCH_INFO
 					os_cout << subExpr.str() << "\n";
 #endif
