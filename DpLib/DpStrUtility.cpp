@@ -69,7 +69,10 @@ namespace DoPixel
 				std::string::size_type begin = pos;
 				while ((pos = strSrc.find(strPattern, pos)) != std::string::npos)
 				{
-					strDest += strSrc.substr(begin, pos - begin);
+					if (pos != begin)
+					{
+						strDest += strSrc.substr(begin, pos - begin);
+					}
 					pos += length;
 					begin = pos;
 				}
@@ -97,7 +100,10 @@ namespace DoPixel
 				std::string::size_type begin = pos;
 				while ((pos = strSrc.find(strPattern, pos)) != std::string::npos)
 				{
-					strDest += strSrc.substr(begin, pos - begin);
+					if (pos != begin)
+					{
+						strDest += strSrc.substr(begin, pos - begin);
+					}
 					strDest += strReplace;
 					pos += length;
 					begin = pos;
@@ -221,6 +227,106 @@ namespace DoPixel
 				}
 
 				return false;
+			}
+
+			void StrStripAnychar(char* strDest, const char* strSrc, const char* anychar)
+			{
+				assert(strDest != nullptr && strSrc != nullptr && anychar != nullptr);
+
+				size_t srcLen = strlen(strSrc);
+				const char* p = strSrc;
+				const char* q = p;
+
+				char ch;
+				while ((ch = *q) != 0)
+				{
+					if (strchr(anychar, ch) == nullptr)
+					{
+						++q;
+					}
+					else
+					{
+						if (p != q)
+						{
+							ptrdiff_t len = q - p;
+							memcpy(strDest, p, len);
+							strDest += len;
+						}
+
+						++q;
+						p = q;
+					}
+				}
+
+				// last should exist
+				const char* last = strSrc + srcLen;
+				ptrdiff_t lastLen = last - p + 1;
+				memcpy(strDest, p, lastLen);
+			}
+
+			void StrStripAnychar(std::string& strDest, const std::string& strSrc, const std::string& anychar)
+			{
+				strDest.clear();
+
+				std::string::size_type pos = 0;
+				std::string::size_type begin = pos;
+
+				char ch;
+				while (pos < strSrc.size())
+				{
+					ch = strSrc[pos];
+					if (anychar.find(ch) == std::string::npos)
+					{
+						++pos;
+					}
+					else
+					{
+						if (pos != begin)
+						{
+							strDest += strSrc.substr(begin, pos - begin);
+						}
+						++pos;
+						begin = pos;
+					}
+				}
+
+				if (begin != strSrc.size())
+				{
+					strDest += strSrc.substr(begin, strSrc.size() - begin);
+				}
+			}
+
+			void StrReplaceAnychar(std::string& strDest, const std::string& strSrc, const std::string& anychar, const std::string& strReplace)
+			{
+				strDest.clear();
+
+				std::string::size_type pos = 0;
+				std::string::size_type begin = pos;
+
+				char ch;
+				while (pos < strSrc.size())
+				{
+					ch = strSrc[pos];
+					if (anychar.find(ch) == std::string::npos)
+					{
+						++pos;
+					}
+					else
+					{
+						if (pos != begin)
+						{
+							strDest += strSrc.substr(begin, pos - begin);
+						}
+						strDest += strReplace;
+						++pos;
+						begin = pos;
+					}
+				}
+
+				if (begin != strSrc.size())
+				{
+					strDest += strSrc.substr(begin, strSrc.size() - begin);
+				}
 			}
 		}
 	}

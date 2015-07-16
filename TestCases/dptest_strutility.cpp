@@ -93,4 +93,22 @@ DPTEST(StrUtility)
 	StrUtility::StrSplit(vec, str6, ';');
 	EXPECT_TRUE(vec.size() == 3);
 	EXPECT_TRUE(vec[1] == "LookFromOffset:(0,0,0)");
+
+	// StrUtility::StrStripAnychar
+	const char* str7 = "add...a<1,2> <2,3> <3,4>";
+	StrUtility::StrStripAnychar(sz, str7, "<>.");
+	EXPECT_TRUE(strcmp(sz, "adda1,2 2,3 3,4") == 0);
+
+	const char* str8 = "..<a>add...a<1,2> <2,3> <3,4>";
+	StrUtility::StrStripAnychar(sz, str8, "<ad>.");
+	EXPECT_TRUE(strcmp(sz, "1,2 2,3 3,4") == 0);
+
+	std::string str9 = str8;
+	StrUtility::StrStripAnychar(out, str9, "<ad>.");
+	EXPECT_TRUE(out == "1,2 2,3 3,4");
+
+	// StrUtility::StrReplaceAnychar
+	std::string str10 = "<11,43> <0,9> <12,44>";
+	StrUtility::StrReplaceAnychar(out, str10, "<,>", " ");
+	EXPECT_TRUE(out == " 11 43   0 9   12 44 ");
 }

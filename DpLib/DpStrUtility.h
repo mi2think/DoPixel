@@ -39,6 +39,13 @@ namespace DoPixel
 			void StrTrimRight(std::string& str);
 
 			bool ToFloat(float& f, const char* strNum);
+
+			// Take action if any char matched
+			void StrStripAnychar(char* strDest, const char* strSrc, const char* anychar);
+
+			void StrStripAnychar(std::string& strDest, const std::string& strSrc, const std::string& anychar);
+
+			void StrReplaceAnychar(std::string& strDest, const std::string& strSrc, const std::string& anychar, const std::string& strReplace);
 		}
 	}
 }
