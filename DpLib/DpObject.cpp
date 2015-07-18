@@ -14,6 +14,7 @@
 #include "DpColor.h"
 #include "DpDevice.h"
 #include "DpLight.h"
+#include "DpCore.h"
 #include <cassert>
 #include <map>
 
@@ -54,10 +55,27 @@ namespace DoPixel
 		void Object::Init(int numVertices, int numPolys, int numFrames)
 		{
 			// we just might need this function if we manually want to build an object???
-			Destroy();
+			InitVertices(numVertices, numFrames);
+
+			InitPolys(numPolys);
+
+			InitCoordList(numPolys * 3);
+
+			SetFrame(0);
+		}
+
+		void Object::InitVertices(int numVertices, int numFrames)
+		{
+			SAFE_DELETEARRAY(vListLocalHead);
+			vListLocal = nullptr;
+
+			SAFE_DELETEARRAY(vListTransHead);
+			vListTrans = nullptr;
+
+			SAFE_DELETEARRAY(avgRadius);
+			SAFE_DELETEARRAY(maxRadius);
 
 			this->numVertices = numVertices;
-			this->numPolys = numPolys;
 			this->numFrames = numFrames;
 			this->totalVertices = this->numVertices * this->numFrames;
 
@@ -66,17 +84,27 @@ namespace DoPixel
 			memset(vListLocalHead, 0, sizeof(Vertex) * totalVertices);
 			memset(vListTransHead, 0, sizeof(Vertex) * totalVertices);
 
-			pList = new Poly[numPolys];
-			memset(pList, 0, sizeof(Poly) * numPolys);
-
-			coordlist = new Vector2f[numPolys * 3];
-
 			avgRadius = new float[numFrames];
 			maxRadius = new float[numFrames];
 			memset(avgRadius, 0, sizeof(float) * numFrames);
 			memset(maxRadius, 0, sizeof(float) * numFrames);
 
 			SetFrame(0);
+		}
+
+		void Object::InitPolys(int numPolys)
+		{
+			SAFE_DELETEARRAY(pList);
+
+			pList = new Poly[numPolys];
+			memset(pList, 0, sizeof(Poly) * numPolys);
+		}
+
+		void Object::InitCoordList(int numCoords)
+		{
+			SAFE_DELETEARRAY(coordlist);
+
+			coordlist = new Vector2f[numCoords];
 		}
 
 		void Object::SetFrame(int frame)
@@ -94,43 +122,18 @@ namespace DoPixel
 
 		void Object::Destroy()
 		{
-			if (vListLocalHead)
-			{
-				delete[] vListLocalHead;
-				vListLocal = nullptr;
-				vListLocalHead = nullptr;
-			}
+			SAFE_DELETEARRAY(vListLocalHead);
+			vListLocal = nullptr;
 
-			if (vListTransHead)
-			{
-				delete[] vListTransHead;
-				vListTrans = nullptr;
-				vListTransHead = nullptr;
-			}
+			SAFE_DELETEARRAY(vListTransHead);
+			vListTrans = nullptr;
 
-			if (pList)
-			{
-				delete[] pList;
-				pList = nullptr;
-			}
+			SAFE_DELETEARRAY(avgRadius);
+			SAFE_DELETEARRAY(maxRadius);
 
-			if (coordlist)
-			{
-				delete[] coordlist;
-				coordlist = nullptr;
-			}
+			SAFE_DELETEARRAY(pList);
 
-			if (avgRadius)
-			{
-				delete[] avgRadius;
-				avgRadius = nullptr;
-			}
-
-			if (maxRadius)
-			{
-				delete[] maxRadius;
-				maxRadius = nullptr;
-			}
+			SAFE_DELETEARRAY(coordlist);
 		}
 
 		void Object::Translate(const Vector4f& pos)

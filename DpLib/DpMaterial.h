@@ -14,6 +14,7 @@
 #define __DP_MATERIAL__
 
 #include "DpColor.h"
+#include <cassert>
 
 namespace DoPixel
 {
@@ -21,8 +22,12 @@ namespace DoPixel
 	{
 		struct Texture
 		{
-			char file[80];
+			std::string fileName;
 			unsigned char* data;
+
+			void SetFileName(const char* fileName) { this->fileName = fileName; }
+
+			void Load();
 
 			void Release() {}
 		};
@@ -38,7 +43,7 @@ namespace DoPixel
 				ATTR_RGB16 = 0x8,
 				ATTR_RGB24 = 0x10,
 
-				ATTR_SHADE_PURE = 0x20,
+				ATTR_SHADE_PURE = 0x20,	// constant
 				ATTR_SHADE_FLAT = 0x40,
 				ATTR_SHADE_GOURAUD = 0x80,
 				ATTR_SHADE_PHONG = 0x100,
@@ -64,8 +69,8 @@ namespace DoPixel
 
 			Texture* texture;
 
-			Material() 
-			: id(0)
+			Material(int _id = 0) 
+			: id(_id)
 			, state(0)
 			, attr(0)
 			, kambient(0)
@@ -76,17 +81,34 @@ namespace DoPixel
 			{
 				memset(name, 0, sizeof(name));
 			}
+
+			void SetAttr(int attr) { this->attr = attr; }
+
+			int GetAttr() const { return attr; }
+
+			void SetTextureFileName(const char* fileName)
+			{
+				assert((this->attr & ATTR_SHADE_TEXTURE));
+
+				if (texture == nullptr)
+				{
+					texture = new Texture();
+					texture->SetFileName(fileName);
+				}
+			}
+
+			Texture* GetTexture() const { return texture; }
 		};
 
 		class MaterialManager
 		{
 		public:
-			static const int MAX_MATERIALS = 128;
-			Material materials[MAX_MATERIALS];
+			static MaterialManager& GetInstance() { static MaterialManager ins; return ins; }
 
-			MaterialManager()
+			MaterialManager() : materialId(0){}
+			~MaterialManager()
 			{
-				for (int i = 0; i < MAX_MATERIALS; ++i)
+				for (unsigned int i = 0; i < materials.size(); ++i)
 				{
 					if (materials[i].texture)
 					{
@@ -95,6 +117,48 @@ namespace DoPixel
 					}
 				}
 			}
+
+			Material& GenMaterial(int id)
+			{
+				for (const auto& m : materials)
+				{
+					if (m.id == id)
+					{
+						assert(false && "id has exists!");
+					}
+				}
+				materials.push_back(Material(id));
+				return materials.back();
+			}
+
+			Material& GenMaterial()
+			{
+				materials.push_back(Material(GenMaterialId()));
+				return materials.back();
+			}
+
+			const Material* GetMaterial(int id) const
+			{
+				for (const auto& m : materials)
+				{
+					if (m.id == id)
+						return &m;
+				}
+				return nullptr;
+			}
+
+		private:
+			int GenMaterialId() const
+			{
+				int genId = 0;
+				for (const auto& m : materials)
+				{
+					genId = MAX(m.id, genId);
+				}
+				return ++genId;
+			}
+			std::vector<Material>  materials;
+			unsigned int materialId;
 		};
 	}
 }

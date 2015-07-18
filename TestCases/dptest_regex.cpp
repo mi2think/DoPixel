@@ -168,22 +168,38 @@ void test_regex_func()
 void test_common_func()
 {
 	// float expression
-	//string pattern = "([+-]?[0-9]+((\\.?[0-9]*e[+-][0-9]+)|(\\.?[0-9]*)))";
-	string pattern = "([-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?)";
-	regex r(pattern);
-	smatch results;
+	{
+		//string pattern = "([+-]?[0-9]+((\\.?[0-9]*e[+-][0-9]+)|(\\.?[0-9]*)))";
+		string pattern = "([-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?)";
+		regex r(pattern);
+		smatch results;
 
-	string test_float1 = "-28.12";
-	if (regex_search(test_float1, results, r))
-		EXPECT_TRUE(results.str() == "-28.12");
+		string test_float1 = "-28.12";
+		if (regex_search(test_float1, results, r))
+			EXPECT_TRUE(results.str() == "-28.12");
 
-	string test_float2 = "8.34465e-007";
-	if (regex_search(test_float2, results, r))
-		EXPECT_TRUE(results.str() == "8.34465e-007")
+		string test_float2 = "8.34465e-007";
+		if (regex_search(test_float2, results, r))
+			EXPECT_TRUE(results.str() == "8.34465e-007")
 
-	string test_float3 = "376521";
-	if (regex_search(test_float3, results, r))
-		EXPECT_TRUE(results.str() == "376521")
+			string test_float3 = "376521";
+		if (regex_search(test_float3, results, r))
+			EXPECT_TRUE(results.str() == "376521")
+	}
+
+	// string expression
+	{
+		string pattern = "[0-9a-zA-Z \\\\:._-]+";
+		regex r(pattern);
+		smatch results;
+
+		string test_string1 = "\"D:\\WINXPP Program Files\\ts5\\Textures\\metal04.bmp\"";
+		if (regex_search(test_string1, results, r))
+		{
+			EXPECT_TRUE(results.str() == "D:\\WINXPP Program Files\\ts5\\Textures\\metal04.bmp");
+		}
+	}
+
 }
 
 DPTEST(Regex)

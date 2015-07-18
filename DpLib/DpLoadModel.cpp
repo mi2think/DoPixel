@@ -14,6 +14,11 @@
 #include "DpColor.h"
 #include "DpFileParser.h"
 #include "DpLoadModel.h"
+#include "DpCore.h"
+#include "DpMath.h"
+#include "DpMaterial.h"
+
+#include <map>
 
 namespace DoPixel
 {
@@ -436,9 +441,14 @@ namespace DoPixel
 	
 		bool LoadObjectFromCOB(Object& object, const char* fileName, const Vector4f& scale, const Vector4f& pos, const Vector4f& rot, int vertexFlag)
 		{
+			memset(&object, 0, sizeof(object));
+			object.state = Object::STATE_ACTIVE | Object::STATE_VISIBLE;
 			object.worldPos = pos;
+			object.attr = Object::ATTR_SINGLE_FRAME;
+			object.numFrames = 1;
 
 			FileParser parser;
+			parser.SetComment("");
 			if (!parser.Open(fileName))
 				return false;
 
@@ -486,9 +496,12 @@ namespace DoPixel
 				
 				if (parser.RegexPatternMatch(strLine, regexInfo))
 				{
-					matrixLocal.m41 = parser.GetMatchedVal<float>(0);	// center x
-					matrixLocal.m42 = parser.GetMatchedVal<float>(1);	// center y
-					matrixLocal.m43 = parser.GetMatchedVal<float>(2);	// center z
+					// the "center" holds the translation factors, so place in
+					// last row of homogeneous matrix, note that these are row vectors
+					// that we need to drop in each column of matrix
+					matrixLocal.m41 = -parser.GetMatchedVal<float>(0);	// center x
+					matrixLocal.m42 = -parser.GetMatchedVal<float>(1);	// center y
+					matrixLocal.m43 = -parser.GetMatchedVal<float>(2);	// center z
 
 					// x axis
 					fnGetLine(strLine);
@@ -588,6 +601,9 @@ namespace DoPixel
 				}
 			}
 
+			// Init vertices
+			object.InitVertices(object.numVertices, object.numFrames);
+
 			// Load vertex
 			regexInfo.GenRegexInfo("[f] [f] [f]");
 			for (int i = 0; i < object.numVertices;)
@@ -601,13 +617,420 @@ namespace DoPixel
 					auto z = parser.GetMatchedVal<float>(2);
 
 					object.vListLocal[i].v = Vector4f(x, y, z, 1);
+				
+					// Since trueSpace do not change vertex position when move or rotation for keep precision,
+					// We need to apply transform vertex		
+					
+					// transform
+					if ((vertexFlag & VERTEX_FLAGS_TRANSFORM_LOCAL) != 0)
+						object.vListLocal[i].v *= matrixLocal;
+
+					if ((vertexFlag & VERTEX_FLAGS_TRANSFORM_LOCAL_WORLD) != 0)
+						object.vListLocal[i].v *= matrixWorld;
+
+					// invert
+					if ((vertexFlag & VERTEX_FLAGS_INVERT_X) != 0)
+						object.vListLocal[i].v.x = -object.vListLocal[i].v.x;
+
+					if ((vertexFlag & VERTEX_FLAGS_INVERT_Y) != 0)
+						object.vListLocal[i].v.y = -object.vListLocal[i].v.y;
+
+					if ((vertexFlag & VERTEX_FLAGS_INVERT_Z) != 0)
+						object.vListLocal[i].v.z = -object.vListLocal[i].v.z;
+
+					// swap axes
+					if ((vertexFlag & VERTEX_FLAGS_SWAP_YZ) != 0)
+						Swap(object.vListLocal[i].v.y, object.vListLocal[i].v.z);
+
+					if ((vertexFlag & VERTEX_FLAGS_SWAP_XZ) != 0)
+						Swap(object.vListLocal[i].v.x, object.vListLocal[i].v.z);
+
+					if ((vertexFlag & VERTEX_FLAGS_SWAP_XY) != 0)
+						Swap(object.vListLocal[i].v.x, object.vListLocal[i].v.y);
+
+					// scale vertices
+					object.vListLocal[i].v.x *= scale.x;
+					object.vListLocal[i].v.y *= scale.y;
+					object.vListLocal[i].v.z *= scale.z;
+
+					object.vListLocal[i].attr |= Vertex::Attr_Point;
+
 					++i;
 				}
 			}
 
-			// Since trueSpace do not change vertex position when move or rotation for keep precision,
-			// We need to apply transform vertex
-			// TODO
+			// compute average and max radius
+			object.UpdateRadius();
+
+			// get texture vertices
+			int numUVs = 0;
+			regexInfo.GenRegexInfo("['Texture'] ['Vertices'] [i]");
+			while (true)
+			{
+				if (!parser.GetLine(strLine))
+					return false;
+
+				if (parser.RegexPatternMatch(strLine, regexInfo))
+				{
+					numUVs = parser.GetMatchedVal<int>(0);
+					break;
+				}
+			}
+
+			// load UV list
+			object.InitCoordList(numUVs);
+			regexInfo.GenRegexInfo("[f] [f]");
+			for (int i = 0; i < numUVs;)
+			{
+				fnGetLine(strLine);
+
+				if (parser.RegexPatternMatch(strLine, regexInfo))
+				{
+					object.coordlist[i].x = parser.GetMatchedVal<float>(0);
+					object.coordlist[i].y = parser.GetMatchedVal<float>(1);
+
+					++i;
+				}
+			}
+
+			// load faces num
+			regexInfo.GenRegexInfo("['Faces'] [i]");
+			while (true)
+			{
+				if (!parser.GetLine(strLine))
+					return false;
+
+				if (parser.RegexPatternMatch(strLine, regexInfo))
+				{
+					object.numPolys = parser.GetMatchedVal<int>(0);
+					break;
+				}
+			}
+
+			// load faces
+			// format:
+			// Face verts nn flags ff mat mm
+			// the nn is the number of vertices, always 3
+			// the ff is the flags, unused for now, has to do with holes
+			// the mm is the material index number 
+
+			object.InitPolys(object.numPolys);
+
+			std::map<int, int> polyMaterials;
+			std::map<int, int> materialsRef;
+			int totalMaterialsRef = 0;
+
+			regexInfo.GenRegexInfo("['Face'] ['verts'] [i] ['flags'] [i] ['mat'] [i]");
+			FileParser::RegexInfo regexInfo2("[i] [i] [i] [i] [i] [i]");
+			for (int i = 0; i < object.numPolys; ++i)
+			{
+				fnGetLine(strLine);
+
+				if (parser.RegexPatternMatch(strLine, regexInfo))
+				{
+					// at this point we have the number of vertices for the polygon, the flags, and it's material index
+					auto materialId = parser.GetMatchedVal<int>(2);
+					polyMaterials[i] = materialId;
+
+					// update materials reference
+					if (materialsRef[materialId] == 0)
+					{
+						// mark as referenced
+						materialsRef[materialId] = 1;
+
+						// increment total number of materials for this object
+						++totalMaterialsRef;
+					}
+
+					// test if number of vertices is 3
+					assert(parser.GetMatchedVal<int>(0) == 3);
+
+					// read vertex indices
+					// <vindex0, coordindex0>  <vindex1, coordindex1> <vindex2,coordindex2> 
+					fnGetLine(strLine);
+					std::string strLineFormat;
+					StrUtility::StrReplaceAnychar(strLineFormat, strLine, ",<>", " ");
+					if (parser.RegexPatternMatch(strLineFormat, regexInfo2))
+					{
+						// 0,2,4 holds vertex indices
+						// 1,3,5 holds texture indices
+
+						auto vIndex0 = parser.GetMatchedVal<int>(0);
+						auto vIndex1 = parser.GetMatchedVal<int>(2);
+						auto vIndex2 = parser.GetMatchedVal<int>(4);
+
+						auto coordIndex0 = parser.GetMatchedVal<int>(1);
+						auto coordIndex1 = parser.GetMatchedVal<int>(3);
+						auto coordIndex2 = parser.GetMatchedVal<int>(5);
+
+						auto& poly = object.pList[i];
+						if ((vertexFlag & VERTEX_FLAGS_INVERT_WINDING_ORDER) != 0)
+						{
+							poly.vert[0] = vIndex2;
+							poly.vert[1] = vIndex1;
+							poly.vert[2] = vIndex0;
+
+							poly.coord[0] = coordIndex2;
+							poly.coord[1] = coordIndex1;
+							poly.coord[2] = coordIndex0;
+						}
+						else
+						{
+							poly.vert[0] = vIndex0;
+							poly.vert[1] = vIndex1;
+							poly.vert[2] = vIndex2;
+
+							poly.coord[0] = coordIndex0;
+							poly.coord[1] = coordIndex1;
+							poly.coord[2] = coordIndex2;
+						}
+						poly.vlist = object.vListLocal;
+						poly.clist = object.coordlist;
+						poly.state = POLY_STATE_ACTIVE;
+					}
+				}
+			}
+
+			// find materials
+			regexInfo.GenRegexInfo("['mat#'] [i]");
+			regexInfo2.GenRegexInfo("['rgb'] [f] [f] [f]");
+			FileParser::RegexInfo regexInfo3("['Shader'] ['class:'] ['color']");
+			FileParser::RegexInfo regexInfo4("['alpha'] [f] ['ka'] [f] ['ks'] [f] ['exp'] [f]");
+			FileParser::RegexInfo regexInfo5("['Shader'] ['name:'] ['\"'] [s] ['\"']");
+			FileParser::RegexInfo regexInfo6("['Shader'] ['name:'] ['plain'] ['color']");
+			FileParser::RegexInfo regexInfo7("['Shader'] ['name:'] ['texture'] ['map']");
+			FileParser::RegexInfo regexInfo8("['file'] ['name:'] ['string'] ['\"'] [s] ['\"']");
+			FileParser::RegexInfo regexInfo9("['Shader'] ['class:'] ['reflectance']");
+
+			for (int i = 0; i < totalMaterialsRef; ++i)
+			{
+				while (true)
+				{
+					// hunt for material header "mat# ddd"
+					fnGetLine(strLine);
+
+					if (parser.RegexPatternMatch(strLine, regexInfo))
+					{
+						int materialId = parser.GetMatchedVal<int>(0);
+						Material& material = MaterialManager::GetInstance().GenMaterial(materialId);
+
+						// color of poly
+						while (true)
+						{
+							fnGetLine(strLine);
+
+							std::string formatStrLine;
+							StrUtility::StrReplaceAnychar(formatStrLine, strLine, ",", " ");
+							if (parser.RegexPatternMatch(formatStrLine, regexInfo2))
+							{
+								auto r = Math::Clamp(parser.GetMatchedVal<float>(0) * 255 + 0.5f, 0.0f, 255.0f);
+								auto g = Math::Clamp(parser.GetMatchedVal<float>(1) * 255 + 0.5f, 0.0f, 255.0f);
+								auto b = Math::Clamp(parser.GetMatchedVal<float>(2) * 255 + 0.5f, 0.0f, 255.0f);
+
+								material.color.Set((unsigned char)r, (unsigned char)g, (unsigned char)b);
+								break;
+							}
+						}
+
+						// "alpha float ka float ks float exp float ior float"
+						// alpha is transparency           0 - 1
+						// ka is ambient coefficient       0 - 1
+						// ks is specular coefficient      0 - 1
+						// exp is highlight power exponent 0 - 1
+						// ior is index of refraction (unused)
+						while (true)
+						{
+							fnGetLine(strLine);
+							if (parser.RegexPatternMatch(strLine, regexInfo4))
+							{
+								auto alpha = Math::Clamp(parser.GetMatchedVal<float>(0) * 255 + 0.5f, 0.0f, 255.0f);
+								auto ka = parser.GetMatchedVal<float>(1);
+								auto kd = 1.0f;	// hard code for now
+								auto ks = parser.GetMatchedVal<float>(2);
+								auto power = parser.GetMatchedVal<float>(3);
+
+								material.color.a = (unsigned char)Math::Clamp(alpha * 255 + 0.5f, 0.0f, 255.0f);
+								material.kambient = ka;
+								material.kdiffuse = kd;
+								material.kspecular = ks;
+								material.power = power;
+
+								// compute material reflectivity in pre-multiplied format to help engine
+								material.rambient *= ka;
+								material.rdiffuse *= kd;
+								material.rspecular *= ks;
+								
+								break;
+							}
+
+						}
+
+						// now we need to know the shading model, it's a bit tricky, we need to look for the lines
+						// "Shader class: color" first, then after this line is:
+						// "Shader name: "xxxxxx" (xxxxxx) "
+						// where the xxxxx part will be "plain color" and "plain" for colored polys 
+						// or "texture map" and "caligari texture"  for textures
+						// THEN based on that we hunt for "Shader class: reflectance" which is where the type
+						// of shading is encoded, we look for the "Shader name: "xxxxxx" (xxxxxx) " again, 
+						// and based on it's value we map it to our shading system as follows:
+						// "constant" -> MATV1_ATTR_SHADE_MODE_CONSTANT 
+						// "matte"    -> MATV1_ATTR_SHADE_MODE_FLAT
+						// "plastic"  -> MATV1_ATTR_SHADE_MODE_GOURAUD
+						// "phong"    -> MATV1_ATTR_SHADE_MODE_FASTPHONG 
+						// and in the case that in the "color" class, we found a "texture map" then the "shading mode" is
+						// "texture map" -> MATV1_ATTR_SHADE_MODE_TEXTURE 
+						// which must be logically or'ed with the other previous modes
+
+						//  look for the "shader class: color"
+						while (true)
+						{
+							fnGetLine(strLine);
+							if (parser.RegexPatternMatch(strLine, regexInfo3))
+							{
+								break;
+							}
+						}
+
+						// now look for the shader name for this class
+						// Shader name: "plain color" or Shader name: "texture map"
+						while (true)
+						{
+							fnGetLine(strLine);
+
+							std::string formatStrLine;
+							StrUtility::StrReplaceAnychar(formatStrLine, strLine, "\"", " ");
+
+							// is this a "plain color" poly?
+							if (parser.RegexPatternMatch(formatStrLine, regexInfo6))
+							{
+								// not much to do this is default, we need to wait for the reflectance type
+								// to tell us the shading mode
+								break;
+							}
+
+							// is this a "texture map" poly?
+							if (parser.RegexPatternMatch(formatStrLine, regexInfo7))
+							{
+								// set the texture mapping flag in material
+								material.SetAttr(material.GetAttr() | Material::ATTR_SHADE_TEXTURE);
+
+								// for find texture file name
+								// e.g.: 
+								// file name: string "D:\WINXPP Program Files\ts5\Textures\metal04.bmp"
+								while (true)
+								{
+									fnGetLine(strLine);
+									if (parser.RegexPatternMatch(strLine, regexInfo8))
+									{
+										auto fileName = parser.GetMatchedVal<std::string>(4);
+										material.SetTextureFileName(fileName.c_str());
+
+										//just load file & missed attribute:
+										//S repeat : float 1
+										//T repeat : float 1
+										//S offset : float 0
+										//T offset : float 0
+										//animate : bool 0
+										//filter : bool 0
+
+										object.texture = material.GetTexture();
+										object.attr |= Object::ATTR_TEXTURES;
+										break;
+									}
+								}
+								break;
+							}
+						}
+						
+						//  look for the "Shader class: reflectance"
+						while (true)
+						{
+							fnGetLine(strLine);
+							if (parser.RegexPatternMatch(strLine, regexInfo9))
+							{
+								break;
+							}
+						}
+
+						// looking for "Shader name: "xxxxxx" (xxxxxx)"
+						while (true)
+						{
+							fnGetLine(strLine);
+
+							if (parser.RegexPatternMatch(strLine, regexInfo5))
+							{
+								auto shaderName = parser.GetMatchedVal<std::string>(3);
+								if (shaderName == "constant")
+									material.SetAttr(material.GetAttr() | Material::ATTR_SHADE_PURE);
+								else if (shaderName == "matte")
+									material.SetAttr(material.GetAttr() | Material::ATTR_SHADE_FLAT);
+								else if (shaderName == "plastic")
+									material.SetAttr(material.GetAttr() | Material::ATTR_SHADE_GOURAUD);
+								else if (shaderName == "phong")
+									material.SetAttr(material.GetAttr() | Material::ATTR_SHADE_PHONG);
+								else
+									material.SetAttr(material.GetAttr() | Material::ATTR_SHADE_FLAT);
+
+								break;
+							}
+						}
+
+						break;
+					}
+				}
+			}
+			
+			// at this point polyMaterials holds all the indices for the polygon materials (zero based, so they need fix up)
+			// and we must access the materials array to fill in each polygon with the polygon color, etc.
+			// now that we finally have the material library loaded
+			for (int i = 0; i < object.numPolys; ++i)
+			{
+				auto& poly = object.pList[i];
+				
+				poly.attr |= POLY_ATTR_RGB32;
+				
+				// Find material
+				int materialId = polyMaterials[i];
+				const Material* material = MaterialManager::GetInstance().GetMaterial(materialId);
+				assert(material != nullptr);
+
+				// Fill color
+				if ((material->attr & Material::ATTR_SHADE_TEXTURE) != 0)
+					poly.color.Set(255, 255, 255);
+				else
+					poly.color = material->color;
+				
+				// Fill shade model
+				if ((material->attr & Material::ATTR_SHADE_PURE))
+					poly.attr |= POLY_ATTR_SHADE_PURE;
+				else if ((material->attr & Material::ATTR_SHADE_FLAT))
+					poly.attr |= POLY_ATTR_SHADE_FLAT;
+				else if ((material->attr & Material::ATTR_SHADE_GOURAUD))
+				{
+					poly.attr |= POLY_ATTR_SHADE_GOURAUD;
+					object.vListLocal[poly.vert[0]].attr |= Vertex::Attr_Normal;
+					object.vListLocal[poly.vert[1]].attr |= Vertex::Attr_Normal;
+					object.vListLocal[poly.vert[2]].attr |= Vertex::Attr_Normal;
+				}
+				else if ((material->attr & Material::ATTR_SHADE_PHONG))
+				{
+					poly.attr |= POLY_ATTR_SHADE_PHONG;
+					object.vListLocal[poly.vert[0]].attr |= Vertex::Attr_Normal;
+					object.vListLocal[poly.vert[1]].attr |= Vertex::Attr_Normal;
+					object.vListLocal[poly.vert[2]].attr |= Vertex::Attr_Normal;
+				}
+				else if ((material->attr & Material::ATTR_SHADE_TEXTURE))
+				{
+					poly.attr |= POLY_ATTR_SHADE_TEXTURE;
+					poly.texture = object.texture;
+					object.vListLocal[poly.vert[0]].attr |= Vertex::Attr_Texture;
+					object.vListLocal[poly.vert[1]].attr |= Vertex::Attr_Texture;
+					object.vListLocal[poly.vert[2]].attr |= Vertex::Attr_Texture;
+				}
+			}
+
+			object.ComputeVertexNormals();
+
 			return true;
 		}
 	}

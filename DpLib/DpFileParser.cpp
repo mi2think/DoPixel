@@ -59,7 +59,7 @@ namespace DoPixel
 			};
 			auto fnStringFormat = [](std::string::size_type& i, const std::string& str)->std::string
 			{
-				std::string s = "[A-Za-z]";
+				std::string s = "[0-9a-zA-Z \\\\:._-]";
 
 				char op = str[++i];
 				if (op == ']')		//[s]
@@ -221,7 +221,7 @@ namespace DoPixel
 					}
 
 					// May be this line just comments
-					if (lineOp & StripComments)
+					if ((lineOp & StripComments) != 0 && ! comment.empty())
 					{
 						std::string::size_type commentsIndex = strLine.find(comment);
 						if (commentsIndex != std::string::npos)

@@ -242,6 +242,13 @@ namespace DoPixel
 
 			void Init(int numVertices, int numPolys, int numFrames);
 
+			void InitVertices(int numVertices, int numFrames);
+
+			void InitPolys(int numPolys);
+
+			void InitCoordList(int numCoords);
+			//////////////////////////////////////////////////////////////////////////
+
 			void SetFrame(int frame);
 
 			void Destroy();

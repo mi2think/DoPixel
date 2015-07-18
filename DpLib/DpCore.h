@@ -14,6 +14,7 @@
 #define __DP_CORE__
 
 #include "DpScopeGuard.h"
+#include "DpRef.h"
 
 #include <cassert>
 #include <cstdarg>

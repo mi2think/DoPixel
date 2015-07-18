@@ -45,7 +45,7 @@ void LoadASC()
 void LoadCOB()
 {
 	Object obj;
-	LoadObjectFromCOB(obj, "caligari_cob_format_example01.cob", Vector4f(1, 1, 1, 1), Vector4f(0, 0, 0, 1), Vector4f(0, 0, 0, 1), 0);
+	LoadObjectFromCOB(obj, "cube_flat_textured_01.cob", Vector4f(1, 1, 1, 1), Vector4f(0, 0, 0, 1), Vector4f(0, 0, 0, 1), 0);
 }
 
 DPTEST(LoadModel)
@@ -54,5 +54,5 @@ DPTEST(LoadModel)
 
 	LoadASC();
 
-// 	LoadCOB();
+ 	LoadCOB();
 }
