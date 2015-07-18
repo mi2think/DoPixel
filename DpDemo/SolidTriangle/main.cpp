@@ -30,7 +30,9 @@ void SolidTriangle::OnCreate()
 	polyFace.state = POLY_STATE_ACTIVE;
 	polyFace.attr = 0;
 	polyFace.color = Color(255,0,0);
-	polyFace.litColor[0] = polyFace.color;
+	polyFace.litColor[0] = Color(255, 0, 0);
+	polyFace.litColor[1] = Color(0, 255, 0);
+	polyFace.litColor[2] = Color(0, 0, 255);
 
 	polyFace.vlist[0].v = Vector4f(0, 50, 0, 1);
 	polyFace.vlist[1].v = Vector4f(50, -50, 0, 1);
@@ -60,7 +62,7 @@ void SolidTriangle::Run(float fElapsedTime)
 		angleX = 0.0f;
 	if ((angleY += 0.5f) >= 360.0f)
 		angleY = 0.0f;
-	if ((angleZ += 0.5f) >= 360.0f)
+	if ((angleZ += 0.2f) >= 360.0f)
 		angleZ = 0.0f;
 
 	renderList.Reset();

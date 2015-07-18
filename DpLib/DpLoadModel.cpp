@@ -146,12 +146,14 @@ namespace DoPixel
 					// In file. RGB is 4.4.4, in virtual color system convert 8.8.8 to 5.5.5 or 5.5.6
 					// So, 4.4.4 -> 8.8.8
 					obj.pList[i].color = Color((unsigned char)red, (unsigned char)green, (unsigned char)blue);
+					obj.pList[i].litColor[0] = obj.pList[i].color;
 				}
 				else
 				{
 					//assert(false && "no support for 8-bit color");
 					obj.pList[i].attr |= POLY_ATTR_8BITCOLOR;
 					obj.pList[i].color = Color(polySurfaceDesc & 0x00ff);
+					obj.pList[i].litColor[0] = obj.pList[i].color;
 				}
 
 				int shadeMode = (polySurfaceDesc & PLX_SHADE_MODE_MASK);
@@ -368,6 +370,7 @@ namespace DoPixel
 
 						poly.color = Color((unsigned char)r, (unsigned char)g, (unsigned char)b, (unsigned char)a);
 						poly.attr |= POLY_ATTR_RGB32;
+						poly.litColor[0] = poly.color;
 					}
 
 					// Vertex overrides

@@ -142,9 +142,9 @@ void TankAndTower::Run(float fElapsedTime)
 	player.ResetCull();
 
 	// set position of player
-	player.worldPos.x = camera.pos.x + 300 * sin(camera.dir.y);
+	player.worldPos.x = camera.pos.x + 150 * sin(camera.dir.y);
 	player.worldPos.y = camera.pos.y - 70;
-	player.worldPos.z = camera.pos.z + 300 * cos(camera.dir.y);
+	player.worldPos.z = camera.pos.z + 150 * cos(camera.dir.y);
 	player.worldPos.w = 1;
 
 	MatrixRotationY(mRot, camera.dir.y + angle2radian(turning));

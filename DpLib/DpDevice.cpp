@@ -468,8 +468,6 @@ namespace DoPixel
 			}
 			else if (type == TypeGeneral)
 			{
-				// Note: v0, v1, v2 have sorted
-
 				// new point
 				float xnew = v0.x + (v2.x - v0.x) * (v1.y - v0.y) / (v2.y - v0.y);
 				float ynew = v1.y;
@@ -482,16 +480,26 @@ namespace DoPixel
 				float y3 = v2.y;
 
 				enum TypeNewPoint { TypeLHS, TypeRHS };
-				TypeNewPoint type = xnew > x1 ? TypeRHS : TypeLHS;
+				TypeNewPoint type = xnew > x2 ? TypeRHS : TypeLHS;
 
-				float height_left = y2 - y1;
-				float height_right = y3 - y1;
-				float dx_left = (x2 - x1) / height_left;
-				float dx_right = (x3 - x1) / height_right;
+				float height_left;
+				float height_right;
+				float dx_left;
+				float dx_right;
 
-				if (type == TypeLHS)
+				if (type == TypeRHS)
 				{
-					Swap(dx_left, dx_right);
+					height_left = y2 - y1;
+					height_right = y3 - y1;
+					dx_left = (x2 - x1) / height_left;
+					dx_right = (x3 - x1) / height_right;
+				}
+				else
+				{
+					height_left = y3 - y1;
+					height_right = y2 - y1;
+					dx_left = (x3 - x1) / height_left;
+					dx_right = (x2 - x1) / height_right;
 				}
 
 				// starting points
@@ -538,6 +546,11 @@ namespace DoPixel
 					iy3 = (int)ceil(y3) - 1;
 				}
 
+				// check yrestart
+				int yrestart = (int)ceil(ynew) - 1;
+				if (yrestart < iy1)
+					yrestart = iy1;
+
 				unsigned int pitchBits = pitch * bitsPerPixel;
 				unsigned char* buffer = frameBuffer + iy1 * pitchBits;
 
@@ -562,7 +575,7 @@ namespace DoPixel
 						xe += dx_right;
 
 						// test for loop_y hitting second region, if so change interpolant
-						if (loop_y == ynew)
+						if (loop_y == yrestart)
 						{
 							float height_new = (y3 - ynew);
 
@@ -628,7 +641,7 @@ namespace DoPixel
 						xe += dx_right;
 
 						// test for loop_y hitting second region, if so change interpolant
-						if (loop_y == ynew)
+						if (loop_y == yrestart)
 						{
 							float height_new = (y3 - ynew);
 
@@ -1021,26 +1034,59 @@ namespace DoPixel
 				float b3 = c2.b;
 
 				enum TypeNewPoint { TypeLHS, TypeRHS };
-				TypeNewPoint type = xnew > x1 ? TypeRHS : TypeLHS;
+				TypeNewPoint type = xnew > x2 ? TypeRHS : TypeLHS;
 
-				float height_left = y2 - y1;
-				float height_right = y3 - y1;
-				float dx_left = (x2 - x1) / height_left;
-				float dx_right = (x3 - x1) / height_right;
+				//float height_left = y2 - y1;
+				//float height_right = y3 - y1;
+				//float dx_left = (x2 - x1) / height_left;
+				//float dx_right = (x3 - x1) / height_right;
 
-				float di_r_left = (r2 - r1) / height_left;
-				float di_g_left = (g2 - g1) / height_left;
-				float di_b_left = (b2 - b1) / height_left;
-				float di_r_right = (r3 - r1) / height_right;
-				float di_g_right = (g3 - g1) / height_right;
-				float di_b_right = (b3 - b1) / height_right;
+				//float di_r_left = (r2 - r1) / height_left;
+				//float di_g_left = (g2 - g1) / height_left;
+				//float di_b_left = (b2 - b1) / height_left;
+				//float di_r_right = (r3 - r1) / height_right;
+				//float di_g_right = (g3 - g1) / height_right;
+				//float di_b_right = (b3 - b1) / height_right;
 
-				if (type == TypeLHS)
+				float height_left;
+				float height_right;
+				float dx_left;
+				float dx_right;;
+
+				float di_r_left;
+				float di_g_left;
+				float di_b_left;
+				float di_r_right;
+				float di_g_right;
+				float di_b_right;
+
+				if (type == TypeRHS)
 				{
-					Swap(dx_left, dx_right);
-					Swap(di_r_left, di_r_right);
-					Swap(di_g_left, di_g_right);
-					Swap(di_b_left, di_b_right);
+					height_left = y2 - y1;
+					height_right = y3 - y1;
+					dx_left = (x2 - x1) / height_left;
+					dx_right = (x3 - x1) / height_right;
+
+					di_r_left = (r2 - r1) / height_left;
+					di_g_left = (g2 - g1) / height_left;
+					di_b_left = (b2 - b1) / height_left;
+					di_r_right = (r3 - r1) / height_right;
+					di_g_right = (g3 - g1) / height_right;
+					di_b_right = (b3 - b1) / height_right;
+				}
+				else
+				{
+					height_left = y3 - y1;
+					height_right = y2 - y1;
+					dx_left = (x3 - x1) / height_left;
+					dx_right = (x2 - x1) / height_right;
+
+					di_r_left = (r3 - r1) / height_left;
+					di_g_left = (g3 - g1) / height_left;
+					di_b_left = (b3 - b1) / height_left;
+					di_r_right = (r2 - r1) / height_right;
+					di_g_right = (g2 - g1) / height_right;
+					di_b_right = (b2 - b1) / height_right;
 				}
 
 				// starting points
@@ -1100,6 +1146,11 @@ namespace DoPixel
 					// make sure top left fill convention is observed
 					iy3 = (int)ceil(y3) - 1;
 				}
+
+				// check yrestart
+				int yrestart = int(ynew + 0.5f);
+				if (yrestart < iy1)
+					yrestart = iy1;
 
 				unsigned int pitchBits = pitch * bitsPerPixel;
 				unsigned char* buffer = frameBuffer + iy1 * pitchBits;
@@ -1161,7 +1212,7 @@ namespace DoPixel
 						ie_b += di_b_right;
 
 						// test for loop_y hitting second region, if so change interpolant
-						if (loop_y == ynew)
+						if (loop_y == yrestart)
 						{
 							float height_new = (y3 - ynew);
 
@@ -1287,7 +1338,7 @@ namespace DoPixel
 						ie_b += di_b_right;
 
 						// test for loop_y hitting second region, if so change interpolant
-						if (loop_y == ynew)
+						if (loop_y == yrestart)
 						{
 							float height_new = (y3 - ynew);
 
