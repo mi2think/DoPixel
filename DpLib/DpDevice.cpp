@@ -361,11 +361,11 @@ namespace DoPixel
 				{
 					dy = clipRect.top - y1;
 
-					// reset y1
-					y1 = (float)clipRect.top;
+					// clip y1
+					float y1_clip = (float)clipRect.top;
 
 					//make sure top left fill convention is observed
-					iy1 = (int)y1;
+					iy1 = (int)y1_clip;
 				}
 				else
 				{
@@ -374,18 +374,18 @@ namespace DoPixel
 
 					dy = iy1 - y1;
 				}
-				//// compute new xs and xe
-				//xs = xs + dx_left * dy;
-				//xe = xe + dx_right * dy;
+				// compute new xs and xe
+				xs = xs + dx_left * dy;
+				xe = xe + dx_right * dy;
 
 				// check y3
 				if (y3 > clipRect.bottom)
 				{
 					// clip y
-					y3 = (float)clipRect.bottom;
+					float y3_clip = (float)clipRect.bottom;
 
 					// make sure top left fill convention is observed
-					iy3 = int(y3 - 1);
+					iy3 = int(y3_clip - 1);
 				}
 				else
 				{
@@ -514,11 +514,11 @@ namespace DoPixel
 				{
 					dy = clipRect.top - y1;
 
-					// reset y1
-					y1 = (float)clipRect.top;
+					// clip y1
+					float y1_clip = (float)clipRect.top;
 
 					//make sure top left fill convention is observed
-					iy1 = (int)y1;
+					iy1 = (int)y1_clip;
 				}
 				else
 				{
@@ -527,18 +527,18 @@ namespace DoPixel
 
 					dy = iy1 - y1;
 				}
-				// compute new xs and ys
-				//xs = xs + dx_left * dy;
-				//xe = xe + dx_right * dy;
+				// compute new xs and xe
+				xs = xs + dx_left * dy;
+				xe = xe + dx_right * dy;
 
 				// check y3
 				if (y3 > clipRect.bottom)
 				{
 					// clip y
-					y3 = (float)clipRect.bottom;
+					float y3_clip = (float)clipRect.bottom;
 
 					// make sure top left fill convention is observed
-					iy3 = int(y3 - 1);
+					iy3 = int(y3_clip - 1);
 				}
 				else
 				{
@@ -826,11 +826,11 @@ namespace DoPixel
 				{
 					dy = clipRect.top - y1;
 
-					// reset y1
-					y1 = (float)clipRect.top;
+					// clip y1
+					float y1_clip = (float)clipRect.top;
 
 					//make sure top left fill convention is observed
-					iy1 = (int)y1;
+					iy1 = (int)y1_clip;
 				}
 				else
 				{
@@ -839,13 +839,13 @@ namespace DoPixel
 
 					dy = iy1 - y1;
 				}
-				// compute new xs and ys
-				//xs = xs + dx_left * dy;
+				// compute new xs and xe
+				xs = xs + dx_left * dy;
 				is_r = is_r + di_r_left * dy;
 				is_g = is_g + di_g_left * dy;
 				is_b = is_b + di_b_left * dy;
 
-				//xe = xe + dx_right * dy;
+				xe = xe + dx_right * dy;
 				ie_r = ie_r + di_r_right * dy;
 				ie_g = ie_g + di_g_right * dy;
 				ie_b = ie_b + di_b_right * dy;
@@ -854,10 +854,10 @@ namespace DoPixel
 				if (y3 > clipRect.bottom)
 				{
 					// clip y
-					y3 = (float)clipRect.bottom;
+					float y3_clip = (float)clipRect.bottom;
 
 					// make sure top left fill convention is observed
-					iy3 = int(y3 - 1);
+					iy3 = int(y3_clip - 1);
 				}
 				else
 				{
@@ -1036,18 +1036,6 @@ namespace DoPixel
 				enum TypeNewPoint { TypeLHS, TypeRHS };
 				TypeNewPoint type = xnew > x2 ? TypeRHS : TypeLHS;
 
-				//float height_left = y2 - y1;
-				//float height_right = y3 - y1;
-				//float dx_left = (x2 - x1) / height_left;
-				//float dx_right = (x3 - x1) / height_right;
-
-				//float di_r_left = (r2 - r1) / height_left;
-				//float di_g_left = (g2 - g1) / height_left;
-				//float di_b_left = (b2 - b1) / height_left;
-				//float di_r_right = (r3 - r1) / height_right;
-				//float di_g_right = (g3 - g1) / height_right;
-				//float di_b_right = (b3 - b1) / height_right;
-
 				float height_left;
 				float height_right;
 				float dx_left;
@@ -1108,11 +1096,10 @@ namespace DoPixel
 				{
 					dy = clipRect.top - y1;
 
-					// reset y1
-					y1 = (float)clipRect.top;
+					float y1_clip = (float)clipRect.top;
 
 					//make sure top left fill convention is observed
-					iy1 = (int)y1;
+					iy1 = (int)y1_clip;
 				}
 				else
 				{
@@ -1122,12 +1109,12 @@ namespace DoPixel
 					dy = iy1 - y1;
 				}
 				// compute new xs and ys
-				//xs = xs + dx_left * dy;
+				xs = xs + dx_left * dy;
 				is_r = is_r + di_r_left * dy;
 				is_g = is_g + di_g_left * dy;
 				is_b = is_b + di_b_left * dy;
 
-				//xe = xe + dx_right * dy;
+				xe = xe + dx_right * dy;
 				ie_r = ie_r + di_r_right * dy;
 				ie_g = ie_g + di_g_right * dy;
 				ie_b = ie_b + di_b_right * dy;
@@ -1136,10 +1123,10 @@ namespace DoPixel
 				if (y3 > clipRect.bottom)
 				{
 					// clip y
-					y3 = (float)clipRect.bottom;
+					float y3_clip = (float)clipRect.bottom;
 
 					// make sure top left fill convention is observed
-					iy3 = int(y3 - 1);
+					iy3 = int(y3_clip - 1);
 				}
 				else
 				{
