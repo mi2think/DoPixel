@@ -561,6 +561,23 @@ namespace DoPixel
 				{
 					for (int loop_y = iy1; loop_y <= iy3; ++loop_y, buffer += pitchBits)
 					{
+						// test for loop_y hitting second region, if so change interpolant
+						if (loop_y == yrestart)
+						{
+							float height_new = (y3 - ynew);
+
+							if (type == TypeLHS)
+							{
+								dx_right = (x3 - x2) / height_new;
+								xe = x2;
+							}
+							else
+							{
+								dx_left = (x3 - x2) / height_new;
+								xs = x2;
+							}
+						}
+
 						// point start
 						int xstart = (int)ceil(xs);
 						int xend = (int)ceil(xe) - 1;
@@ -573,7 +590,13 @@ namespace DoPixel
 
 						xs += dx_left;
 						xe += dx_right;
-
+					}
+				}
+				else
+				{
+					// clip x
+					for (int loop_y = iy1; loop_y <= iy3; ++loop_y, buffer += pitchBits)
+					{
 						// test for loop_y hitting second region, if so change interpolant
 						if (loop_y == yrestart)
 						{
@@ -583,22 +606,14 @@ namespace DoPixel
 							{
 								dx_right = (x3 - x2) / height_new;
 								xe = x2;
-								xe += dx_right;
 							}
 							else
 							{
 								dx_left = (x3 - x2) / height_new;
 								xs = x2;
-								xs += dx_left;
 							}
 						}
-					}
-				}
-				else
-				{
-					// clip x
-					for (int loop_y = iy1; loop_y <= iy3; ++loop_y, buffer += pitchBits)
-					{
+
 						// clip test
 						float xs_clip = xs;
 						float xe_clip = xe;
@@ -639,29 +654,6 @@ namespace DoPixel
 
 						xs += dx_left;
 						xe += dx_right;
-
-						// test for loop_y hitting second region, if so change interpolant
-						if (loop_y == yrestart)
-						{
-							float height_new = (y3 - ynew);
-
-							if (type == TypeLHS)
-							{
-								dx_right = (x3 - x2) / height_new;
-
-								xe = x2;
-
-								xe += dx_right;
-							}
-							else
-							{
-								dx_left = (x3 - x2) / height_new;
-
-								xs = x2;
-
-								xs += dx_left;
-							}
-						}
 					}
 				}
 			}
@@ -1149,6 +1141,39 @@ namespace DoPixel
 				{
 					for (int loop_y = iy1; loop_y <= iy3; ++loop_y, buffer += pitchBits)
 					{
+						// test for loop_y hitting second region, if so change interpolant
+						if (loop_y == yrestart)
+						{
+							float height_new = (y3 - ynew);
+
+							if (type == TypeLHS)
+							{
+								dx_right = (x3 - x2) / height_new;
+
+								di_r_right = (r3 - r2) / height_new;
+								di_g_right = (g3 - g2) / height_new;
+								di_b_right = (b3 - b2) / height_new;
+
+								xe = x2;
+								ie_r = r2;
+								ie_g = g2;
+								ie_b = b2;
+							}
+							else
+							{
+								dx_left = (x3 - x2) / height_new;
+
+								di_r_left = (r3 - r2) / height_new;
+								di_g_left = (g3 - g2) / height_new;
+								di_b_left = (b3 - b2) / height_new;
+
+								xs = x2;
+								is_r = r2;
+								is_g = g2;
+								is_b = b2;
+							}
+						}
+
 						// color step
 						float di_r = 0.0f;
 						float di_g = 0.0f;
@@ -1197,7 +1222,13 @@ namespace DoPixel
 						ie_r += di_r_right;
 						ie_g += di_g_right;
 						ie_b += di_b_right;
-
+					}
+				}
+				else
+				{
+					// clip x
+					for (int loop_y = iy1; loop_y <= iy3; ++loop_y, buffer += pitchBits)
+					{
 						// test for loop_y hitting second region, if so change interpolant
 						if (loop_y == yrestart)
 						{
@@ -1215,11 +1246,6 @@ namespace DoPixel
 								ie_r = r2;
 								ie_g = g2;
 								ie_b = b2;
-
-								xe += dx_right;
-								ie_r += di_r_right;
-								ie_g += di_g_right;
-								ie_b += di_b_right;
 							}
 							else
 							{
@@ -1233,20 +1259,9 @@ namespace DoPixel
 								is_r = r2;
 								is_g = g2;
 								is_b = b2;
-
-								xs += dx_left;
-								is_r += di_r_left;
-								is_g += di_g_left;
-								is_b += di_b_left;
 							}
 						}
-					}
-				}
-				else
-				{
-					// clip x
-					for (int loop_y = iy1; loop_y <= iy3; ++loop_y, buffer += pitchBits)
-					{
+
 						// clip test
 						float xs_clip = xs;
 						float xe_clip = xe;
@@ -1323,49 +1338,6 @@ namespace DoPixel
 						ie_r += di_r_right;
 						ie_g += di_g_right;
 						ie_b += di_b_right;
-
-						// test for loop_y hitting second region, if so change interpolant
-						if (loop_y == yrestart)
-						{
-							float height_new = (y3 - ynew);
-
-							if (type == TypeLHS)
-							{
-								dx_right = (x3 - x2) / height_new;
-
-								di_r_right = (r3 - r2) / height_new;
-								di_g_right = (g3 - g2) / height_new;
-								di_b_right = (b3 - b2) / height_new;
-
-								xe = x2;
-								ie_r = r2;
-								ie_g = g2;
-								ie_b = b2;
-
-								xe += dx_right;
-								ie_r += di_r_right;
-								ie_g += di_g_right;
-								ie_b += di_b_right;
-							}
-							else
-							{
-								dx_left = (x3 - x2) / height_new;
-
-								di_r_left = (r3 - r2) / height_new;
-								di_g_left = (g3 - g2) / height_new;
-								di_b_left = (b3 - b2) / height_new;
-
-								xs = x2;
-								is_r = r2;
-								is_g = g2;
-								is_b = b2;
-
-								xs += dx_left;
-								is_r += di_r_left;
-								is_g += di_g_left;
-								is_b += di_b_left;
-							}
-						}
 					}
 				}
 			}
