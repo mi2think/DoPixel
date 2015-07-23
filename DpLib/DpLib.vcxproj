@@ -38,7 +38,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>..\Vendor;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
@@ -71,6 +73,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Vendor\stb\stb_image.h" />
+    <ClInclude Include="..\Vendor\stb\stb_image_write.h" />
     <ClInclude Include="DpCamera.h" />
     <ClInclude Include="DpColor.h" />
     <ClInclude Include="DpConsole.h" />
@@ -101,6 +105,8 @@
     <ClInclude Include="DpVector4.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Vendor\stb\stb_image.c" />
+    <ClCompile Include="..\Vendor\stb\stb_image_write.c" />
     <ClCompile Include="DpColor.cpp" />
     <ClCompile Include="DpConsole.cpp" />
     <ClCompile Include="DpDevice.cpp" />
@@ -109,6 +115,7 @@
     <ClCompile Include="DpObject.cpp" />
     <ClCompile Include="DpQuaternion.cpp" />
     <ClCompile Include="DpStrUtility.cpp" />
+    <ClCompile Include="DpTga.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

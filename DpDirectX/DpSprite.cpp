@@ -32,7 +32,7 @@ namespace DoPixel
 
 			assert(_stricmp(ext, "tga") == 0);
 
-			Core::Tga tga(fileName);
+			Core::Tga tga(fileName.c_str());
 			m_width = tga.GetWidth();
 			m_height = tga.GetHeight();
 

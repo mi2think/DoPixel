@@ -10,6 +10,12 @@
     <Filter Include="DpLoadRes">
       <UniqueIdentifier>{577779e4-e345-4a00-911b-fd33f2437524}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vendor">
+      <UniqueIdentifier>{01cb6ecf-27f6-4ab2-a2bc-e9bfbf05bef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\stb">
+      <UniqueIdentifier>{5cba56af-9548-4abf-ae57-cd3908156e95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DpVector3.h">
@@ -96,6 +102,12 @@
     <ClInclude Include="DpRef.h">
       <Filter>DpCommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\Vendor\stb\stb_image.h">
+      <Filter>Vendor\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\stb\stb_image_write.h">
+      <Filter>Vendor\stb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">
@@ -121,6 +133,15 @@
     </ClCompile>
     <ClCompile Include="DpFileParser.cpp">
       <Filter>DpLoadRes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\stb\stb_image.c">
+      <Filter>Vendor\stb</Filter>
+    </ClCompile>
+    <ClCompile Include="DpTga.cpp">
+      <Filter>DpLoadRes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\stb\stb_image_write.c">
+      <Filter>Vendor\stb</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
