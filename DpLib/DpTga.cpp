@@ -189,14 +189,14 @@ namespace DoPixel
 
 			// Because stbi load it by [r g b a], we need convert it. :(
 			// r g b a -> a r g b
-			//len = width * height * 4;
-			//unsigned char* end = image + len;
-			//for (unsigned char* p = image; p < end; p += 4)
-			//{
-			//	unsigned int& c = *((unsigned int*)p);
-			//	unsigned int a = c & 0x000f;
-			//	c = (c >> 8) | (a << 24);
-			//}
+			len = width * height * 4;
+			unsigned char* end = image + len;
+			for (unsigned char* p = image; p < end; p += 4)
+			{
+				unsigned char r = *p;
+				*p = *(p + 2);
+				*(p + 2) = r;
+			}
 
 			m_image = image;
 		}
