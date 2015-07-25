@@ -174,7 +174,7 @@ namespace DoPixel
 				d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 				d3dpp.SwapEffect = D3DSWAPEFFECT_FLIP;
 			}
-			HRESULT hr = m_pD3D->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, d3dpp.BackBufferFormat, d3dpp.BackBufferFormat, d3dpp.Windowed);
+			HRESULT hr = m_pD3D->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, displayMode.Format, d3dpp.BackBufferFormat, d3dpp.Windowed);
 			if (FAILED(hr))
 			{
 				DEBUG_DXTRACE(hr);
@@ -206,14 +206,14 @@ namespace DoPixel
 			}
 			DEBUG_TRACE("Create vertex & index buffer succeed!\n");
 
-			hr = m_pD3DD->CreateTexture(wndWidth, wndHeight, 1, D3DUSAGE_RENDERTARGET, displayMode.Format, D3DPOOL_DEFAULT, &m_pRenderTarget, NULL);
+			hr = m_pD3DD->CreateTexture(wndWidth, wndHeight, 1, D3DUSAGE_RENDERTARGET, d3dpp.BackBufferFormat, D3DPOOL_DEFAULT, &m_pRenderTarget, NULL);
 			if (FAILED(hr))
 			{
 				DEBUG_DXTRACE(hr);
 				return;
 			}
 
-			hr = m_pD3DD->CreateTexture(wndWidth, wndHeight, 1, D3DUSAGE_DYNAMIC, displayMode.Format, D3DPOOL_DEFAULT, &m_pTexture, NULL);
+			hr = m_pD3DD->CreateTexture(wndWidth, wndHeight, 1, D3DUSAGE_DYNAMIC, d3dpp.BackBufferFormat, D3DPOOL_DEFAULT, &m_pTexture, NULL);
 			if (FAILED(hr))
 			{
 				DEBUG_DXTRACE(hr);

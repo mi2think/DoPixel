@@ -13,23 +13,27 @@
 #ifndef __DP_MATERIAL__
 #define __DP_MATERIAL__
 
+#include "DpCore.h"
 #include "DpColor.h"
-#include <cassert>
 
 namespace DoPixel
 {
 	namespace Core
 	{
-		struct Texture
+		class Texture
 		{
+		public:
+			Texture();
+			~Texture();
+
+			void Load(const char* fileName);
+
+			void Release();
+		private:
 			std::string fileName;
 			unsigned char* data;
-
-			void SetFileName(const char* fileName) { this->fileName = fileName; }
-
-			void Load();
-
-			void Release() {}
+			int width;
+			int height;
 		};
 
 
@@ -93,7 +97,7 @@ namespace DoPixel
 				if (texture == nullptr)
 				{
 					texture = new Texture();
-					texture->SetFileName(fileName);
+					texture->Load(fileName);
 				}
 			}
 

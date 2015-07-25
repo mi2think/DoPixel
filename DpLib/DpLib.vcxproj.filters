@@ -143,5 +143,8 @@
     <ClCompile Include="..\Vendor\stb\stb_image_write.c">
       <Filter>Vendor\stb</Filter>
     </ClCompile>
+    <ClCompile Include="DpMaterial.cpp">
+      <Filter>Dp3DEngine</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

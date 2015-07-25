@@ -186,19 +186,21 @@ namespace DoPixel
 			int height = 0;
 			int comp = 0;
 			unsigned char* image = stbi_load_from_memory(fileData, len, &width, &height, &comp, 4);
-
+			
+			int size = width * height * 4;
+			m_image = new unsigned char[size];
+			memcpy(m_image, image, size);
 			// Because stbi load it by [r g b a], we need convert it. :(
 			// r g b a -> a r g b
-			len = width * height * 4;
-			unsigned char* end = image + len;
-			for (unsigned char* p = image; p < end; p += 4)
+			unsigned char* end = m_image + size;
+			for (unsigned char* p = m_image; p < end; p += 4)
 			{
 				unsigned char r = *p;
 				*p = *(p + 2);
 				*(p + 2) = r;
 			}
 
-			m_image = image;
+			free(image);
 		}
 
 		Color Tga::GetColor(const Math::Point& pos) const

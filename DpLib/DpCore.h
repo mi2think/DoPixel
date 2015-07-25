@@ -20,6 +20,8 @@
 #include <cstdarg>
 #include <cstring>
 
+#include <vector>
+
 namespace DoPixel
 {
 	namespace Core
