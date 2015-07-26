@@ -1,10 +1,5 @@
 #include "D3DDemoApp.h"
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <string>
-#include <algorithm>
-
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
@@ -85,7 +80,7 @@ void D3DDemoApp::Create(int wndWidth, int wndHeight, const char* wndName, bool b
 	}
 
 	GetD3DDevice()->Init(g_hwnd, clientWidth, clientHeight, bWindow);
-	GetD3DDevice()->SetClipRect(RectF(0, 0, clientWidth - 1, clientHeight - 1));
+	GetD3DDevice()->SetClipRect(RectF(0, 0, clientWidth, clientHeight));
 
 	device = GetD3DDevice()->GetD3DD();
 
