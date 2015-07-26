@@ -61,7 +61,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DpOpenGL", "DpOpenGL\DpOpen
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DpOpenGLDemo", "DpOpenGLDemo", "{492FEE1D-F038-4594-847F-8790D133612D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SetupOpenGL", "DpOpenGLDemo\SetupOpenGL\SetupOpenGL.vcxproj", "{23589E0E-1F74-427B-A953-7CF08B78FD8C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GouraudTriangle", "DpOpenGLDemo\GouraudTriangle\GouraudTriangle.vcxproj", "{23589E0E-1F74-427B-A953-7CF08B78FD8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

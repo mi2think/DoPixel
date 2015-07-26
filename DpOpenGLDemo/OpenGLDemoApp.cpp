@@ -41,7 +41,7 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// 重置OpenGL窗口大小
 	glLoadIdentity();									// 重置投影矩阵
 
 	// 设置视口的大小
-	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+	gluPerspective(90.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 
 	glMatrixMode(GL_MODELVIEW);							// 选择模型观察矩阵
 	glLoadIdentity();									// 重置模型观察矩阵

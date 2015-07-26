@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{23589E0E-1F74-427B-A953-7CF08B78FD8C}</ProjectGuid>
     <RootNamespace>SetupOpenGL</RootNamespace>
+    <ProjectName>GouraudTriangle</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -41,6 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>..\;..\..\Vendor\GL;..\..\DpLib;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\Vendor\GL\lib\x86\;..\..\Debug\;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)_OpenGL</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>..\;..\..\DpLib;$(IncludePath)</IncludePath>
