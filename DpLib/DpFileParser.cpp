@@ -281,6 +281,9 @@ namespace DoPixel
 					if (! subExpr.matched)
 						continue;
 
+					if (index > regexInfo.vecSubExprType.size())
+						break;
+
 					auto& subExprType = regexInfo.vecSubExprType[index - 1];
 
 					switch (subExprType)

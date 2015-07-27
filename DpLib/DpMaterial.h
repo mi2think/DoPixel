@@ -122,13 +122,15 @@ namespace DoPixel
 				}
 			}
 
-			Material& GenMaterial(int id)
+			// if id has repeat, change it
+			Material& GenMaterial(int& id)
 			{
 				for (const auto& m : materials)
 				{
 					if (m.id == id)
 					{
-						assert(false && "id has exists!");
+						//assert(false && "id has exists!");
+						id = GenMaterialId();
 					}
 				}
 				materials.push_back(Material(id));

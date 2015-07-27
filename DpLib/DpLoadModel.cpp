@@ -814,8 +814,23 @@ namespace DoPixel
 
 					if (parser.RegexPatternMatch(strLine, regexInfo))
 					{
+						// generate actual material
 						int materialId = parser.GetMatchedVal<int>(0);
-						Material& material = MaterialManager::GetInstance().GenMaterial(materialId);
+						int genMaterialId = materialId;
+						Material& material = MaterialManager::GetInstance().GenMaterial(genMaterialId);
+						if (genMaterialId != materialId)
+						{
+							// repeat material id in globe material manager, generate new id
+							// and change map between poly index - material id
+							for (auto& kv : polyMaterials)
+							{
+								if (kv.second == materialId)
+									kv.second = genMaterialId;
+							}
+							// No need to change materialsRef
+							
+							materialId = genMaterialId;
+						}
 
 						// color of poly
 						while (true)

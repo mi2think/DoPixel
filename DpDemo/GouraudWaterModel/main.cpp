@@ -38,7 +38,7 @@ private:
 
 void GouraudWaterModel::OnCreate()
 {
-	camera.InitCamera(Camera::MODEL_EULER, Vector4f(0.0f, 0.0f, 0.0f, 1.0f), Vector4f(0.0f, 0.0f, 0.0f, 1.0f), Vector4f(0.0f, 0.0f, 0.0f, 1.0f), 200.0f, 12000.0f, 
+	camera.InitCamera(Camera::MODEL_EULER, Vector4f(0.0f, 0.0f, 0.0f, 1.0f), Vector4f(0.0f, 0.0f, 0.0f, 1.0f), Vector4f(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, 12000.0f, 
 		120.0f, (float)clientWidth, (float)clientHeight);
 
 	// load constant shaded water
@@ -125,6 +125,8 @@ void GouraudWaterModel::Run(float fElapsedTime)
 
 	// generate rotation matrix around y axis
 	MatrixRotationXYZ(rotMatrix, angle2radian(x_ang), angle2radian(y_ang), angle2radian(z_ang));
+
+	renderList.Reset();
 
 	//////////////////////////////////////////////////////////////////////////
 	// constant shaded water
