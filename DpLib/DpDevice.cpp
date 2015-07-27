@@ -314,6 +314,17 @@ namespace DoPixel
 
 			if (type == TypeFlatTop || type == TypeFlatBottom)
 			{
+				if (type == TypeFlatTop)
+				{
+					if (v1.x < v0.x)
+						Swap(v1, v0);
+				}
+				else
+				{
+					if (v2.x < v1.x)
+						Swap(v2, v1);
+				}
+
 				float x1 = v0.x;
 				float y1 = v0.y;
 				float x2 = v1.x;
@@ -332,9 +343,6 @@ namespace DoPixel
 
 				if (type == TypeFlatTop)
 				{
-					if (x1 > x2)
-						Swap(x1, x2);
-
 					dx_left = (x3 - x1) / height;
 					dx_right = (x3 - x2) / height;
 
@@ -343,11 +351,8 @@ namespace DoPixel
 				}
 				else
 				{
-					if (x3 > x2)
-						Swap(x2, x3);
-
-					dx_left = (x3 - x1) / height;
-					dx_right = (x2 - x1) / height;
+					dx_left = (x2 - x1) / height;
+					dx_right = (x3 - x1) / height;
 
 					xs = x1;
 					xe = x1;

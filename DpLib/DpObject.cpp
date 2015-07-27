@@ -485,6 +485,7 @@ namespace DoPixel
 
 				p->state &= (~POLY_STATE_BACKFACE);
 				p->state &= (~POLY_STATE_CLIPPED);
+				p->state &= (~POLY_STATE_LIT);
 			}
 		}
 
