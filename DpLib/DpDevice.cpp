@@ -18,6 +18,27 @@ namespace DoPixel
 	{
 #define Round(x) ((int)((x) + 0.5))
 
+		Device::Device()
+			: frameBuffer(NULL)
+			, pitch(0)
+			, bitsPerPixel(4)
+			, fillMode(Fill_Solid)
+			, shadeMode(Shade_Flat)
+		{}
+
+		void Device::SetRenderState(RenderState rs, int value)
+		{
+			switch (rs)
+			{
+			case RS_FillMode:
+				fillMode = value;
+				break;
+			case RS_ShadeMode:
+				shadeMode = value;
+				break;
+			}
+		}
+
 		void Device::DrawLineDDA(const Point& p0, const Point& p1, const Color& color) const
 		{
 			Point pc0;
@@ -277,37 +298,59 @@ namespace DoPixel
 			return true;
 		}
 
-		void Device::DrawTriangle(const Point& p0, const Point& p1, const Point& p2, const Color& color) const
+		void Device::DrawTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
 		{
+			if (fillMode == Fill_Wireframe)
+			{
+				// just draw three lines, with color of first vertex
+				DrawLine(Point(v0.x, v0.y), Point(v1.x, v1.y), v0.color);
+				DrawLine(Point(v1.x, v1.y), Point(v2.x, v2.y), v0.color);
+				DrawLine(Point(v0.x, v0.y), Point(v2.x, v2.y), v0.color);
+			}
+			else
+			{
+				if (shadeMode == Shade_Flat)
+				{
+					DrawFlatTriangle(v0, v1, v2);
+				}
+				else if (shadeMode == Shade_Gouraud)
+				{
+					DrawGouraudTriangle(v0, v1, v2);
+				}
+			}
+		}
+
+		void Device::DrawFlatTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
+		{
+			Point p0(v0.x, v0.y);
+			Point p1(v1.x, v1.y);
+			Point p2(v2.x, v2.y);
+
 			if (FCMP(p0.x, p1.x) && FCMP(p1.x, p2.x) || FCMP(p0.y, p1.y) && FCMP(p1.y, p2.y))
 				return;
 
-			// Sort v0, v1, v2 in ascending y order
-			Point v0 = p0;
-			Point v1 = p1;
-			Point v2 = p2;
+			// Sort p0, p1, p2 in ascending y order
+			if (p1.y < p0.y)
+				Swap(p1, p0);
 
-			if (v1.y < v0.y)
-				Swap(v1, v0);
+			if (p2.y < p0.y)
+				Swap(p0, p2);
 
-			if (v2.y < v0.y)
-				Swap(v0, v2);
-
-			if (v2.y < v1.y)
-				Swap(v2, v1);
+			if (p2.y < p1.y)
+				Swap(p2, p1);
 
 			// Cull
-			if (v2.y < clipRect.top || v0.y > clipRect.bottom ||
-				v0.x < clipRect.left && v1.x < clipRect.left && v2.x < clipRect.left ||
-				v0.x > clipRect.right && v1.x > clipRect.right && v2.x > clipRect.right)
+			if (p2.y < clipRect.top || p0.y > clipRect.bottom ||
+				p0.x < clipRect.left && p1.x < clipRect.left && p2.x < clipRect.left ||
+				p0.x > clipRect.right && p1.x > clipRect.right && p2.x > clipRect.right)
 				return;
 
 			enum TypeTriangle { TypeFlatTop, TypeFlatBottom, TypeGeneral };
 		
 			TypeTriangle type;
-			if (FCMP(v0.y, v1.y))
+			if (FCMP(p0.y, p1.y))
 				type = TypeFlatTop;
-			else if (FCMP(v1.y, v2.y))
+			else if (FCMP(p1.y, p2.y))
 				type = TypeFlatBottom;
 			else
 				type = TypeGeneral;
@@ -316,21 +359,21 @@ namespace DoPixel
 			{
 				if (type == TypeFlatTop)
 				{
-					if (v1.x < v0.x)
-						Swap(v1, v0);
+					if (p1.x < p0.x)
+						Swap(p1, p0);
 				}
 				else
 				{
-					if (v2.x < v1.x)
-						Swap(v2, v1);
+					if (p2.x < p1.x)
+						Swap(p2, p1);
 				}
 
-				float x1 = v0.x;
-				float y1 = v0.y;
-				float x2 = v1.x;
+				float x1 = p0.x;
+				float y1 = p0.y;
+				float x2 = p1.x;
 				//float y2 = p1.y;
-				float x3 = v2.x;
-				float y3 = v2.y;
+				float x3 = p2.x;
+				float y3 = p2.y;
 
 				float height = y3 - y1;
 
@@ -416,7 +459,7 @@ namespace DoPixel
 						unsigned char* p = buffer + xstart * bitsPerPixel;
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
 						{
-							*((unsigned int*)p) = color.value;
+							*((unsigned int*)p) = v0.color.value;
 						}
 
 						xs += dx_left;
@@ -463,7 +506,7 @@ namespace DoPixel
 						unsigned char* p = buffer + xstart * bitsPerPixel;
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
 						{
-							*((unsigned int*)p) = color.value;
+							*((unsigned int*)p) = v0.color.value;
 						}
 
 						xs += dx_left;
@@ -474,15 +517,15 @@ namespace DoPixel
 			else if (type == TypeGeneral)
 			{
 				// new point
-				float xnew = v0.x + (v2.x - v0.x) * (v1.y - v0.y) / (v2.y - v0.y);
+				float xnew = p0.x + (v2.x - p0.x) * (p1.y - p0.y) / (p2.y - p0.y);
 				float ynew = v1.y;
 
-				float x1 = v0.x;
-				float y1 = v0.y;
-				float x2 = v1.x;
-				float y2 = v1.y;
-				float x3 = v2.x;
-				float y3 = v2.y;
+				float x1 = p0.x;
+				float y1 = p0.y;
+				float x2 = p1.x;
+				float y2 = p1.y;
+				float x3 = p2.x;
+				float y3 = p2.y;
 
 				enum TypeNewPoint { TypeLHS, TypeRHS };
 				TypeNewPoint type = xnew > x2 ? TypeRHS : TypeLHS;
@@ -590,7 +633,7 @@ namespace DoPixel
 						unsigned char* p = buffer + xstart * bitsPerPixel;
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
 						{
-							*((unsigned int*)p) = color.value;
+							*((unsigned int*)p) = v0.color.value;
 						}
 
 						xs += dx_left;
@@ -654,7 +697,7 @@ namespace DoPixel
 						unsigned char* p = buffer + xstart * bitsPerPixel;
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
 						{
-							*((unsigned int*)p) = color.value;
+							*((unsigned int*)p) = v0.color.value;
 						}
 
 						xs += dx_left;
@@ -664,49 +707,50 @@ namespace DoPixel
 			}
 		}
 
-		void Device::DrawTriangle(const Point& p0, const Point& p1, const Point& p2, const Color& color0, const Color& color1, const Color& color2) const
+		void Device::DrawGouraudTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
 		{
+			Point p0(v0.x, v0.y);
+			Point p1(v1.x, v1.y);
+			Point p2(v2.x, v2.y);
+
 			if (FCMP(p0.x, p1.x) && FCMP(p1.x, p2.x) || FCMP(p0.y, p1.y) && FCMP(p1.y, p2.y))
 				return;
 
-			// Sort v0, v1, v2 in ascending y order
-			Point v0 = p0;
-			Point v1 = p1;
-			Point v2 = p2;
-			Color c0 = color0;
-			Color c1 = color1;
-			Color c2 = color2;
+			// Sort p0, p1, p2 in ascending y order
+			Color c0 = v0.color;
+			Color c1 = v1.color;
+			Color c2 = v2.color;
 
-			if (v1.y < v0.y)
+			if (p1.y < p0.y)
 			{
-				Swap(v1, v0);
+				Swap(p1, p0);
 				Swap(c1, c0);
 			}
 
-			if (v2.y < v0.y)
+			if (p2.y < p0.y)
 			{
-				Swap(v0, v2);
+				Swap(p0, p2);
 				Swap(c0, c2);
 			}
 
-			if (v2.y < v1.y)
+			if (p2.y < p1.y)
 			{
-				Swap(v2, v1);
+				Swap(p2, p1);
 				Swap(c2, c1);
 			}
 
 			// Cull
-			if (v2.y < clipRect.top || v0.y > clipRect.bottom ||
-				v0.x < clipRect.left && v1.x < clipRect.left && v2.x < clipRect.left ||
-				v0.x > clipRect.right && v1.x > clipRect.right && v2.x > clipRect.right)
+			if (p2.y < clipRect.top || p0.y > clipRect.bottom ||
+				p0.x < clipRect.left && p1.x < clipRect.left && p2.x < clipRect.left ||
+				p0.x > clipRect.right && p1.x > clipRect.right && p2.x > clipRect.right)
 				return;
 
 			enum TypeTriangle { TypeFlatTop, TypeFlatBottom, TypeGeneral };
 
 			TypeTriangle type;
-			if (FCMP(v0.y, v1.y))
+			if (FCMP(p0.y, p1.y))
 				type = TypeFlatTop;
-			else if (FCMP(v1.y, v2.y))
+			else if (FCMP(p1.y, p2.y))
 				type = TypeFlatBottom;
 			else
 				type = TypeGeneral;
@@ -715,27 +759,27 @@ namespace DoPixel
 			{
 				if (type == TypeFlatTop)
 				{
-					if (v1.x < v0.x)
+					if (p1.x < p0.x)
 					{
-						Swap(v1, v0);
+						Swap(p1, p0);
 						Swap(c1, c0);
 					}
 				}
 				else
 				{
-					if (v2.x < v1.x)
+					if (p2.x < p1.x)
 					{
-						Swap(v2, v1);
+						Swap(p2, p1);
 						Swap(c2, c1);
 					}
 				}
 
-				float x1 = v0.x;
-				float y1 = v0.y;
-				float x2 = v1.x;
-				//float y2 = v1.y;
-				float x3 = v2.x;
-				float y3 = v2.y;
+				float x1 = p0.x;
+				float y1 = p0.y;
+				float x2 = p1.x;
+				//float y2 = p1.y;
+				float x3 = p2.x;
+				float y3 = p2.y;
 
 				float r1 = c0.r;
 				float g1 = c0.g;
@@ -1010,15 +1054,15 @@ namespace DoPixel
 			else
 			{
 				// new point
-				float xnew = v0.x + (v2.x - v0.x) * (v1.y - v0.y) / (v2.y - v0.y);
-				float ynew = v1.y;
+				float xnew = p0.x + (p2.x - p0.x) * (p1.y - p0.y) / (p2.y - p0.y);
+				float ynew = p1.y;
 
-				float x1 = v0.x;
-				float y1 = v0.y;
-				float x2 = v1.x;
-				float y2 = v1.y;
-				float x3 = v2.x;
-				float y3 = v2.y;
+				float x1 = p0.x;
+				float y1 = p0.y;
+				float x2 = p1.x;
+				float y2 = p1.y;
+				float x3 = p2.x;
+				float y3 = p2.y;
 
 				float r1 = c0.r;
 				float g1 = c0.g;

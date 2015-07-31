@@ -26,12 +26,18 @@ void SingleTriangle::OnCreate()
 
 	polyFace.state = POLY_STATE_ACTIVE;
 	polyFace.attr = 0;
-	polyFace.color = Color(255,0,0);
-	polyFace.litColor[0] = polyFace.color;
 
-	polyFace.vlist[0].v = Vector4f(0, 50, 0, 1);
-	polyFace.vlist[1].v = Vector4f(50, -50, 0, 1);
-	polyFace.vlist[2].v = Vector4f(-50, -50, 0, 1);
+	polyFace.vlist[0].p = Vector4f(0, 50, 0, 1);
+	polyFace.vlist[1].p = Vector4f(50, -50, 0, 1);
+	polyFace.vlist[2].p = Vector4f(-50, -50, 0, 1);
+
+	polyFace.vlist[0].color = Color(255, 0, 0);
+	polyFace.vlist[1].color = Color(255, 0, 0);
+	polyFace.vlist[2].color = Color(255, 0, 0);
+
+	polyFace.tlist[0] = polyFace.vlist[0];
+	polyFace.tlist[1] = polyFace.vlist[1];
+	polyFace.tlist[2] = polyFace.vlist[2];
 
 	polyPos = Vector4f(0,0,100,1);
 

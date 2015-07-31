@@ -18,6 +18,7 @@
 #include "DpMatrix44.h"
 #include "DpColor.h"
 #include "DpMaterial.h"
+#include "DpDevice.h"
 
 using namespace DoPixel::Math;
 
@@ -26,41 +27,7 @@ namespace DoPixel
 	namespace Core
 	{
 		class Camera;
-		class Device;
 		class Light;
-
-		struct Vertex
-		{
-			enum Attr
-			{
-				Attr_None	= 0x0,
-				Attr_Point	= 0x1,
-				Attr_Normal	= 0x2,
-				Attr_Texture= 0x4,
-			};
-
-			union
-			{
-				float m[12];
-
-				struct  
-				{
-					float x, y, z, w;		// position
-					float nx, ny, nz, nw;	// normal
-					float u0, v0;			// texture coord
-
-					float i;	// light color
-					int attr;	// Attr
-				};
-
-				struct
-				{
-					Vector4f v;		// position
-					Vector4f n;		// normal
-					Vector2f uv0;	// texture coord
-				};
-			};
-		};
 
 		//////////////////////////////////////////////////////////////////////////
 
@@ -104,9 +71,10 @@ namespace DoPixel
 			int state;			// state status
 			int attr;
 	
-			Color color;		// the color of poly
-			Color litColor[3];	// store lit color. for constant color, the first store it
-								// for gouraud color, store 3 vertex colors
+			//Color color;		// the color of poly
+			//Color litColor[3];	// store lit color. for constant color, the first store it
+			//					// for gouraud color, store 3 vertex colors
+
 			Texture* texture;
 			int materialId;
 
@@ -126,10 +94,21 @@ namespace DoPixel
 				const auto& v1 = vlist[vert[1]];
 				const auto& v2 = vlist[vert[2]];
 
-				Vector4f u = v1.v - v0.v;
-				Vector4f v = v2.v - v0.v;
+				Vector4f u = v1.p - v0.p;
+				Vector4f v = v2.p - v0.p;
 				Vector4f n = CrossProduct(u, v);
 				return n;
+			}
+
+			void ResetCull()
+			{
+				state &= (~POLY_STATE_BACKFACE);
+				state &= (~POLY_STATE_CLIPPED);
+				state &= (~POLY_STATE_LIT);
+				// Reset vertex lit
+				vlist[vert[0]].attr &= (~Vertex::Attr_Light);
+				vlist[vert[1]].attr &= (~Vertex::Attr_Light);
+				vlist[vert[2]].attr &= (~Vertex::Attr_Light);
 			}
 		};
 
@@ -139,9 +118,6 @@ namespace DoPixel
 			int state;			// state status
 			int attr;
 
-			Color color;		// the color of poly
-			Color litColor[3];	// store lit color. for constant color, the first store it
-								// for gouraud color, store 3 vertex colors
 			Texture* texture;
 			int materialId;
 
@@ -160,11 +136,6 @@ namespace DoPixel
 			{
 				attr = poly.attr;
 				state = poly.state;
-				color = poly.color;
-
-				litColor[0] = poly.litColor[0];
-				litColor[1] = poly.litColor[1];
-				litColor[2] = poly.litColor[2];
 				
 				texture = poly.texture;
 				materialId = poly.materialId;
@@ -293,11 +264,11 @@ namespace DoPixel
 			void Lighting(const Camera& camera, const std::vector<Light>& lights);
 
 			// Render
-			void RenderWire(const Device& device) const;
+			void RenderWire(Device& device) const;
 
-			void RenderSolid(const Device& device) const;
+			void RenderSolid(Device& device) const;
 
-			void RenderGouraud(const Device& device) const;
+			void RenderGouraud(Device& device) const;
 		};
 
 		class RenderList
@@ -348,11 +319,11 @@ namespace DoPixel
 			void Lighting(const Camera& camera, const std::vector<Light>& lights);
 
 			// Render
-			void RenderWire(const Device& device) const;
+			void RenderWire(Device& device) const;
 
-			void RenderSolid(const Device& device) const;
+			void RenderSolid(Device& device) const;
 
-			void RenderGouraud(const Device& device) const;
+			void RenderGouraud(Device& device) const;
 		};
 
 		// Transformation & Lighting
@@ -362,8 +333,20 @@ namespace DoPixel
 			static void Lighting(const Camera& camera, const std::vector<Light>& lights, Poly& poly);
 
 			static void Lighting(const Camera& camera, const std::vector<Light>& lights, PolyFace& polyFace);
+
+			static void SetLighting(bool lighting) { s_isLighting = lighting; }
 		private:
-			static void InternalLighting(Color* litColor, const Camera& camera, const std::vector<Light>& lights, int shadeType, const Vertex& vertex0, const Vertex& vertex1, const Vertex& vertex2, const Color& color);
+			static void InternalLighting(const Camera& camera, const std::vector<Light>& lights, int shadeType, Vertex& vertex0, Vertex& vertex1, Vertex& vertex2);
+
+			static void InfiniteLightLit(float& rLit, float& gLit, float& bLit, Color color, const Light& light, const Vector4f& n);
+
+			static void PointLightLit(float& rLit, float& gLit, float& bLit, Color color, const Light& light, const Vector4f& p, const Vector4f& n);
+
+			static void SpotLight1Lit(float& rLit, float& gLit, float& bLit, Color color, const Light& light, const Vector4f& p, const Vector4f& n);
+
+			static void SpotLight2Lit(float& rLit, float& gLit, float& bLit, Color color, const Light& light, const Vector4f& p, const Vector4f& n);
+
+			static bool s_isLighting;
 		};
 	}
 }

@@ -116,28 +116,31 @@ namespace DoPixel
 				if (!fileParser.GetLine(strLine))
 					return false;
 
+				Poly& poly = obj.pList[i];
+
 				// Assume each ploy is triangle
-				sscanf_s(strLine.c_str(), "%s %d %d %d %d", tmp, sizeof(tmp), &polyNumVerts, &obj.pList[i].vert[0], &obj.pList[i].vert[1], &obj.pList[i].vert[2]);
+				sscanf_s(strLine.c_str(), "%s %d %d %d %d", tmp, sizeof(tmp), &polyNumVerts, &poly.vert[0], &poly.vert[1], &poly.vert[2]);
 				if (tmp[0] == '0' && toupper(tmp[1]) == 'X')
 					sscanf_s(tmp, "%x", &polySurfaceDesc);
 				else
 					polySurfaceDesc = atoi(tmp);
 
 				// Let ploy vertex list be object vertex list 
-				obj.pList[i].vlist = obj.vListLocal;
+				poly.vlist = obj.vListLocal;
 
-				obj.pList[i].clist = obj.coordlist;
+				poly.clist = obj.coordlist;
 
 				// Analyze ploy surface desc
 
 				// Side
 				if (polySurfaceDesc & PLX_2SIDE_FLAG)
-					obj.pList[i].attr |= POLY_ATTR_2SIDE;
+					poly.attr |= POLY_ATTR_2SIDE;
 
 				// Color
+				Color color;
 				if (polySurfaceDesc & PLX_COLOR_MODE_RGB_FLAG)
 				{
-					obj.pList[i].attr |= POLY_ATTR_RGB32;
+					poly.attr |= POLY_ATTR_RGB32;
 
 					int red = ((polySurfaceDesc & 0x0f00) >> 8);
 					int green = ((polySurfaceDesc & 0x00f0) >> 4);
@@ -145,49 +148,55 @@ namespace DoPixel
 
 					// In file. RGB is 4.4.4, in virtual color system convert 8.8.8 to 5.5.5 or 5.5.6
 					// So, 4.4.4 -> 8.8.8
-					obj.pList[i].color = Color((unsigned char)red, (unsigned char)green, (unsigned char)blue);
-					obj.pList[i].litColor[0] = obj.pList[i].color;
+					color = Color((unsigned char)red, (unsigned char)green, (unsigned char)blue);
 				}
 				else
 				{
 					//assert(false && "no support for 8-bit color");
-					obj.pList[i].attr |= POLY_ATTR_8BITCOLOR;
-					obj.pList[i].color = Color(polySurfaceDesc & 0x00ff);
-					obj.pList[i].litColor[0] = obj.pList[i].color;
+					poly.attr |= POLY_ATTR_8BITCOLOR;
+					color = Color(polySurfaceDesc & 0x00ff);
 				}
+
+				// set poly color to vertex color
+				Vertex& v0 = obj.vListLocal[poly.vert[0]];
+				Vertex& v1 = obj.vListLocal[poly.vert[1]];
+				Vertex& v2 = obj.vListLocal[poly.vert[2]];
+				v0.color = color;
+				v1.color = color;
+				v2.color = color;
 
 				int shadeMode = (polySurfaceDesc & PLX_SHADE_MODE_MASK);
 				switch (shadeMode)
 				{
 				case PLX_SHADE_MODE_PURE_FLAG:
-					obj.pList[i].attr |= POLY_ATTR_SHADE_PURE;
+					poly.attr |= POLY_ATTR_SHADE_PURE;
 					break;
 				case PLX_SHADE_MODE_FLAT_FLAG:
-					obj.pList[i].attr |= POLY_ATTR_SHADE_FLAT;
+					poly.attr |= POLY_ATTR_SHADE_FLAT;
 					break;
 				case PLX_SHADE_MODE_GUARD_FLAG:
 					{
-						obj.pList[i].attr |= POLY_ATTR_SHADE_GOURAUD;
+						poly.attr |= POLY_ATTR_SHADE_GOURAUD;
 						// set vertex need normals
-						obj.vListLocal[obj.pList[i].vert[0]].attr |= Vertex::Attr_Normal;
-						obj.vListLocal[obj.pList[i].vert[1]].attr |= Vertex::Attr_Normal;
-						obj.vListLocal[obj.pList[i].vert[2]].attr |= Vertex::Attr_Normal;
+						v0.attr |= Vertex::Attr_Normal;
+						v1.attr |= Vertex::Attr_Normal;
+						v2.attr |= Vertex::Attr_Normal;
 					}
 					break;
 				case PLX_SHADE_MODE_PHONG_FLAG:
 					{
-						obj.pList[i].attr |= POLY_ATTR_SHADE_PHONG;
+						poly.attr |= POLY_ATTR_SHADE_PHONG;
 						// set vertex need normals
-						obj.vListLocal[obj.pList[i].vert[0]].attr |= Vertex::Attr_Normal;
-						obj.vListLocal[obj.pList[i].vert[1]].attr |= Vertex::Attr_Normal;
-						obj.vListLocal[obj.pList[i].vert[2]].attr |= Vertex::Attr_Normal;
+						v0.attr |= Vertex::Attr_Normal;
+						v1.attr |= Vertex::Attr_Normal;
+						v2.attr |= Vertex::Attr_Normal;
 					}
 					break;
 				default:
 					break;
 				}
 
-				obj.pList[i].state = POLY_STATE_ACTIVE;
+				poly.state = POLY_STATE_ACTIVE;
 			}
 
 			obj.ComputeVertexNormals();
@@ -312,7 +321,7 @@ namespace DoPixel
 					y *= scale.y;
 					z *= scale.z;
 
-					obj.vListLocal[i].v = Vector4f(x, y, z, 1);
+					obj.vListLocal[i].p = Vector4f(x, y, z, 1);
 					obj.vListLocal[i].attr |= Vertex::Attr_Point;
 					++i;
 				}
@@ -368,9 +377,17 @@ namespace DoPixel
 
 						a = 255;
 
-						poly.color = Color((unsigned char)r, (unsigned char)g, (unsigned char)b, (unsigned char)a);
+						Color color((unsigned char)r, (unsigned char)g, (unsigned char)b, (unsigned char)a);
+
+						// set poly color to vertex color
+						Vertex& v0 = obj.vListLocal[poly.vert[0]];
+						Vertex& v1 = obj.vListLocal[poly.vert[1]];
+						Vertex& v2 = obj.vListLocal[poly.vert[2]];
+						v0.color = color;
+						v1.color = color;
+						v2.color = color;
+
 						poly.attr |= POLY_ATTR_RGB32;
-						poly.litColor[0] = poly.color;
 					}
 
 					// Vertex overrides
@@ -619,42 +636,42 @@ namespace DoPixel
 					auto y = parser.GetMatchedVal<float>(1);
 					auto z = parser.GetMatchedVal<float>(2);
 
-					object.vListLocal[i].v = Vector4f(x, y, z, 1);
+					object.vListLocal[i].p = Vector4f(x, y, z, 1);
 				
 					// Since trueSpace do not change vertex position when move or rotation for keep precision,
 					// We need to apply transform vertex		
 					
 					// transform
 					if ((vertexFlag & VERTEX_FLAGS_TRANSFORM_LOCAL) != 0)
-						object.vListLocal[i].v *= matrixLocal;
+						object.vListLocal[i].p *= matrixLocal;
 
 					if ((vertexFlag & VERTEX_FLAGS_TRANSFORM_LOCAL_WORLD) != 0)
-						object.vListLocal[i].v *= matrixWorld;
+						object.vListLocal[i].p *= matrixWorld;
 
 					// invert
 					if ((vertexFlag & VERTEX_FLAGS_INVERT_X) != 0)
-						object.vListLocal[i].v.x = -object.vListLocal[i].v.x;
+						object.vListLocal[i].x = -object.vListLocal[i].x;
 
 					if ((vertexFlag & VERTEX_FLAGS_INVERT_Y) != 0)
-						object.vListLocal[i].v.y = -object.vListLocal[i].v.y;
+						object.vListLocal[i].y = -object.vListLocal[i].y;
 
 					if ((vertexFlag & VERTEX_FLAGS_INVERT_Z) != 0)
-						object.vListLocal[i].v.z = -object.vListLocal[i].v.z;
+						object.vListLocal[i].z = -object.vListLocal[i].z;
 
 					// swap axes
 					if ((vertexFlag & VERTEX_FLAGS_SWAP_YZ) != 0)
-						Swap(object.vListLocal[i].v.y, object.vListLocal[i].v.z);
+						Swap(object.vListLocal[i].y, object.vListLocal[i].z);
 
 					if ((vertexFlag & VERTEX_FLAGS_SWAP_XZ) != 0)
-						Swap(object.vListLocal[i].v.x, object.vListLocal[i].v.z);
+						Swap(object.vListLocal[i].x, object.vListLocal[i].z);
 
 					if ((vertexFlag & VERTEX_FLAGS_SWAP_XY) != 0)
-						Swap(object.vListLocal[i].v.x, object.vListLocal[i].v.y);
+						Swap(object.vListLocal[i].x, object.vListLocal[i].y);
 
 					// scale vertices
-					object.vListLocal[i].v.x *= scale.x;
-					object.vListLocal[i].v.y *= scale.y;
-					object.vListLocal[i].v.z *= scale.z;
+					object.vListLocal[i].x *= scale.x;
+					object.vListLocal[i].y *= scale.y;
+					object.vListLocal[i].z *= scale.z;
 
 					object.vListLocal[i].attr |= Vertex::Attr_Point;
 
@@ -1003,7 +1020,10 @@ namespace DoPixel
 			// now that we finally have the material library loaded
 			for (int i = 0; i < object.numPolys; ++i)
 			{
-				auto& poly = object.pList[i];
+				Poly& poly = object.pList[i];
+				Vertex& v0 = object.vListLocal[poly.vert[0]];
+				Vertex& v1 = object.vListLocal[poly.vert[1]];
+				Vertex& v2 = object.vListLocal[poly.vert[2]];
 				
 				poly.attr |= POLY_ATTR_RGB32;
 				
@@ -1011,12 +1031,16 @@ namespace DoPixel
 				int materialId = polyMaterials[i];
 				const Material* material = MaterialManager::GetInstance().GetMaterial(materialId);
 				assert(material != nullptr);
-
-				// Fill color
+	
+				// set poly color to vertex color
+				Color color;				
 				if ((material->attr & Material::ATTR_SHADE_TEXTURE) != 0)
-					poly.color.Set(255, 255, 255);
+					color.Set(255, 255, 255);
 				else
-					poly.color = material->color;
+					color = material->color;
+				v0.color = color;
+				v1.color = color;
+				v2.color = color;
 				
 				// Fill shade model
 				if ((material->attr & Material::ATTR_SHADE_PURE))
@@ -1026,24 +1050,24 @@ namespace DoPixel
 				else if ((material->attr & Material::ATTR_SHADE_GOURAUD))
 				{
 					poly.attr |= POLY_ATTR_SHADE_GOURAUD;
-					object.vListLocal[poly.vert[0]].attr |= Vertex::Attr_Normal;
-					object.vListLocal[poly.vert[1]].attr |= Vertex::Attr_Normal;
-					object.vListLocal[poly.vert[2]].attr |= Vertex::Attr_Normal;
+					v0.attr |= Vertex::Attr_Normal;
+					v1.attr |= Vertex::Attr_Normal;
+					v2.attr |= Vertex::Attr_Normal;
 				}
 				else if ((material->attr & Material::ATTR_SHADE_PHONG))
 				{
 					poly.attr |= POLY_ATTR_SHADE_PHONG;
-					object.vListLocal[poly.vert[0]].attr |= Vertex::Attr_Normal;
-					object.vListLocal[poly.vert[1]].attr |= Vertex::Attr_Normal;
-					object.vListLocal[poly.vert[2]].attr |= Vertex::Attr_Normal;
+					v0.attr |= Vertex::Attr_Normal;
+					v1.attr |= Vertex::Attr_Normal;
+					v2.attr |= Vertex::Attr_Normal;
 				}
 				else if ((material->attr & Material::ATTR_SHADE_TEXTURE))
 				{
 					poly.attr |= POLY_ATTR_SHADE_TEXTURE;
 					poly.texture = object.texture;
-					object.vListLocal[poly.vert[0]].attr |= Vertex::Attr_Texture;
-					object.vListLocal[poly.vert[1]].attr |= Vertex::Attr_Texture;
-					object.vListLocal[poly.vert[2]].attr |= Vertex::Attr_Texture;
+					v0.attr |= Vertex::Attr_Texture;
+					v1.attr |= Vertex::Attr_Texture;
+					v2.attr |= Vertex::Attr_Texture;
 				}
 			}
 

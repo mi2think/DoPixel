@@ -152,7 +152,7 @@ namespace DoPixel
 				// now simply rotate each point of the mesh in local/model coordinates
 				for (int i = 0; i < totalVertices; ++i)
 				{
-					vListLocalHead[i].v *= m;
+					vListLocalHead[i].p *= m;
 					if ((vListLocalHead[i].attr & Vertex::Attr_Normal) != 0)
 					{
 						vListLocalHead[i].n *= m;
@@ -163,7 +163,7 @@ namespace DoPixel
 			{
 				for (int i = 0; i < numVertices; ++i)
 				{
-					vListLocal[i].v *= m;
+					vListLocal[i].p *= m;
 					if ((vListLocal[i].attr & Vertex::Attr_Normal) != 0)
 					{
 						vListLocal[i].n *= m;
@@ -216,7 +216,7 @@ namespace DoPixel
 				float totalRadius = 0;
 				for (int i = 0; i < count; ++i)
 				{
-					float distVertex = p[i].v.Length();
+					float distVertex = p[i].p.Length();
 					if (distVertex >= maxR)
 						maxR = distVertex;
 					totalRadius += distVertex;
@@ -301,23 +301,23 @@ namespace DoPixel
 
 		void Object::Transform(const Matrix44f& m, int transform, bool transformBase, bool allFrames)
 		{
-			auto fnTransfrom = [&m](Vertex* p, int count)
+			auto fnTransfrom = [&m](Vertex* v, int count)
 			{
-				for (int i = 0; i < count; ++i, ++p)
+				for (int i = 0; i < count; ++i, ++v)
 				{
-					p->v *= m;
-					if ((p->attr & Vertex::Attr_Normal) != 0)
-						p->n *= m;
+					v->p *= m;
+					if ((v->attr & Vertex::Attr_Normal) != 0)
+						v->n *= m;
 				}
 			};
 
-			auto fnTransfromTo = [&m](Vertex* p, Vertex* q, int count)
+			auto fnTransfromTo = [&m](Vertex* v1, Vertex* v2, int count)
 			{
-				for (int i = 0; i < count; ++i, ++p, ++q)
+				for (int i = 0; i < count; ++i, ++v1, ++v2)
 				{
-					q->v = p->v * m;
-					if ((p->attr & Vertex::Attr_Normal) != 0)
-						q->n = p->n * m;
+					v2->p = v1->p * m;
+					if ((v1->attr & Vertex::Attr_Normal) != 0)
+						v2->n = v1->n * m;
 				}
 			};
 
@@ -375,16 +375,17 @@ namespace DoPixel
 				{
 					for (int i = 0; i < totalVertices; ++i)
 					{
-						vListTransHead[i].v = vListLocalHead[i].v + worldPos;
-						// copy normal
-						vListTransHead[i].n = vListLocalHead[i].n;
+						// copy
+						vListTransHead[i] = vListLocalHead[i];
+						// update position
+						vListTransHead[i].p = vListLocalHead[i].p + worldPos;
 					}
 				}
 				else
 				{
 					for (int i = 0; i < totalVertices; ++i)
 					{
-						vListTransHead[i].v += worldPos;
+						vListTransHead[i].p += worldPos;
 					}
 				}
 			}
@@ -394,16 +395,17 @@ namespace DoPixel
 				{
 					for (int i = 0; i < numVertices; ++i)
 					{
-						vListTrans[i].v = vListLocal[i].v + worldPos;
-						// copy normal
-						vListTrans[i].n = vListLocal[i].n;
+						// copy
+						vListTransHead[i] = vListLocalHead[i];
+						// update position
+						vListTransHead[i].p = vListLocalHead[i].p + worldPos;
 					}
 				}
 				else
 				{
 					for (int i = 0; i < numVertices; ++i)
 					{
-						vListTrans[i].v += worldPos;
+						vListTrans[i].p += worldPos;
 					}
 				}
 			}
@@ -418,13 +420,14 @@ namespace DoPixel
 				0, 0, 1, 0,
 				worldPos.x, worldPos.y, worldPos.z, 1);
 			Transform(m, transform, true, allFrames);
+			// TODO: need copy other attrs from local to trans
 		}
 
 		void Object::WorldToCamera(const Camera& camera)
 		{
 			for (int i = 0; i < numVertices; ++i)
 			{
-				vListTrans[i].v *= camera.matrixCamera;
+				vListTrans[i].p *= camera.matrixCamera;
 			}
 		}
 
@@ -483,9 +486,7 @@ namespace DoPixel
 				if (! p || ! (p->state & POLY_STATE_ACTIVE))
 					continue;
 
-				p->state &= (~POLY_STATE_BACKFACE);
-				p->state &= (~POLY_STATE_CLIPPED);
-				p->state &= (~POLY_STATE_LIT);
+				p->ResetCull();
 			}
 		}
 
@@ -509,11 +510,11 @@ namespace DoPixel
 
 				// Calc Poly face normal vector
 				// u:p0->p1, v:p0->p2, n: uxv
-				Vector4f u = vListTrans[vi1].v - vListTrans[vi0].v;
-				Vector4f v = vListTrans[vi2].v - vListTrans[vi0].v;
+				Vector4f u = vListTrans[vi1].p - vListTrans[vi0].p;
+				Vector4f v = vListTrans[vi2].p - vListTrans[vi0].p;
 				Vector4f n = CrossProduct(u, v);
 
-				Vector4f view = camera.pos - vListTrans[vi0].v;
+				Vector4f view = camera.pos - vListTrans[vi0].p;
 				float dp = DotProduct(view, n);
 				if (dp <= 0.0f)
 					p->state |= POLY_STATE_BACKFACE;
@@ -559,7 +560,7 @@ namespace DoPixel
 		{
 			for (int i = 0; i < numVertices; ++i)
 			{
-				vListTrans[i].v /= vListTrans[i].w;
+				vListTrans[i].p /= vListTrans[i].w;
 			}
 		}
 
@@ -625,10 +626,12 @@ namespace DoPixel
 			}
 		}
 
-		void Object::RenderWire(const Device& device) const
+		void Object::RenderWire(Device& device) const
 		{
 			if (state & STATE_CULLED)
 				return;
+
+			device.SetRenderState(RS_FillMode, Fill_Wireframe);
 
 			for (int i = 0; i < numPolys; ++i)
 			{
@@ -642,16 +645,17 @@ namespace DoPixel
 				int i1 = p->vert[1];
 				int i2 = p->vert[2];
 
-				device.DrawLine(Point(vListTrans[i0].x, vListTrans[i0].y), Point(vListTrans[i1].x, vListTrans[i1].y), p->litColor[0]);
-				device.DrawLine(Point(vListTrans[i1].x, vListTrans[i1].y), Point(vListTrans[i2].x, vListTrans[i2].y), p->litColor[0]);
-				device.DrawLine(Point(vListTrans[i2].x, vListTrans[i2].y), Point(vListTrans[i0].x, vListTrans[i0].y), p->litColor[0]);
+				device.DrawTriangle(vListTrans[i0], vListTrans[i1], vListTrans[i2]);
 			}
 		}
 
-		void Object::RenderSolid(const Device& device) const
+		void Object::RenderSolid(Device& device) const
 		{
 			if (state & STATE_CULLED)
 				return;
+
+			device.SetRenderState(RS_FillMode, Fill_Solid);
+			device.SetRenderState(RS_ShadeMode, Shade_Flat);
 
 			for (int i = 0; i < numPolys; ++i)
 			{
@@ -664,14 +668,17 @@ namespace DoPixel
 				int i1 = p->vert[1];
 				int i2 = p->vert[2];
 
-				device.DrawTriangle(Point(vListTrans[i0].x, vListTrans[i0].y), Point(vListTrans[i1].x, vListTrans[i1].y), Point(vListTrans[i2].x, vListTrans[i2].y), p->litColor[0]);
+				device.DrawTriangle(vListTrans[i0], vListTrans[i1], vListTrans[i2]);
 			}
 		}
 
-		void Object::RenderGouraud(const Device& device) const
+		void Object::RenderGouraud(Device& device) const
 		{
 			if (state & STATE_CULLED)
 				return;
+
+			device.SetRenderState(RS_FillMode, Fill_Solid);
+			device.SetRenderState(RS_ShadeMode, Shade_Gouraud);
 
 			for (int i = 0; i < numPolys; ++i)
 			{
@@ -684,7 +691,7 @@ namespace DoPixel
 				int i1 = p->vert[1];
 				int i2 = p->vert[2];
 
-				device.DrawTriangle(Point(vListTrans[i0].x, vListTrans[i0].y), Point(vListTrans[i1].x, vListTrans[i1].y), Point(vListTrans[i2].x, vListTrans[i2].y), p->litColor[0], p->litColor[1], p->litColor[2]);
+				device.DrawTriangle(vListTrans[i0], vListTrans[i1], vListTrans[i2]);
 			}
 		}
 
@@ -793,17 +800,17 @@ namespace DoPixel
 					switch (transform)
 					{
 					case TRANSFORM_LOCAL_ONLY:
-						pf->vlist[j].v *= m;
+						pf->vlist[j].p *= m;
 						if ((pf->vlist[j].attr & Vertex::Attr_Normal) != 0)
 							pf->vlist[j].n *= m;
 						break;
 					case TRANSFORM_TRANS_ONLY:
-						pf->tlist[j].v *= m;
+						pf->tlist[j].p *= m;
 						if ((pf->tlist[j].attr & Vertex::Attr_Normal) != 0)
 							pf->tlist[j].n *= m;
 						break;
 					case TRANSFORM_LOCAL_TO_TRANS:
-						pf->tlist[j].v = pf->vlist[j].v * m;
+						pf->tlist[j].p = pf->vlist[j].p * m;
 						if ((pf->vlist[j].attr & Vertex::Attr_Normal) != 0)
 							pf->tlist[j].n = pf->vlist[j].n * m;
 						break;
@@ -827,9 +834,9 @@ namespace DoPixel
 				for (int j = 0; j < 3; ++j)
 				{
 					if (transform == TRANSFORM_LOCAL_TO_TRANS)
-						pf->tlist[j].v = pf->vlist[j].v + worldPos;
+						pf->tlist[j].p = pf->vlist[j].p + worldPos;
 					else
-						pf->tlist[j].v += worldPos;
+						pf->tlist[j].p += worldPos;
 				}
 			}
 		}
@@ -853,7 +860,7 @@ namespace DoPixel
 
 				for (int j = 0; j < 3; ++j)
 				{
-					pf->tlist[j].v *= camera.matrixCamera;
+					pf->tlist[j].p *= camera.matrixCamera;
 				}
 			}
 		}
@@ -898,11 +905,11 @@ namespace DoPixel
 					continue;
 				
 				// Calc Poly face normal vector
-				Vector4f u = pf->tlist[1].v - pf->tlist[0].v;
-				Vector4f v = pf->tlist[2].v - pf->tlist[0].v;
+				Vector4f u = pf->tlist[1].p - pf->tlist[0].p;
+				Vector4f v = pf->tlist[2].p - pf->tlist[0].p;
 				Vector4f n = CrossProduct(u, v);
 
-				Vector4f view = camera.pos - pf->tlist[0].v;
+				Vector4f view = camera.pos - pf->tlist[0].p;
 
 				float dp = DotProduct(view, n);
 				if (dp <= 0.0f)
@@ -962,7 +969,7 @@ namespace DoPixel
 
 				for (int j = 0; j < 3; ++j)
 				{
-					pf->tlist[j].v /= pf->tlist[j].w;
+					pf->tlist[j].p /= pf->tlist[j].w;
 				}
 			}
 		}
@@ -1031,45 +1038,53 @@ namespace DoPixel
 			}
 		}
 
-		void RenderList::RenderWire(const Device& device) const
+		void RenderList::RenderWire(Device& device) const
 		{
+			device.SetRenderState(RS_FillMode, Fill_Wireframe);
+
 			for (int i = 0; i < numPolyFaces; ++i)
 			{
 				PolyFace* pf = pPolyFace[i];
 				if (! pf || ! (pf->state & POLY_STATE_ACTIVE) || (pf->state & POLY_STATE_CLIPPED) || (pf->state & POLY_STATE_BACKFACE))
 					continue;
 
-				device.DrawLine(Point(pf->tlist[0].x, pf->tlist[0].y), Point(pf->tlist[1].x, pf->tlist[1].y), pf->litColor[0]);
-				device.DrawLine(Point(pf->tlist[1].x, pf->tlist[1].y), Point(pf->tlist[2].x, pf->tlist[2].y), pf->litColor[0]);
-				device.DrawLine(Point(pf->tlist[2].x, pf->tlist[2].y), Point(pf->tlist[0].x, pf->tlist[0].y), pf->litColor[0]);
+				device.DrawTriangle(pf->tlist[0], pf->tlist[1], pf->tlist[2]);
 			}
 		}
 
-		void RenderList::RenderSolid(const Device& device) const
+		void RenderList::RenderSolid(Device& device) const
 		{
+			device.SetRenderState(RS_FillMode, Fill_Solid);
+			device.SetRenderState(RS_ShadeMode, Shade_Flat);
+
 			for (int i = 0; i < numPolyFaces; ++i)
 			{
 				PolyFace* pf = pPolyFace[i];
 				if (!pf || !(pf->state & POLY_STATE_ACTIVE) || (pf->state & POLY_STATE_CLIPPED) || (pf->state & POLY_STATE_BACKFACE))
 					continue;
 
-				device.DrawTriangle(Point(pf->tlist[0].x, pf->tlist[0].y), Point(pf->tlist[1].x, pf->tlist[1].y), Point(pf->tlist[2].x, pf->tlist[2].y), pf->litColor[0]);
+				device.DrawTriangle(pf->tlist[0], pf->tlist[1], pf->tlist[2]);
 			}
 		}
 
-		void RenderList::RenderGouraud(const Device& device) const
+		void RenderList::RenderGouraud(Device& device) const
 		{
+			device.SetRenderState(RS_FillMode, Fill_Solid);
+			device.SetRenderState(RS_ShadeMode, Shade_Gouraud);
+
 			for (int i = 0; i < numPolyFaces; ++i)
 			{
 				PolyFace* pf = pPolyFace[i];
 				if (!pf || !(pf->state & POLY_STATE_ACTIVE) || (pf->state & POLY_STATE_CLIPPED) || (pf->state & POLY_STATE_BACKFACE))
 					continue;
 
-				device.DrawTriangle(Point(pf->tlist[0].x, pf->tlist[0].y), Point(pf->tlist[1].x, pf->tlist[1].y), Point(pf->tlist[2].x, pf->tlist[2].y), pf->litColor[0], pf->litColor[1], pf->litColor[2]);
+				device.DrawTriangle(pf->tlist[0], pf->tlist[1], pf->tlist[2]);
 			}
 		}
 
 		//////////////////////////////////////////////////////////////////////////
+		bool TLBase::s_isLighting = false;
+
 		void TLBase::Lighting(const Camera& camera, const std::vector<Light>& lights, Poly& poly)
 		{
 			poly.state |= POLY_STATE_LIT;
@@ -1078,159 +1093,25 @@ namespace DoPixel
 			int i1 = poly.vert[1];
 			int i2 = poly.vert[2];
 
-			InternalLighting(poly.litColor, camera, lights, poly.attr, poly.vlist[i0], poly.vlist[i1], poly.vlist[i2], poly.color);
+			InternalLighting(camera, lights, poly.attr, poly.vlist[i0], poly.vlist[i1], poly.vlist[i2]);
 		}
 
 		void TLBase::Lighting(const Camera& camera, const std::vector<Light>& lights, PolyFace& polyFace)
 		{
 			polyFace.state |= POLY_STATE_LIT;
 
-			InternalLighting(polyFace.litColor, camera, lights, polyFace.attr, polyFace.tlist[0], polyFace.tlist[1], polyFace.tlist[2], polyFace.color);
+			InternalLighting(camera, lights, polyFace.attr, polyFace.tlist[0], polyFace.tlist[1], polyFace.tlist[2]);
 		}
 
 		// Now just calc diffuse light model.
 		// Rsdiffuse: diffuse color of material, assume every surface has a material
 		// Idiffuse: intensity of diffuse color of light.
 
-		void TLBase::InternalLighting(Color* litColor, const Camera& camera, const std::vector<Light>& lights, int shadeType, const Vertex& vertex0, const Vertex& vertex1, const Vertex& vertex2, const Color& color)
+		void TLBase::InternalLighting(const Camera& camera, const std::vector<Light>& lights, int shadeType, Vertex& vertex0, Vertex& vertex1, Vertex& vertex2)
 		{
-			float rBase = color.r;
-			float gBase = color.g;
-			float bBase = color.b;
-
-			const Vector4f& v0 = vertex0.v;
-			const Vector4f& v1 = vertex1.v;
-			const Vector4f& v2 = vertex2.v;
-
-			// Normal vector
-			Vector4f u = v1 - v0;
-			Vector4f v = v2 - v0;
-			Vector4f n = CrossProduct(u, v);
-			n.Normalize();
-
-			// Compute lit
-			auto fnInfiniteLightLit = [&rBase, &gBase, &bBase](float& rSum, float& gSum, float& bSum, const Light& light, const Vector4f& n)
-			{
-				assert(light.attr == Light::ATTR_INFINITE);
-
-				// infinite lighting, we need the surface normal, and the direction of the light
-				// but no longer to compute normal or length, we already have the vertex normal and it's length is 1.0
-
-				// Infinite light:
-				// I(d)dir = I0dir * Cldir
-
-				// diffuse model
-				// Itotald = Rsdiffuse * Idiffuse * (n . l)
-
-				float dp = DotProduct(n, light.dir);
-				if (dp > 0)
-				{
-					rSum += light.color.r * rBase * dp / 256;
-					gSum += light.color.g * gBase * dp / 256;
-					bSum += light.color.b * bBase * dp / 256;
-				}
-			};
-
-			auto fnPointLightLit = [&rBase, &gBase, &bBase](float& rSum, float& gSum, float& bSum, const Light& light, const Vector4f& v, const Vector4f& n)
-			{
-				assert(light.attr == Light::ATTR_POINT);
-
-				// Point light, So need know the the normal vector of poly (n),
-				// the dir of light (l) and the distance between light & poly (d)
-
-				// Point light: 
-				// I(d)point  = I0point  * Clpoint  / (kc + kl * d + kq * d * d)
-				// Where d = |p - s|
-
-				// diffuse model
-				// Itotald = Rsdiffuse * Idiffuse * (n . l)
-
-				Vector4f l = light.pos - v;
-				float dp = DotProduct(n, l);
-				if (dp > 0)
-				{
-					float d = l.Length();
-					float dd = l.LengthSQ();
-					float k = light.kc + light.kl * d + light.kq * dd;
-
-					// We need to divide d since l isn't unit vector
-					float a = dp / (k * d);
-
-					rSum += light.color.r * rBase * a / 256;
-					gSum += light.color.g * gBase * a / 256;
-					bSum += light.color.b * bBase * a / 256;
-				}
-			};
-
-			auto fnSpotLight1Lit = [&rBase, &gBase, &bBase](float& rSum, float& gSum, float& bSum, const Light& light, const Vector4f& v, const Vector4f& n)
-			{
-				assert(light.attr == Light::ATTR_SPOTLIGHT1);
-
-				// Simple spot light, using point light with dir for simulate spot light
-				// Simple model: I(d)point = I0point  * Clpoint  / (kc + kl * d + kq * d * d)
-
-				// diffuse model
-				// Itotald = Rsdiffuse * Idiffuse * (n . l)
-
-				// Note: using direction of light, not l
-
-				float dp = DotProduct(n, light.dir);
-				if (dp > 0)
-				{
-					Vector4f l = light.pos - v;
-					float d = l.Length();
-					float dd = l.LengthSQ();
-					float k = light.kc + light.kl * d + light.kq * dd;
-
-					float a = dp / k;
-
-					rSum += light.color.r * rBase * a / 256;
-					gSum += light.color.g * gBase * a / 256;
-					bSum += light.color.b * bBase * a / 256;
-				}
-			};
-
-			auto fnSpotLight2Lit = [&rBase, &gBase, &bBase](float& rSum, float& gSum, float& bSum, const Light& light, const Vector4f& v, const Vector4f& n)
-			{
-				assert(light.attr == Light::ATTR_SPOTLIGHT2);
-
-				// Simple spot light, do not distinguish umbra & penumbra
-				// Simple model: I(d)spotlight = IOspotlight * Clsportlight * MAX(cos theta, 0)^pf /  (Kc + kl * d + kq * d * d)
-				// theta: angle between dir of light and the vector s to light
-
-				// diffuse model
-				// Itotald = Rsdiffuse * Idiffuse * (n . l)
-
-				// Note: using direction of light, not l
-
-				float dp = DotProduct(n, light.dir);
-				if (dp > 0)
-				{
-					// compute vector from light to surface (different from l which IS the light dir)
-					Vector4f s = v - light.pos;
-					float d = s.Length();
-
-					// compute spot light term (s . l), for calc cos(theta), which theta is angle between s(light to surface) and l(light.dir)
-					float dpsl = DotProduct(s, light.dir) / d;
-					if (dpsl > 0)
-					{
-						float dd = s.LengthSQ();
-						float k = light.kc + light.kl * d + light.kq * dd;
-
-						// (s . l) ^ pf
-						float dpsl_exp = dpsl;
-						int i_exp = 1;
-						while ((i_exp++) < int(light.pf))
-							dpsl_exp *= dpsl;
-
-						float a = dp * dpsl_exp / k;
-
-						rSum += light.color.r * rBase * a / 256;
-						gSum += light.color.g * gBase * a / 256;
-						bSum += light.color.b * bBase * a / 256;
-					}
-				}
-			};
+			const Vector4f& p0 = vertex0.p;
+			const Vector4f& p1 = vertex1.p;
+			const Vector4f& p2 = vertex2.p;
 
 			if ((shadeType & POLY_ATTR_SHADE_FLAT) != 0)
 			{
@@ -1239,6 +1120,17 @@ namespace DoPixel
 				float gSum = 0;
 				float bSum = 0;
 
+				// has lighted
+				if ((vertex0.attr & Vertex::Attr_Light) != 0)
+					return;
+
+				// Normal vector
+				Vector4f u = p1 - p0;
+				Vector4f v = p2 - p0;
+				Vector4f n = CrossProduct(u, v);
+				n.Normalize();
+
+				// lit
 				for (const auto& light : lights)
 				{
 					if (light.state != Light::STATE_ON)
@@ -1248,22 +1140,22 @@ namespace DoPixel
 					{
 					case Light::ATTR_AMBIENT:
 						{
-							rSum += light.color.r * rBase / 256;
-							gSum += light.color.g * gBase / 256;
-							bSum += light.color.b * bBase / 256;
+							rSum += (float)light.color.r * vertex0.color.r / 256;
+							gSum += (float)light.color.g * vertex0.color.g / 256;
+							bSum += (float)light.color.b * vertex0.color.b / 256;
 						}
 						break;
 					case Light::ATTR_INFINITE:
-						fnInfiniteLightLit(rSum, gSum, bSum, light, n);
+						InfiniteLightLit(rSum, gSum, bSum, vertex0.color, light, n);
 						break;
 					case Light::ATTR_POINT:
-						fnPointLightLit(rSum, gSum, bSum, light, v0, n);
+						PointLightLit(rSum, gSum, bSum, vertex0.color, light, p0, n);
 						break;
 					case Light::ATTR_SPOTLIGHT1:
-						fnSpotLight1Lit(rSum, gSum, bSum, light, v0, n);
+						SpotLight1Lit(rSum, gSum, bSum, vertex0.color, light, p0, n);
 						break;
 					case Light::ATTR_SPOTLIGHT2:
-						fnSpotLight2Lit(rSum, gSum, bSum, light, v0, n);
+						SpotLight2Lit(rSum, gSum, bSum, vertex0.color, light, p0, n);
 						break;
 					}
 				}
@@ -1272,7 +1164,12 @@ namespace DoPixel
 				gSum = Math::Clamp(gSum, 0.0f, 255.0f);
 				bSum = Math::Clamp(bSum, 0.0f, 255.0f);
 
-				litColor[0] = Color((unsigned char)rSum, (unsigned char)gSum, (unsigned char)bSum);
+				vertex0.litColor = Color((unsigned char)rSum, (unsigned char)gSum, (unsigned char)bSum);
+				vertex1.litColor = vertex0.litColor;
+				vertex2.litColor = vertex0.litColor;
+				
+				vertex0.attr |= Vertex::Attr_Light;
+				// since vertex1, vertex2 may also belong to other poly, it may need lit
 			}
 			else if ((shadeType & POLY_ATTR_SHADE_GOURAUD) != 0)
 			{
@@ -1293,10 +1190,14 @@ namespace DoPixel
 				float gSum2 = 0;
 				float bSum2 = 0;
 
-				float ri = 0;
-				float gi = 0;
-				float bi = 0;
+				// has lighted
+				bool hasV0Lit = ((vertex0.attr & Vertex::Attr_Light) != 0);
+				bool hasV1Lit = ((vertex1.attr & Vertex::Attr_Light) != 0);
+				bool hasV2Lit = ((vertex2.attr & Vertex::Attr_Light) != 0);
+				if (hasV0Lit && hasV1Lit && hasV2Lit)
+					return;
 
+				// lit
 				for (const auto& light : lights)
 				{
 					if (light.state != Light::STATE_ON)
@@ -1306,62 +1207,78 @@ namespace DoPixel
 					{
 					case Light::ATTR_AMBIENT:
 						{
-							ri = light.color.r * rBase / 256;
-							gi = light.color.g * gBase / 256;
-							bi = light.color.b * bBase / 256;
+							if (!hasV0Lit)
+							{
+								rSum0 += (float)light.color.r * vertex0.color.r / 256;
+								gSum0 += (float)light.color.r * vertex0.color.g / 256;
+								bSum0 += (float)light.color.r * vertex0.color.b / 256;
+							}
 
-							// ambient light has the same affect on each vertex
-							rSum0 += ri;
-							gSum0 += gi;
-							bSum0 += bi;
+							if (!hasV1Lit)
+							{
+								rSum1 += (float)light.color.r * vertex1.color.r / 256;
+								gSum1 += (float)light.color.r * vertex1.color.g / 256;
+								bSum1 += (float)light.color.r * vertex1.color.b / 256;
+							}
 
-							rSum1 += ri;
-							gSum1 += gi;
-							bSum1 += bi;
-
-							rSum2 += ri;
-							gSum2 += gi;
-							bSum2 += bi;
+							if (!hasV2Lit)
+							{
+								rSum2 += (float)light.color.r * vertex2.color.r / 256;
+								gSum2 += (float)light.color.r * vertex2.color.g / 256;
+								bSum2 += (float)light.color.r * vertex2.color.b / 256;
+							}
 						}
 						break;
 					case Light::ATTR_INFINITE:
 						{
 							// Vertex 0
-							fnInfiniteLightLit(rSum0, gSum0, bSum0, light, n0);
+							if (! hasV0Lit)
+								InfiniteLightLit(rSum0, gSum0, bSum0, vertex0.color, light, n0);
 							// Vertex 1
-							fnInfiniteLightLit(rSum1, gSum1, bSum1, light, n1);
+							if (! hasV1Lit)
+								InfiniteLightLit(rSum1, gSum1, bSum1, vertex1.color, light, n1);
 							// Vertex 2
-							fnInfiniteLightLit(rSum2, gSum2, bSum2, light, n2);
+							if (! hasV2Lit)
+								InfiniteLightLit(rSum2, gSum2, bSum2, vertex2.color, light, n2);
 						}
 						break;
 					case Light::ATTR_POINT:
 						{
 							// Vertex 0
-							fnPointLightLit(rSum0, gSum0, bSum0, light, v0, n0);
+							if (! hasV0Lit)
+								PointLightLit(rSum0, gSum0, bSum0, vertex0.color, light, p0, n0);
 							// Vertex 1
-							fnPointLightLit(rSum1, gSum1, bSum1, light, v1, n1);
+							if (! hasV1Lit)
+								PointLightLit(rSum1, gSum1, bSum1, vertex1.color, light, p1, n1);
 							// Vertex 2
-							fnPointLightLit(rSum2, gSum2, bSum2, light, v2, n2);
+							if (hasV2Lit)
+								PointLightLit(rSum2, gSum2, bSum2, vertex2.color, light, p2, n2);
 						}
 						break;
 					case Light::ATTR_SPOTLIGHT1:
 						{
 							// Vertex 0
-							fnSpotLight1Lit(rSum0, gSum0, bSum0, light, v0, n0);
+							if (! hasV0Lit)
+								SpotLight1Lit(rSum0, gSum0, bSum0, vertex0.color, light, p0, n0);
 							// Vertex 1
-							fnSpotLight1Lit(rSum1, gSum1, bSum1, light, v1, n1);
+							if (! hasV1Lit)
+								SpotLight1Lit(rSum1, gSum1, bSum1, vertex1.color, light, p1, n1);
 							// Vertex 2
-							fnSpotLight1Lit(rSum2, gSum2, bSum2, light, v2, n2);
+							if (! hasV2Lit)
+								SpotLight1Lit(rSum2, gSum2, bSum2, vertex2.color, light, p2, n2);
 						}
 						break;
 					case Light::ATTR_SPOTLIGHT2:
 						{
 							// Vertex 0
-							fnSpotLight2Lit(rSum0, gSum0, bSum0, light, v0, n0);
+							if (! hasV0Lit)
+								SpotLight2Lit(rSum0, gSum0, bSum0, vertex0.color, light, p0, n0);
 							// Vertex 1
-							fnSpotLight2Lit(rSum1, gSum1, bSum1, light, v1, n1);
+							if (! hasV1Lit)
+								SpotLight2Lit(rSum1, gSum1, bSum1, vertex1.color, light, p1, n1);
 							// Vertex 2
-							fnSpotLight2Lit(rSum2, gSum2, bSum2, light, v2, n2);
+							if (! hasV2Lit)
+								SpotLight2Lit(rSum2, gSum2, bSum2, vertex2.color, light, p2, n2);
 						}
 						break;
 					}
@@ -1379,14 +1296,143 @@ namespace DoPixel
 				gSum2 = Math::Clamp(gSum2, 0.0f, 255.0f);
 				bSum2 = Math::Clamp(bSum2, 0.0f, 255.0f);
 
-				litColor[0] = Color((unsigned char)rSum0, (unsigned char)gSum0, (unsigned char)bSum0);
-				litColor[1] = Color((unsigned char)rSum1, (unsigned char)gSum1, (unsigned char)bSum1);
-				litColor[2] = Color((unsigned char)rSum2, (unsigned char)gSum2, (unsigned char)bSum2);
+				vertex0.litColor = Color((unsigned char)rSum0, (unsigned char)gSum0, (unsigned char)bSum0);
+				vertex1.litColor = Color((unsigned char)rSum1, (unsigned char)gSum1, (unsigned char)bSum1);
+				vertex2.litColor = Color((unsigned char)rSum2, (unsigned char)gSum2, (unsigned char)bSum2);
+
+				vertex0.attr |= Vertex::Attr_Light;
+				vertex1.attr |= Vertex::Attr_Light;
+				vertex2.attr |= Vertex::Attr_Light;
 			}
 			else
 			{
 				// emmisive shading only, do nothing
-				litColor[0] = color;
+				vertex0.litColor = vertex0.color;
+				vertex1.litColor = vertex1.color;
+				vertex2.litColor = vertex2.color;
+			}
+		}
+
+		void TLBase::InfiniteLightLit(float& rLit, float& gLit, float& bLit, Color color, const Light& light, const Vector4f& n)
+		{
+			assert(light.attr == Light::ATTR_INFINITE);
+
+			// infinite lighting, we need the surface normal, and the direction of the light
+			// but no longer to compute normal or length, we already have the vertex normal and it's length is 1.0
+
+			// Infinite light:
+			// I(d)dir = I0dir * Cldir
+
+			// diffuse model
+			// Itotald = Rsdiffuse * Idiffuse * (n . l)
+
+			float dp = DotProduct(n, light.dir);
+			if (dp > 0)
+			{
+				rLit += light.color.r * color.r * dp / 256;
+				gLit += light.color.g * color.g * dp / 256;
+				bLit += light.color.b * color.b * dp / 256;
+			}
+		}
+
+		void TLBase::PointLightLit(float& rLit, float& gLit, float& bLit, Color color, const Light& light, const Vector4f& p, const Vector4f& n)
+		{
+			assert(light.attr == Light::ATTR_POINT);
+
+			// Point light, So need know the the normal vector of poly (n),
+			// the dir of light (l) and the distance between light & poly (d)
+
+			// Point light: 
+			// I(d)point  = I0point  * Clpoint  / (kc + kl * d + kq * d * d)
+			// Where d = |p - s|
+
+			// diffuse model
+			// Itotald = Rsdiffuse * Idiffuse * (n . l)
+
+			Vector4f l = light.pos - p;
+			float dp = DotProduct(n, l);
+			if (dp > 0)
+			{
+				float d = l.Length();
+				float dd = l.LengthSQ();
+				float k = light.kc + light.kl * d + light.kq * dd;
+
+				// We need to divide d since l isn't unit vector
+				float a = dp / (k * d);
+
+				rLit += light.color.r * color.r * a / 256;
+				gLit += light.color.g * color.g * a / 256;
+				bLit += light.color.b * color.b * a / 256;
+			}
+		}
+
+		void TLBase::SpotLight1Lit(float& rLit, float& gLit, float& bLit, Color color, const Light& light, const Vector4f& p, const Vector4f& n)
+		{
+			assert(light.attr == Light::ATTR_SPOTLIGHT1);
+
+			// Simple spot light, using point light with dir for simulate spot light
+			// Simple model: I(d)point = I0point  * Clpoint  / (kc + kl * d + kq * d * d)
+
+			// diffuse model
+			// Itotald = Rsdiffuse * Idiffuse * (n . l)
+
+			// Note: using direction of light, not l
+
+			float dp = DotProduct(n, light.dir);
+			if (dp > 0)
+			{
+				Vector4f l = light.pos - p;
+				float d = l.Length();
+				float dd = l.LengthSQ();
+				float k = light.kc + light.kl * d + light.kq * dd;
+
+				float a = dp / k;
+
+				rLit += light.color.r * color.r * a / 256;
+				gLit += light.color.g * color.g * a / 256;
+				bLit += light.color.b * color.b * a / 256;
+			}
+		}
+
+		void TLBase::SpotLight2Lit(float& rLit, float& gLit, float& bLit, Color color, const Light& light, const Vector4f& p, const Vector4f& n)
+		{
+			assert(light.attr == Light::ATTR_SPOTLIGHT2);
+
+			// Simple spot light, do not distinguish umbra & penumbra
+			// Simple model: I(d)spotlight = IOspotlight * Clsportlight * MAX(cos theta, 0)^pf /  (Kc + kl * d + kq * d * d)
+			// theta: angle between dir of light and the vector s to light
+
+			// diffuse model
+			// Itotald = Rsdiffuse * Idiffuse * (n . l)
+
+			// Note: using direction of light, not l
+
+			float dp = DotProduct(n, light.dir);
+			if (dp > 0)
+			{
+				// compute vector from light to surface (different from l which IS the light dir)
+				Vector4f s = p - light.pos;
+				float d = s.Length();
+
+				// compute spot light term (s . l), for calc cos(theta), which theta is angle between s(light to surface) and l(light.dir)
+				float dpsl = DotProduct(s, light.dir) / d;
+				if (dpsl > 0)
+				{
+					float dd = s.LengthSQ();
+					float k = light.kc + light.kl * d + light.kq * dd;
+
+					// (s . l) ^ pf
+					float dpsl_exp = dpsl;
+					int i_exp = 1;
+					while ((i_exp++) < int(light.pf))
+						dpsl_exp *= dpsl;
+
+					float a = dp * dpsl_exp / k;
+
+					rLit += light.color.r * color.r * a / 256;
+					gLit += light.color.g * color.g * a / 256;
+					bLit += light.color.b * color.b * a / 256;
+				}
 			}
 		}
 	}
