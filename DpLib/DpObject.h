@@ -106,9 +106,9 @@ namespace DoPixel
 				state &= (~POLY_STATE_CLIPPED);
 				state &= (~POLY_STATE_LIT);
 				// Reset vertex lit
-				vlist[vert[0]].attr &= (~Vertex::Attr_Light);
-				vlist[vert[1]].attr &= (~Vertex::Attr_Light);
-				vlist[vert[2]].attr &= (~Vertex::Attr_Light);
+				vlist[vert[0]].attr &= (~Vertex::Attr_Lit);
+				vlist[vert[1]].attr &= (~Vertex::Attr_Lit);
+				vlist[vert[2]].attr &= (~Vertex::Attr_Lit);
 			}
 		};
 

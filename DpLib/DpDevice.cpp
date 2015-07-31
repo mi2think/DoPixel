@@ -322,6 +322,7 @@ namespace DoPixel
 
 		void Device::DrawFlatTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
 		{
+			Color color = ((v0.attr & Vertex::Attr_Lit) != 0 ? v0.litColor : v0.color);
 			Point p0(v0.x, v0.y);
 			Point p1(v1.x, v1.y);
 			Point p2(v2.x, v2.y);
@@ -459,7 +460,7 @@ namespace DoPixel
 						unsigned char* p = buffer + xstart * bitsPerPixel;
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
 						{
-							*((unsigned int*)p) = v0.color.value;
+							*((unsigned int*)p) = color.value;
 						}
 
 						xs += dx_left;
@@ -506,7 +507,7 @@ namespace DoPixel
 						unsigned char* p = buffer + xstart * bitsPerPixel;
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
 						{
-							*((unsigned int*)p) = v0.color.value;
+							*((unsigned int*)p) = color.value;
 						}
 
 						xs += dx_left;
@@ -517,8 +518,8 @@ namespace DoPixel
 			else if (type == TypeGeneral)
 			{
 				// new point
-				float xnew = p0.x + (v2.x - p0.x) * (p1.y - p0.y) / (p2.y - p0.y);
-				float ynew = v1.y;
+				float xnew = p0.x + (p2.x - p0.x) * (p1.y - p0.y) / (p2.y - p0.y);
+				float ynew = p1.y;
 
 				float x1 = p0.x;
 				float y1 = p0.y;
@@ -633,7 +634,7 @@ namespace DoPixel
 						unsigned char* p = buffer + xstart * bitsPerPixel;
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
 						{
-							*((unsigned int*)p) = v0.color.value;
+							*((unsigned int*)p) = color.value;
 						}
 
 						xs += dx_left;
@@ -697,7 +698,7 @@ namespace DoPixel
 						unsigned char* p = buffer + xstart * bitsPerPixel;
 						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
 						{
-							*((unsigned int*)p) = v0.color.value;
+							*((unsigned int*)p) = color.value;
 						}
 
 						xs += dx_left;
@@ -717,9 +718,9 @@ namespace DoPixel
 				return;
 
 			// Sort p0, p1, p2 in ascending y order
-			Color c0 = v0.color;
-			Color c1 = v1.color;
-			Color c2 = v2.color;
+			Color c0 = ((v0.attr & Vertex::Attr_Lit) != 0 ? v0.litColor : v0.color);
+			Color c1 = ((v1.attr & Vertex::Attr_Lit) != 0 ? v1.litColor : v1.color);
+			Color c2 = ((v2.attr & Vertex::Attr_Lit) != 0 ? v2.litColor : v2.color);
 
 			if (p1.y < p0.y)
 			{

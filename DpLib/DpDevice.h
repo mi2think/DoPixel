@@ -50,7 +50,7 @@ namespace DoPixel
 				Attr_Point = 0x1,
 				Attr_Normal = 0x2,
 				Attr_Texture = 0x4,
-				Attr_Light = 0x8,
+				Attr_Lit = 0x8,
 			};
 
 			union

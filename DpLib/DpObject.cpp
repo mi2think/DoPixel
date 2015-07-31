@@ -1121,7 +1121,7 @@ namespace DoPixel
 				float bSum = 0;
 
 				// has lighted
-				if ((vertex0.attr & Vertex::Attr_Light) != 0)
+				if ((vertex0.attr & Vertex::Attr_Lit) != 0)
 					return;
 
 				// Normal vector
@@ -1168,7 +1168,7 @@ namespace DoPixel
 				vertex1.litColor = vertex0.litColor;
 				vertex2.litColor = vertex0.litColor;
 				
-				vertex0.attr |= Vertex::Attr_Light;
+				vertex0.attr |= Vertex::Attr_Lit;
 				// since vertex1, vertex2 may also belong to other poly, it may need lit
 			}
 			else if ((shadeType & POLY_ATTR_SHADE_GOURAUD) != 0)
@@ -1191,9 +1191,9 @@ namespace DoPixel
 				float bSum2 = 0;
 
 				// has lighted
-				bool hasV0Lit = ((vertex0.attr & Vertex::Attr_Light) != 0);
-				bool hasV1Lit = ((vertex1.attr & Vertex::Attr_Light) != 0);
-				bool hasV2Lit = ((vertex2.attr & Vertex::Attr_Light) != 0);
+				bool hasV0Lit = ((vertex0.attr & Vertex::Attr_Lit) != 0);
+				bool hasV1Lit = ((vertex1.attr & Vertex::Attr_Lit) != 0);
+				bool hasV2Lit = ((vertex2.attr & Vertex::Attr_Lit) != 0);
 				if (hasV0Lit && hasV1Lit && hasV2Lit)
 					return;
 
@@ -1300,9 +1300,9 @@ namespace DoPixel
 				vertex1.litColor = Color((unsigned char)rSum1, (unsigned char)gSum1, (unsigned char)bSum1);
 				vertex2.litColor = Color((unsigned char)rSum2, (unsigned char)gSum2, (unsigned char)bSum2);
 
-				vertex0.attr |= Vertex::Attr_Light;
-				vertex1.attr |= Vertex::Attr_Light;
-				vertex2.attr |= Vertex::Attr_Light;
+				vertex0.attr |= Vertex::Attr_Lit;
+				vertex1.attr |= Vertex::Attr_Lit;
+				vertex2.attr |= Vertex::Attr_Lit;
 			}
 			else
 			{
@@ -1310,6 +1310,9 @@ namespace DoPixel
 				vertex0.litColor = vertex0.color;
 				vertex1.litColor = vertex1.color;
 				vertex2.litColor = vertex2.color;
+
+				vertex0.attr |= Vertex::Attr_Lit;
+				// since vertex1, vertex2 may also belong to other poly, it may need lit
 			}
 		}
 
