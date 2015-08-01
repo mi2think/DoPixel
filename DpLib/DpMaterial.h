@@ -29,9 +29,18 @@ namespace DoPixel
 			void Load(const char* fileName);
 
 			void Release();
+
+			unsigned char* GetData() const { return data; }
+
+			int GetWidth() const { return width; }
+
+			int GetHeight() const { return height; }
+
+			inline void Sample(Color& color, float u, float v) const;
 		private:
 			std::string fileName;
 			unsigned char* data;
+
 			int width;
 			int height;
 		};

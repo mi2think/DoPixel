@@ -70,10 +70,6 @@ namespace DoPixel
 		{
 			int state;			// state status
 			int attr;
-	
-			//Color color;		// the color of poly
-			//Color litColor[3];	// store lit color. for constant color, the first store it
-			//					// for gouraud color, store 3 vertex colors
 
 			Texture* texture;
 			int materialId;

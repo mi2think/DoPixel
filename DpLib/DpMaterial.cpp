@@ -51,6 +51,16 @@ namespace DoPixel
 
 				int comp = 0;
 				data = stbi_load_from_memory(fileData, size, &width, &height, &comp, 4);
+
+				// Because stbi load it by [r g b a], we need convert it. :(
+				// r g b a -> a r g b
+				unsigned char* end = data + size;
+				for (unsigned char* p = data; p < end; p += 4)
+				{
+					unsigned char r = *p;
+					*p = *(p + 2);
+					*(p + 2) = r;
+				}
 			}
 		}
 
@@ -59,6 +69,18 @@ namespace DoPixel
 			height = 0;
 			width = 0;
 			free(data);
+		}
+
+		inline void Texture::Sample(Color& color, float u, float v) const
+		{
+			assert(u >= 0.0f && u <= 1.0f);
+			assert(v >= 0.0f && v <= 1.0f);
+
+			int x = int(u * (width - 1));
+			int y = int(v * (height - 1));
+
+			Color* p = (Color*)data;
+			color = *(p + y * width + x);
 		}
 	}
 }

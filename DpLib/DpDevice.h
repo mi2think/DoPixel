@@ -81,6 +81,7 @@ namespace DoPixel
 		};
 
 		class Color;
+		class Texture;
 
 		class Device
 		{
@@ -95,6 +96,8 @@ namespace DoPixel
 
 			void SetRenderState(RenderState rs, int value);
 
+			void SetTexture(Texture* texture) { this->texture = texture; }
+
 			// Clip line, using Cohen-Sutherland, return true if clipRect contain 
 			bool ClipLine(Point& pc0, Point& pc1, const Point& p0, const Point& p1) const;
 
@@ -106,14 +109,18 @@ namespace DoPixel
 
 			// Draw a triangle with now render state
 			void DrawTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+
 		private:
 			// Draw a flat triangle
 			void DrawFlatTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const;
 
 			// Draw a gouraud triangle
 			void DrawGouraudTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const;
-		private:
 
+			// Draw a textured triangle
+			void DrawTexturedTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const;
+
+		private:
 			unsigned char* frameBuffer;
 			int pitch;
 			int bitsPerPixel;
@@ -121,6 +128,7 @@ namespace DoPixel
 			
 			int fillMode;
 			int shadeMode;
+			Texture* texture;
 		};
 	}
 }
