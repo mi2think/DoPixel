@@ -1463,9 +1463,9 @@ namespace DoPixel
 				float dx_right;
 
 				// uv
-				Vector2f uv1 = v0.uv0;
-				Vector2f uv2 = v1.uv0;
-				Vector2f uv3 = v2.uv0;
+				Vector2f uv1 = p0.uv0;
+				Vector2f uv2 = p1.uv0;
+				Vector2f uv3 = p2.uv0;
 
 				float du_left;
 				float dv_left;
@@ -1716,9 +1716,9 @@ namespace DoPixel
 				float dx_right;;
 
 				// uv
-				Vector2f uv1 = v0.uv0;
-				Vector2f uv2 = v1.uv0;
-				Vector2f uv3 = v2.uv0;
+				Vector2f uv1 = p0.uv0;
+				Vector2f uv2 = p1.uv0;
+				Vector2f uv3 = p2.uv0;
 
 				float du_left;
 				float dv_left;

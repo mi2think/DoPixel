@@ -265,6 +265,8 @@ namespace DoPixel
 			void RenderSolid(Device& device) const;
 
 			void RenderGouraud(Device& device) const;
+
+			void RenderTexture(Device& device, Texture* texture) const;
 		};
 
 		class RenderList
@@ -320,6 +322,8 @@ namespace DoPixel
 			void RenderSolid(Device& device) const;
 
 			void RenderGouraud(Device& device) const;
+
+			void RenderTexture(Device& device, Texture* texture) const;
 		};
 
 		// Transformation & Lighting

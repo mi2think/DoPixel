@@ -67,6 +67,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GouraudWaterModel", "DpDemo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureCube", "DpDirectXDemo\TextureCube\TextureCube.vcxproj", "{182AB89A-105C-4635-BB98-BB98F2812C4D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureTriangle", "DpDemo\TextureTriangle\TextureTriangle.vcxproj", "{9C336BC5-9246-4956-A711-4AB21686A3CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -141,6 +143,10 @@ Global
 		{182AB89A-105C-4635-BB98-BB98F2812C4D}.Debug|Win32.Build.0 = Debug|Win32
 		{182AB89A-105C-4635-BB98-BB98F2812C4D}.Release|Win32.ActiveCfg = Release|Win32
 		{182AB89A-105C-4635-BB98-BB98F2812C4D}.Release|Win32.Build.0 = Release|Win32
+		{9C336BC5-9246-4956-A711-4AB21686A3CB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9C336BC5-9246-4956-A711-4AB21686A3CB}.Debug|Win32.Build.0 = Debug|Win32
+		{9C336BC5-9246-4956-A711-4AB21686A3CB}.Release|Win32.ActiveCfg = Release|Win32
+		{9C336BC5-9246-4956-A711-4AB21686A3CB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,5 +165,6 @@ Global
 		{23589E0E-1F74-427B-A953-7CF08B78FD8C} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{2CF8366B-662D-4E34-96FB-A45CED43948B} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
 		{182AB89A-105C-4635-BB98-BB98F2812C4D} = {C89F52F7-985A-47F7-9499-DE8C5780D304}
+		{9C336BC5-9246-4956-A711-4AB21686A3CB} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
 	EndGlobalSection
 EndGlobal

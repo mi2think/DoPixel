@@ -695,6 +695,29 @@ namespace DoPixel
 			}
 		}
 
+		void Object::RenderTexture(Device& device, Texture* texture) const
+		{
+			if (state & STATE_CULLED)
+				return;
+
+			device.SetRenderState(RS_FillMode, Fill_Solid);
+			device.SetTexture(texture);
+
+			for (int i = 0; i < numPolys; ++i)
+			{
+				const Poly* p = &pList[i];
+
+				if ((p->state & POLY_STATE_BACKFACE) || (p->state & POLY_STATE_CLIPPED))
+					continue;
+
+				int i0 = p->vert[0];
+				int i1 = p->vert[1];
+				int i2 = p->vert[2];
+
+				device.DrawTriangle(vListTrans[i0], vListTrans[i1], vListTrans[i2]);
+			}
+		}
+
 		//////////////////////////////////////////////////////////////////////////
 
 		bool RenderList::InsertPolyFace(const PolyFace& polyFace)
@@ -1071,6 +1094,21 @@ namespace DoPixel
 		{
 			device.SetRenderState(RS_FillMode, Fill_Solid);
 			device.SetRenderState(RS_ShadeMode, Shade_Gouraud);
+
+			for (int i = 0; i < numPolyFaces; ++i)
+			{
+				PolyFace* pf = pPolyFace[i];
+				if (!pf || !(pf->state & POLY_STATE_ACTIVE) || (pf->state & POLY_STATE_CLIPPED) || (pf->state & POLY_STATE_BACKFACE))
+					continue;
+
+				device.DrawTriangle(pf->tlist[0], pf->tlist[1], pf->tlist[2]);
+			}
+		}
+
+		void RenderList::RenderTexture(Device& device, Texture* texture) const
+		{
+			device.SetRenderState(RS_FillMode, Fill_Solid);
+			device.SetTexture(texture);
 
 			for (int i = 0; i < numPolyFaces; ++i)
 			{
