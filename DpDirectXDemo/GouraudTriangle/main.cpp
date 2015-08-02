@@ -28,6 +28,8 @@ public:
 	void Run(float fElapsedTime);
 
 	void Render(float fElapsedTime);
+
+	void Release();
 private:
 	IDirect3DVertexBuffer9*  vertexBuffer;
 	D3DXMATRIX worldMatrix;
@@ -95,6 +97,11 @@ void GouraudTriangle::Render(float fElapsedTime)
 	// draw the triangle with grouraud shading
 	device->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
 	device->DrawPrimitive(D3DPT_TRIANGLELIST, 3, 3);
+}
+
+void GouraudTriangle::Release()
+{
+	SAFE_RELEASE(vertexBuffer);
 }
 
 int main()

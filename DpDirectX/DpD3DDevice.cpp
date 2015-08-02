@@ -156,6 +156,10 @@ namespace DoPixel
 			d3dpp.Windowed = bWindow ? TRUE : FALSE;
 			d3dpp.hDeviceWindow = hwnd;
 			d3dpp.BackBufferFormat = displayMode.Format;
+			d3dpp.EnableAutoDepthStencil = TRUE;
+			d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
+			//d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
+			//d3dpp.MultiSampleQuality = 0;
 			if (bWindow)
 			{
 				d3dpp.BackBufferCount = 2;
@@ -243,7 +247,11 @@ namespace DoPixel
 
 			m_pD3DD->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-			m_pD3DD->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+			m_pD3DD->SetRenderState(D3DRS_ZENABLE, TRUE);
+			m_pD3DD->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+			m_pD3DD->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
+			m_pD3DD->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+
 			m_pD3DD->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 			m_pD3DD->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 

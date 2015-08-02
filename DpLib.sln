@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DpLib", "DpLib\DpLib.vcxproj", "{4C95835D-13E9-4AD4-9311-0112334FEE13}"
 EndProject
@@ -64,6 +64,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GouraudTriangle", "DpOpenGLDemo\GouraudTriangle\GouraudTriangle.vcxproj", "{23589E0E-1F74-427B-A953-7CF08B78FD8C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GouraudWaterModel", "DpDemo\GouraudWaterModel\GouraudWaterModel.vcxproj", "{2CF8366B-662D-4E34-96FB-A45CED43948B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureCube", "DpDirectXDemo\TextureCube\TextureCube.vcxproj", "{182AB89A-105C-4635-BB98-BB98F2812C4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -135,6 +137,10 @@ Global
 		{2CF8366B-662D-4E34-96FB-A45CED43948B}.Debug|Win32.Build.0 = Debug|Win32
 		{2CF8366B-662D-4E34-96FB-A45CED43948B}.Release|Win32.ActiveCfg = Release|Win32
 		{2CF8366B-662D-4E34-96FB-A45CED43948B}.Release|Win32.Build.0 = Release|Win32
+		{182AB89A-105C-4635-BB98-BB98F2812C4D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{182AB89A-105C-4635-BB98-BB98F2812C4D}.Debug|Win32.Build.0 = Debug|Win32
+		{182AB89A-105C-4635-BB98-BB98F2812C4D}.Release|Win32.ActiveCfg = Release|Win32
+		{182AB89A-105C-4635-BB98-BB98F2812C4D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -152,5 +158,6 @@ Global
 		{7B44CA32-2E31-4F87-B2C8-23D09B2D03EE} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
 		{23589E0E-1F74-427B-A953-7CF08B78FD8C} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{2CF8366B-662D-4E34-96FB-A45CED43948B} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
+		{182AB89A-105C-4635-BB98-BB98F2812C4D} = {C89F52F7-985A-47F7-9499-DE8C5780D304}
 	EndGlobalSection
 EndGlobal

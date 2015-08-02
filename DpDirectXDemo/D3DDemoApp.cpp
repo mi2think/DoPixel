@@ -155,6 +155,7 @@ bool D3DDemoApp::Loop()
 		}
 	}
 
+	Release();
 	GetD3DDevice()->Release();
 
 	return false;

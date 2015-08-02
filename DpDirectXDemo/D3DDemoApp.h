@@ -6,6 +6,7 @@
 #include "DpFps.h"
 #include "DpColor.h"
 #include "DpD3DDevice.h"
+#include "DpTextureAlloc.h"
 
 #include <windows.h>
 
@@ -32,6 +33,8 @@ public:
 	virtual void Run(float fElapsedTime);
 
 	virtual void Render(float fElapsedTime);
+
+	virtual void Release() {}
 protected:
 	int clientWidth;
 	int clientHeight;
