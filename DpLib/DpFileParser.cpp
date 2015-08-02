@@ -12,6 +12,7 @@
 
 #include "DpFileParser.h"
 #include <regex>
+#include <cassert>
 
 #define PRINT_REGEX_MATCH_INFO
 #ifdef PRINT_REGEX_MATCH_INFO

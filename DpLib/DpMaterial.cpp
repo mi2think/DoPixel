@@ -71,7 +71,7 @@ namespace DoPixel
 			free(data);
 		}
 
-		inline void Texture::Sample(Color& color, float u, float v) const
+		void Texture::Sample(Color& color, float u, float v) const
 		{
 			assert(u >= 0.0f && u <= 1.0f);
 			assert(v >= 0.0f && v <= 1.0f);

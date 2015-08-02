@@ -36,7 +36,7 @@ namespace DoPixel
 
 			int GetHeight() const { return height; }
 
-			inline void Sample(Color& color, float u, float v) const;
+			void Sample(Color& color, float u, float v) const;
 		private:
 			std::string fileName;
 			unsigned char* data;

@@ -111,6 +111,7 @@
     <ClCompile Include="DpConsole.cpp" />
     <ClCompile Include="DpDevice.cpp" />
     <ClCompile Include="DpFileParser.cpp" />
+    <ClCompile Include="DpFileStream.cpp" />
     <ClCompile Include="DpLoadModel.cpp" />
     <ClCompile Include="DpMaterial.cpp" />
     <ClCompile Include="DpObject.cpp" />

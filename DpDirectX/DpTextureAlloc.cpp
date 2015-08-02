@@ -13,6 +13,7 @@
 #include "DpTextureAlloc.h"
 #include "DpD3DDevice.h"
 #include "DpCore.h"
+#include "DpFileStream.h"
 
 #include <d3dx9.h>
 #include <algorithm>
@@ -28,15 +29,18 @@ namespace DoPixel
 			auto it = m_mapFileTex.find(fileName);
 			if (it == m_mapFileTex.end() || it->second == nullptr)
 			{
-				IDirect3DTexture9* tex = nullptr;
-				HRESULT hr = D3DXCreateTextureFromFile(GetD3DDevice()->GetD3DD(), fileName.c_str(), &tex);
-				if (FAILED(hr))
+				FileStream fs(fileName.c_str(), FileStream::BinaryRead);
+				size_t size = (size_t)fs.Size();
+				unsigned char* fileData = new unsigned char[size];
+				ON_SCOPE_EXIT([&fileData](){ SAFE_DELETEARRAY(fileData); });
+				if (fileData)
 				{
-					DEBUG_DXTRACE(hr);
-					return nullptr;
+					size_t readSize = fs.Read(fileData, size);
+					assert(readSize == size);
+					IDirect3DTexture9* tex = CreateTexture(fileName, fileData, size);
+					m_mapFileTex[fileName] = tex;
+					return tex;
 				}
-				m_mapFileTex[fileName] = tex;
-				return tex;
 			}
 
 			return nullptr;

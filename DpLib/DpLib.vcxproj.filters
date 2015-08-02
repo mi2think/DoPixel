@@ -146,5 +146,8 @@
     <ClCompile Include="DpMaterial.cpp">
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
+    <ClCompile Include="DpFileStream.cpp">
+      <Filter>DpLoadRes</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
