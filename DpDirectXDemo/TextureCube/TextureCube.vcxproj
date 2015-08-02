@@ -74,9 +74,6 @@
   <ItemGroup>
     <ClInclude Include="..\D3DDemoApp.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\..\Debug\crate.jpg" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

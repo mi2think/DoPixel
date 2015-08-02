@@ -7,14 +7,4 @@
   <ItemGroup>
     <ClInclude Include="..\D3DDemoApp.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Filter Include="res">
-      <UniqueIdentifier>{dff0bb74-4d7e-4d14-aa6a-26e4977c81bc}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\..\Debug\crate.jpg">
-      <Filter>res</Filter>
-    </Image>
-  </ItemGroup>
 </Project>
