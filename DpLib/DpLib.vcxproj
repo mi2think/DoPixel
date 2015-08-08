@@ -73,6 +73,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Vendor\rapidjson\allocators.h" />
+    <ClInclude Include="..\Vendor\rapidjson\document.h" />
+    <ClInclude Include="..\Vendor\rapidjson\encodedstream.h" />
+    <ClInclude Include="..\Vendor\rapidjson\encodings.h" />
+    <ClInclude Include="..\Vendor\rapidjson\filereadstream.h" />
+    <ClInclude Include="..\Vendor\rapidjson\filewritestream.h" />
+    <ClInclude Include="..\Vendor\rapidjson\memorybuffer.h" />
+    <ClInclude Include="..\Vendor\rapidjson\memorystream.h" />
+    <ClInclude Include="..\Vendor\rapidjson\pointer.h" />
+    <ClInclude Include="..\Vendor\rapidjson\prettywriter.h" />
+    <ClInclude Include="..\Vendor\rapidjson\rapidjson.h" />
+    <ClInclude Include="..\Vendor\rapidjson\reader.h" />
+    <ClInclude Include="..\Vendor\rapidjson\stringbuffer.h" />
+    <ClInclude Include="..\Vendor\rapidjson\writer.h" />
     <ClInclude Include="..\Vendor\stb\stb_image.h" />
     <ClInclude Include="..\Vendor\stb\stb_image_write.h" />
     <ClInclude Include="DpCamera.h" />

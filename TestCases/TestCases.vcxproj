@@ -40,6 +40,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>..\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\DpLib;..\Vendor;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -47,7 +48,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\DpLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4201;4100</DisableSpecificWarnings>
       <FloatingPointModel>Strict</FloatingPointModel>
     </ClCompile>
@@ -73,6 +74,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dptest_fileparser.cpp" />
+    <ClCompile Include="dptest_json.cpp" />
     <ClCompile Include="dptest_loadmodel.cpp" />
     <ClCompile Include="dptest_main.cpp" />
     <ClCompile Include="dptest_matrix33.cpp" />

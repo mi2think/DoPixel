@@ -16,6 +16,9 @@
     <Filter Include="Vendor\stb">
       <UniqueIdentifier>{5cba56af-9548-4abf-ae57-cd3908156e95}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vendor\rapidjson">
+      <UniqueIdentifier>{77e30a77-b43f-4cb7-b158-980d5c7961f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DpVector3.h">
@@ -107,6 +110,48 @@
     </ClInclude>
     <ClInclude Include="..\Vendor\stb\stb_image_write.h">
       <Filter>Vendor\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\allocators.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\document.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\encodedstream.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\encodings.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\filereadstream.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\filewritestream.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\memorybuffer.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\memorystream.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\pointer.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\prettywriter.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\rapidjson.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\reader.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\stringbuffer.h">
+      <Filter>Vendor\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\rapidjson\writer.h">
+      <Filter>Vendor\rapidjson</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
