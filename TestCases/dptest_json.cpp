@@ -15,29 +15,30 @@
 #include "rapidjson/reader.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/prettywriter.h" // for stringify JSON
+#include "DpJson.h"
 
 using namespace std;
 using namespace DoPixel::DpTest;
+using namespace DoPixel::Core;
 using namespace rapidjson;
 
 #undef RAPIDJSON_HAS_STDSTRING
 
 //////////////////////////////////////////////////////////////////////////
-// simples from rapidjson org
-
+// simples from rapidjson.org
 
 void simple_dom()
 {
-	// 1. 把JSON解析至DOM。
+	// 1. Pare JSON to DOM
 	const char* json = "{\"project\":\"rapidjson\",\"stars\":10}";
 	Document d;
 	d.Parse(json);
 	
-	// 2. 利用DOM作出修改。
+	// 2. Modify it by using DOM
 	Value& s = d["stars"];
 	s.SetInt(s.GetInt() + 1);
 	
-	// 3. 把DOM转换（stringify）成JSON。
+	// 3. Convert dom to Json (stringify)
 	StringBuffer buffer;
 	Writer<StringBuffer> writer(buffer);
 	d.Accept(writer);
@@ -257,6 +258,200 @@ void simple_serialize()
 }
 
 //////////////////////////////////////////////////////////////////////////
+// test dpjson
+void simple_dpjson_serialize()
+{
+	// char*
+	{
+		JsonArchive js;
+		js << JVAR_IN_MANUAL("hello", "world");
+		EXPECT_TRUE(js.GetJsonString() == "{\"hello\":\"world\"}");
+
+		std::string s;
+		js >> JVAR_OUT_MANUAL("hello", s);
+		EXPECT_TRUE(s == "world");
+	}
+
+	// std::string
+	{
+		std::string my = "baby!";
+		JsonArchive js;
+		js << JVAR_IN(my);
+		EXPECT_TRUE(js.GetJsonString() == "{\"my\":\"baby!\"}");
+
+		std::string s;
+		js >> JVAR_OUT_MANUAL("my", s);
+		EXPECT_TRUE(s == my);
+	}
+
+	// bool
+	{
+		bool AmIBoy = true;
+		JsonArchive js;
+		js << JVAR_IN(AmIBoy);
+		EXPECT_TRUE(js.GetJsonString() == "{\"AmIBoy\":true}");
+
+		bool b;
+		js >> JVAR_OUT_MANUAL("AmIBoy", b);
+		EXPECT_TRUE(b == AmIBoy);
+	}
+
+	// int
+	{
+		int id = -1;
+		JsonArchive js;
+		js << JVAR_IN(id);
+		EXPECT_TRUE(js.GetJsonString() == "{\"id\":-1}");
+
+		int id_test = 0;
+		js >> JVAR_OUT_MANUAL("id", id_test);
+		EXPECT_TRUE(id == id_test);
+	}
+
+	// unsigned int
+	{
+		unsigned int score = 100;
+		JsonArchive js;
+		js << JVAR_IN(score);
+		EXPECT_TRUE(js.GetJsonString() == "{\"score\":100}");
+	}
+
+	// long long
+	{
+		long long maxNum = -50123456789;
+		JsonArchive js;
+		js << JVAR_IN(maxNum);
+		EXPECT_TRUE(js.GetJsonString() == "{\"maxNum\":-50123456789}");
+	}
+
+	// unsigned long long
+	{
+		unsigned long long maxNum = 50123456789;
+		JsonArchive js;
+		js << JVAR_IN(maxNum);
+		EXPECT_TRUE(js.GetJsonString() == "{\"maxNum\":50123456789}");
+	}
+
+	// float
+	{
+//		float f = 3.1415926f;
+	}
+
+	// JsonArray
+	{
+		JsonArchive js;
+		JsonArray arrayVal(&js);
+		arrayVal << "hello" << std::string("world") << false << -1
+			<< 99 << -50123456789 << 50123456789 << 3.15f << 3.1415926535898;
+
+		js << JVAR_IN(arrayVal);
+		cout << js.GetJsonString() << "\n";
+	}
+
+	// JsonArray << JsonArchive
+	{
+		JsonArchive js;
+		JsonArray arrayVal(&js);
+
+		JsonArchive js2;
+		bool AmIBoy = true;
+		js2 << JVAR_IN_MANUAL("hello", "world") << JVAR_IN(AmIBoy);
+
+		arrayVal << js2;
+		js << JVAR_IN(arrayVal);
+		cout << js.GetJsonString() << "\n";
+	}
+
+	JsonArchive jsonArchive;
+	std::string hello = "world";
+	jsonArchive << JVAR_IN(hello) << JVAR_IN_MANUAL("num", 9);
+
+	jsonArchive << JVAR_IN(99);
+	{
+		JsonArchive js2;
+		js2 << JVAR_IN_MANUAL("my", 10);
+
+		jsonArchive << JVAR_IN(js2);
+	}
+
+	//int a[3] = { 1, 2, 3 };
+	//const char* h[2] = { "oh, my", "god" };
+
+	std::string sz;
+	jsonArchive >> JVAR_OUT_MANUAL("hello", sz);
+
+	cout << jsonArchive.GetJsonString() << "\n";
+
+	struct Person
+	{
+		int rank;
+		double score;
+		std::string name;
+		struct H
+		{
+			bool h;
+			int id;
+
+			JsonArchive& Serialize(JsonArchive& jsonArchive) const
+			{
+				jsonArchive << JVAR_IN(h);
+				jsonArchive << JVAR_IN(id);
+
+				return jsonArchive;
+			}
+		} h;
+
+		JsonArchive& Serialize(JsonArchive& jsonArchive) const
+		{
+			jsonArchive << JVAR_IN(rank);
+			jsonArchive << JVAR_IN(score);
+			jsonArchive << JVAR_IN(name);
+			jsonArchive << JVAR_IN(h);
+
+			return jsonArchive;
+		}
+	};
+
+	Person person;
+	person.rank = 1;
+	person.score = 99.9;
+	person.name = "Joe";
+	person.h.h = true;
+	person.h.id = 10001;
+
+	JsonArchive jsonArchivePerson;
+	jsonArchivePerson << JVAR_IN(person) << JVAR_IN_MANUAL("hello", "world");
+
+	cout << jsonArchivePerson.GetJsonString();
+}
+
+void my_test()
+{
+	Document doc;
+	doc.SetObject();
+
+	Value val(kObjectType);
+	doc.AddMember("apple", val, doc.GetAllocator());
+
+	{
+		Document* doc2 = new Document();
+		doc2->SetObject();
+		doc2->AddMember("hello", "world", doc.GetAllocator());
+
+		doc.AddMember("d2", *doc2, doc.GetAllocator());
+
+		delete doc2;
+	}
+
+	// 3. Convert dom to Json (stringify)
+	StringBuffer buffer;
+	Writer<StringBuffer> writer(buffer);
+	doc.Accept(writer);
+
+	// Output {"project":"rapidjson","stars":11}
+	std::cout << buffer.GetString() << std::endl;
+}
+
 
 DPTEST(json)
 {
@@ -267,4 +462,8 @@ DPTEST(json)
 	simple_reader();
 
 	simple_serialize();
+
+	my_test();
+	//////////////////////////////////////////////////////////////////////////
+	simple_dpjson_serialize();
 }

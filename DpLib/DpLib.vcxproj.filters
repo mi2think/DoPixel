@@ -153,6 +153,9 @@
     <ClInclude Include="..\Vendor\rapidjson\writer.h">
       <Filter>Vendor\rapidjson</Filter>
     </ClInclude>
+    <ClInclude Include="DpJson.h">
+      <Filter>DpLoadRes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">
@@ -192,6 +195,9 @@
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpFileStream.cpp">
+      <Filter>DpLoadRes</Filter>
+    </ClCompile>
+    <ClCompile Include="DpJson.cpp">
       <Filter>DpLoadRes</Filter>
     </ClCompile>
   </ItemGroup>
