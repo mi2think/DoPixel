@@ -116,6 +116,15 @@ namespace DoPixel
 			JsonArray& operator>> (float& f);
 			JsonArray& operator>> (double& d);
 
+			template<typename T, size_t size> JsonArray& operator>> (T (&arrayVal)[size])
+			{
+				for (size_t i = 0; i < size; ++i)
+				{
+					*this >> arrayVal[i];
+				}
+				return *this;
+			}
+
 			// Reset deserialize index to 0
 			void ResetDeserialize();
 			friend class JsonArchive;

@@ -388,6 +388,21 @@ void simple_dpjson_serialize()
 		EXPECT_TRUE(i == 8);
 	}
 
+	// JsonArray >> T[]
+	{
+		JsonArchive js;
+		JsonArray arrayVal(&js);
+
+		arrayVal << 1 << 2 << 3 << 4 << 5;
+		int a[5];
+		arrayVal >> a;
+
+		for (int i = 0; i < 5; ++i)
+		{
+			EXPECT_TRUE(a[i] == i + 1);
+		}
+	}
+
 	JsonArchive jsonArchive;
 	std::string hello = "world";
 	jsonArchive << JVAR_IN(hello) << JVAR_IN_MANUAL("num", 9);
