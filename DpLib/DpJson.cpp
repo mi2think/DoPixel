@@ -20,6 +20,7 @@ namespace DoPixel
 
 			rapidjson::Document* GetDoc() { return &doc; }
 			void ParseJsonString(const char* s) { doc.Parse(s); }
+			bool IsParseSuccess() const { return ! doc.HasParseError(); }
 		private:
 			rapidjson::Document doc;
 		};
@@ -174,6 +175,27 @@ namespace DoPixel
 			return *this;
 		}
 
+		JsonArchive& JsonArchive::operator>> (std::pair<const char*, JsonArchive*> var)
+		{
+			auto doc = m_pImpl->GetDoc();
+			auto it = doc->FindMember(var.first);
+			if (it != doc->MemberEnd())
+			{
+				auto pImpl = var.second->GetIMPL();
+				// doc cannot assign :(
+				rapidjson::StringBuffer buffer;
+				rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+				it->value.Accept(writer);
+				std::string s = buffer.GetString();
+				pImpl->GetDoc()->Parse(s.c_str());
+			}
+			else
+			{
+				assert(false && "Invalid member!");
+			}
+			return *this;
+		}
+
 		std::string JsonArchive::GetJsonString() const
 		{
 			rapidjson::StringBuffer buffer;
@@ -183,27 +205,31 @@ namespace DoPixel
 			return buffer.GetString();
 		}
 
-		void JsonArchive::ParseJsonString(const char* s)
+		bool JsonArchive::ParseJsonString(const char* s)
 		{
 			m_pImpl->ParseJsonString(s);
+			return m_pImpl->IsParseSuccess();
 		}
 
-		void JsonArchive::ParseJsonString(const char* data, unsigned int dataSize)
+		bool JsonArchive::ParseJsonString(const char* data, unsigned int dataSize)
 		{
 			std::string s(data, dataSize);
 			ParseJsonString(s.c_str());
+			return m_pImpl->IsParseSuccess();
 		}
 
 		//////////////////////////////////////////////////////////////////////////
 		class JsonArray::IMPL
 		{
 		public:
-			IMPL() : arrayVal(rapidjson::kArrayType) {}
+			IMPL() : arrayVal(rapidjson::kArrayType), deserializeCounter(0) {}
 			~IMPL() {}
 
 			rapidjson::Value* GetArray() { return &arrayVal; }
+			int& GetDeserializeCounter() { return deserializeCounter; }
 		private:
 			rapidjson::Value arrayVal;
+			int deserializeCounter;
 		};
 
 		JsonArray::JsonArray(JsonArchive* jsonArchive)
@@ -282,6 +308,17 @@ namespace DoPixel
 			return *this;
 		}
 
+		JsonArray& JsonArray::operator<< (const JsonArray& jsonArray)
+		{
+			auto arrayVal = m_pImpl->GetArray();
+			auto& alloc = m_jsonArchive->GetIMPL()->GetDoc()->GetAllocator();
+			auto pImpl = jsonArray.GetIMPL();
+			auto otherArrayVal = pImpl->GetArray();
+			rapidjson::Value value(*otherArrayVal, alloc);
+			arrayVal->PushBack(value, alloc);
+			return *this;
+		}
+
 		JsonArray& JsonArray::operator<< (const JsonArchive& jsonArchive)
 		{
 			auto arrayVal = m_pImpl->GetArray();
@@ -290,6 +327,75 @@ namespace DoPixel
 			auto doc = pImpl->GetDoc();
 			rapidjson::Value value(*doc, alloc);
 			arrayVal->PushBack(value, alloc);
+			return *this;
+		}
+
+		void JsonArray::ResetDeserialize()
+		{
+			auto& counter = m_pImpl->GetDeserializeCounter();
+			counter = 0;
+		}
+
+#define RAPIDJSON_ARRAY_GETMEMBER(VAR, CHECKMETHOD, GETMETHOD) { \
+	auto arrayVal = m_pImpl->GetArray(); \
+	auto& counter = m_pImpl->GetDeserializeCounter(); \
+	auto& element = (*arrayVal)[counter]; \
+	if (element.CHECKMETHOD()) \
+	{ \
+		VAR = element.GETMETHOD(); \
+		++counter; \
+	} \
+	else \
+	{ \
+		assert(false && "Invalid data"); \
+	} \
+}
+
+		JsonArray& JsonArray::operator>> (std::string& s)
+		{
+			RAPIDJSON_ARRAY_GETMEMBER(s, IsString, GetString);
+			return *this;
+		}
+
+		JsonArray& JsonArray::operator>> (bool& b)
+		{
+			RAPIDJSON_ARRAY_GETMEMBER(b, IsBool, GetBool);
+			return *this;
+		}
+
+		JsonArray& JsonArray::operator>> (int& i)
+		{
+			RAPIDJSON_ARRAY_GETMEMBER(i, IsInt, GetInt);
+			return *this;
+		}
+
+		JsonArray& JsonArray::operator>> (unsigned int& u)
+		{
+			RAPIDJSON_ARRAY_GETMEMBER(u, IsUint, GetUint);
+			return *this;
+		}
+
+		JsonArray& JsonArray::operator>> (long long& l)
+		{
+			RAPIDJSON_ARRAY_GETMEMBER(l, IsInt64, GetInt64);
+			return *this;
+		}
+
+		JsonArray& JsonArray::operator>> (unsigned long long& ul)
+		{
+			RAPIDJSON_ARRAY_GETMEMBER(ul, IsUint64, GetUint64);
+			return *this;
+		}
+
+		JsonArray& JsonArray::operator>> (float& f)
+		{
+			RAPIDJSON_ARRAY_GETMEMBER(f, IsDouble, GetDouble);
+			return *this;
+		}
+
+		JsonArray& JsonArray::operator>> (double& d)
+		{
+			RAPIDJSON_ARRAY_GETMEMBER(d, IsDouble, GetDouble);
 			return *this;
 		}
 		//////////////////////////////////////////////////////////////////////////

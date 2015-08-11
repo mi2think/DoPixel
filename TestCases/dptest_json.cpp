@@ -362,6 +362,32 @@ void simple_dpjson_serialize()
 		cout << js.GetJsonString() << "\n";
 	}
 
+	// JsonArray << JsonArray
+	{
+		JsonArchive js;
+		JsonArray arrayVal(&js);
+		JsonArray arrayVal2(&js);
+
+		arrayVal2 << 1 << 2 << 3 << 4 << "a" << "b" << "c" << "d";
+		arrayVal << arrayVal2 << "x" << "y" << "z" << "w";
+
+		js << JVAR_IN(arrayVal);
+		cout << js.GetJsonString() << "\n";
+	}
+
+	// JsonArray >> string
+	{
+		JsonArchive js;
+		JsonArray arrayVal(&js);
+
+		arrayVal << "hello, world" << 8;
+		std::string s;
+		int i;
+		arrayVal >> s >> i;
+		EXPECT_TRUE(s == "hello, world");
+		EXPECT_TRUE(i == 8);
+	}
+
 	JsonArchive jsonArchive;
 	std::string hello = "world";
 	jsonArchive << JVAR_IN(hello) << JVAR_IN_MANUAL("num", 9);
@@ -389,13 +415,21 @@ void simple_dpjson_serialize()
 		std::string name;
 		struct H
 		{
-			bool h;
+			bool hh;
 			int id;
 
 			JsonArchive& Serialize(JsonArchive& jsonArchive) const
 			{
-				jsonArchive << JVAR_IN(h);
+				jsonArchive << JVAR_IN(hh);
 				jsonArchive << JVAR_IN(id);
+
+				return jsonArchive;
+			}
+
+			JsonArchive& Deserialize(JsonArchive& jsonArchive)
+			{
+				jsonArchive >> JVAR_OUT(hh);
+				jsonArchive >> JVAR_OUT(id);
 
 				return jsonArchive;
 			}
@@ -410,19 +444,37 @@ void simple_dpjson_serialize()
 
 			return jsonArchive;
 		}
+
+		JsonArchive& Deserialize(JsonArchive& jsonArchive)
+		{
+			jsonArchive >> JVAR_OUT(rank);
+			jsonArchive >> JVAR_OUT(score);
+			jsonArchive >> JVAR_OUT(name);
+			jsonArchive >> JVAR_OUT(h);
+
+			return jsonArchive;
+		}
 	};
 
 	Person person;
 	person.rank = 1;
 	person.score = 99.9;
 	person.name = "Joe";
-	person.h.h = true;
+	person.h.hh = true;
 	person.h.id = 10001;
+
+	cout << person.h.id << "\n";
 
 	JsonArchive jsonArchivePerson;
 	jsonArchivePerson << JVAR_IN(person) << JVAR_IN_MANUAL("hello", "world");
 
 	cout << jsonArchivePerson.GetJsonString();
+
+
+	Person person2;
+	jsonArchivePerson >> JVAR_OUT_MANUAL("person", person2);
+
+	cout << person2.h.id << "\n";
 }
 
 void my_test()

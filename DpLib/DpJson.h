@@ -56,10 +56,20 @@ namespace DoPixel
 			JsonArchive& operator>> (std::pair<const char*, unsigned long long*> var);
 			JsonArchive& operator>> (std::pair<const char*, float*> var);
 			JsonArchive& operator>> (std::pair<const char*, double*> var);
+			JsonArchive& operator>> (std::pair<const char*, JsonArchive*> var);
+
+			// T requires: JsonArchive& Deserialize(JsonArchive&);
+			template<typename T> JsonArchive& operator>> (std::pair<const char*, T*> var)
+			{
+				JsonArchive jsonArchive;
+				*this >> std::pair<const char*, JsonArchive*>(var.first, &jsonArchive);
+				var.second->Deserialize(jsonArchive);
+				return *this;
+			}
 
 			std::string GetJsonString() const;
-			void ParseJsonString(const char* s);
-			void ParseJsonString(const char* data, unsigned int dataSize);
+			bool ParseJsonString(const char* s);
+			bool ParseJsonString(const char* data, unsigned int dataSize);
 
 			friend class JsonArray;
 		private:
@@ -94,8 +104,20 @@ namespace DoPixel
 			JsonArray& operator<< (unsigned long long ul);
 			JsonArray& operator<< (float f);
 			JsonArray& operator<< (double d);
+			JsonArray& operator<< (const JsonArray& jsonArray);
 			JsonArray& operator<< (const JsonArchive& jsonArchive);
 
+			JsonArray& operator>> (std::string& s);
+			JsonArray& operator>> (bool& b);
+			JsonArray& operator>> (int& i);
+			JsonArray& operator>> (unsigned int& u);
+			JsonArray& operator>> (long long& l);
+			JsonArray& operator>> (unsigned long long& ul);
+			JsonArray& operator>> (float& f);
+			JsonArray& operator>> (double& d);
+
+			// Reset deserialize index to 0
+			void ResetDeserialize();
 			friend class JsonArchive;
 		private:
 			class IMPL;
