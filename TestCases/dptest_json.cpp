@@ -87,6 +87,27 @@ void simple_dpjson_serialize()
 		js << JVAR_IN(maxNum);
 		EXPECT_TRUE(js.GetJsonString() == "{\"maxNum\":50123456789}");
 	}
+
+	// nested
+	{
+		JsonDoc js;
+		js << JVAR_IN_MANUAL("hello", "world");
+
+		JsonDoc jsArray;
+		{
+			int count = 5;
+			for (int i = 0; i < count; ++i)
+			{
+				JsonDoc js2;
+				js2 << JVAR_IN_MANUAL("a", i);
+
+				jsArray.PushBack(js2);
+			}
+		}
+		js << JVAR_IN(jsArray);
+
+		os_cout << js.GetJsonString() << "\n";
+	}
 }
 
 

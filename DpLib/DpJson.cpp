@@ -186,7 +186,8 @@ namespace DoPixel
 			if (!m_doc.IsArray())
 				m_doc.SetArray();
 
-			m_doc.PushBack(jsonDoc.GetDoc(), m_doc.GetAllocator());
+			rapidjson::Value value(jsonDoc.GetDoc(), m_doc.GetAllocator());
+			m_doc.PushBack(value, m_doc.GetAllocator());
 		}
 
 		std::string JsonDoc::GetJsonString() const
