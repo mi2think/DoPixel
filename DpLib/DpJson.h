@@ -34,20 +34,30 @@ namespace DoPixel
 			JsonValue & operator = (const JsonValue & jv) = delete;
 
 			// for object
-			JsonValue& operator>> (std::pair<const char*, std::string *> var);
-			JsonValue& operator>> (std::pair<const char*, bool*> var);
-			JsonValue& operator>> (std::pair<const char*, int*> var);
-			JsonValue& operator>> (std::pair<const char*, unsigned int *> var);
-			JsonValue& operator>> (std::pair<const char*, long long *> var);
-			JsonValue& operator>> (std::pair<const char*, unsigned long long *> var);
-			JsonValue& operator>> (std::pair<const char*, float*> var);
-			JsonValue& operator>> (std::pair<const char*, double*> var);
+			const JsonValue& operator>> (std::pair<const char*, std::string*> var) const;
+			const JsonValue& operator>> (std::pair<const char*, bool*> var) const;
+			const JsonValue& operator>> (std::pair<const char*, int*> var) const;
+			const JsonValue& operator>> (std::pair<const char*, unsigned int*> var) const;
+			const JsonValue& operator>> (std::pair<const char*, long long*> var) const;
+			const JsonValue& operator>> (std::pair<const char*, unsigned long long*> var) const;
+			const JsonValue& operator>> (std::pair<const char*, float*> var) const;
+			const JsonValue& operator>> (std::pair<const char*, double*> var) const;
 
-			bool HasMember(const char * key) const;
-			JsonValue GetMember(const char * key);
+			bool HasMember(const char* key) const;
+			JsonValue GetMember(const char* key) const;
+
 			// for array
 			size_t Size() const;
-			JsonValue operator [] (size_t index);
+			JsonValue operator[] (size_t index) const;
+			// for element in array
+			const JsonValue& operator>> (std::string& s) const;
+			const JsonValue& operator>> (bool& b) const;
+			const JsonValue& operator>> (int& i) const;
+			const JsonValue& operator>> (unsigned int& u) const;
+			const JsonValue& operator>> (long long& l) const;
+			const JsonValue& operator>> (unsigned long long& ul) const;
+			const JsonValue& operator>> (float& f) const;
+			const JsonValue& operator>> (double& d) const;
 
 			rapidjson::Value& GetValue();
 			void SetValue(rapidjson::Value * value);
@@ -80,7 +90,16 @@ namespace DoPixel
 			std::string GetJsonString() const;
 
 			// for array
-			void PushBack(JsonDoc& jsonDoc);
+			JsonDoc& operator<< (const JsonDoc& jsonDoc);
+			JsonDoc& operator<< (bool b);
+			JsonDoc& operator<< (int i);
+			JsonDoc& operator<< (unsigned int u);
+			JsonDoc& operator<< (long long l);
+			JsonDoc& operator<< (unsigned long long ul);
+			JsonDoc& operator<< (float f);
+			JsonDoc& operator<< (double d);
+			JsonDoc& operator<< (const char* s);
+			JsonDoc& operator<< (const std::string& s);
 
 			rapidjson::Document& GetDoc();
 		private:

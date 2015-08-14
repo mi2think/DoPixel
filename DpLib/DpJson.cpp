@@ -15,7 +15,7 @@ namespace DoPixel
 		{
 		}
 
-#define JSONVALUE_GETMEMBER(VAR , METHOD) { \
+#define JSONVALUE_GETMEMBER(VAR, METHOD) { \
 	auto it = m_value->FindMember(VAR.first); \
     if(it != m_value->MemberEnd()) \
 	{ \
@@ -26,49 +26,49 @@ namespace DoPixel
 		assert(false && "Invalid member!" ); \
 	} \
 }
-		JsonValue& JsonValue::operator>> (std::pair<const char *, std::string*> var)
+		const JsonValue& JsonValue::operator>> (std::pair<const char *, std::string*> var) const
 		{
 			JSONVALUE_GETMEMBER(var, GetString);
 			return *this;
 		}
 
-		JsonValue& JsonValue::operator>> (std::pair<const char *, bool *> var)
+		const JsonValue& JsonValue::operator>> (std::pair<const char *, bool *> var) const
 		{
 			JSONVALUE_GETMEMBER(var, GetBool);
 			return *this;
 		}
 
-		JsonValue& JsonValue::operator>> (std::pair<const char *, int *> var)
+		const JsonValue& JsonValue::operator>> (std::pair<const char *, int *> var) const
 		{
 			JSONVALUE_GETMEMBER(var, GetInt);
 			return *this;
 		}
 
-		JsonValue& JsonValue::operator>> (std::pair<const char *, unsigned int *> var)
+		const JsonValue& JsonValue::operator>> (std::pair<const char *, unsigned int *> var) const
 		{
 			JSONVALUE_GETMEMBER(var, GetUint);
 			return *this;
 		}
 
-		JsonValue& JsonValue::operator>> (std::pair<const char *, long long*> var)
+		const JsonValue& JsonValue::operator>> (std::pair<const char *, long long*> var) const
 		{
 			JSONVALUE_GETMEMBER(var, GetInt64);
 			return *this;
 		}
 
-		JsonValue& JsonValue::operator>> (std::pair<const char *, unsigned long long *> var)
+		const JsonValue& JsonValue::operator>> (std::pair<const char *, unsigned long long *> var) const
 		{
 			JSONVALUE_GETMEMBER(var, GetUint64);
 			return *this;
 		}
 
-		JsonValue& JsonValue::operator>> (std::pair<const char *, float *> var)
+		const JsonValue& JsonValue::operator>> (std::pair<const char *, float *> var) const
 		{
 			JSONVALUE_GETMEMBER(var, GetDouble);
 			return *this;
 		}
 
-		JsonValue& JsonValue::operator>> (std::pair<const char *, double *> var)
+		const JsonValue& JsonValue::operator>> (std::pair<const char *, double *> var) const
 		{
 			JSONVALUE_GETMEMBER(var, GetDouble);
 			return *this;
@@ -79,7 +79,7 @@ namespace DoPixel
 			return m_value->HasMember(key);
 		}
 
-		JsonValue JsonValue::GetMember(const char * key)
+		JsonValue JsonValue::GetMember(const char * key) const
 		{
 			return JsonValue(&(m_value->FindMember(key)->value));
 		}
@@ -89,9 +89,57 @@ namespace DoPixel
 			return m_value->Size();
 		}
 
-		JsonValue JsonValue::operator[](size_t index)
+		JsonValue JsonValue::operator[](size_t index) const
 		{
 			return JsonValue(&((*m_value)[index]));
+		}
+
+		const JsonValue& JsonValue::operator >> (std::string& s) const
+		{
+			s = m_value->GetString();
+			return *this;
+		}
+
+		const JsonValue& JsonValue::operator>> (bool& b) const
+		{
+			b = m_value->GetBool();
+			return *this;
+		}
+
+		const JsonValue& JsonValue::operator>> (int& i) const
+		{
+			i = m_value->GetInt();
+			return *this;
+		}
+
+		const JsonValue& JsonValue::operator>> (unsigned int& u) const
+		{
+			u = m_value->GetUint();
+			return *this;
+		}
+
+		const JsonValue& JsonValue::operator>> (long long& l) const
+		{
+			l = m_value->GetInt64();
+			return *this;
+		}
+
+		const JsonValue& JsonValue::operator>> (unsigned long long& ul) const
+		{
+			ul = m_value->GetUint64();
+			return *this;
+		}
+
+		const JsonValue& JsonValue::operator>> (float& f) const
+		{
+			f = static_cast<float>(m_value->GetDouble());
+			return *this;
+		}
+
+		const JsonValue& JsonValue::operator>> (double& d) const
+		{
+			d = m_value->GetDouble();
+			return *this;
 		}
 
 		rapidjson::Value& JsonValue::GetValue()
@@ -181,13 +229,83 @@ namespace DoPixel
 			return *this;
 		}
 
-		void JsonDoc::PushBack(JsonDoc& jsonDoc)
+#define JSONDOC_PUSHMEMBER(VAR) { \
+	if (!m_doc.IsArray()) \
+		m_doc.SetArray(); \
+	rapidjson::Value value(VAR); \
+	m_doc.PushBack(value, m_doc.GetAllocator()); \
+}
+
+		JsonDoc& JsonDoc::operator<< (const JsonDoc& jsonDoc)
 		{
 			if (!m_doc.IsArray())
 				m_doc.SetArray();
 
-			rapidjson::Value value(jsonDoc.GetDoc(), m_doc.GetAllocator());
+			rapidjson::Value value(const_cast<JsonDoc&>(jsonDoc).GetDoc(), m_doc.GetAllocator());
 			m_doc.PushBack(value, m_doc.GetAllocator());
+			return *this;
+		}
+
+		JsonDoc& JsonDoc::operator<< (bool b)
+		{
+			JSONDOC_PUSHMEMBER(b);
+			return *this;
+		}
+
+		JsonDoc& JsonDoc::operator<< (int i)
+		{
+			JSONDOC_PUSHMEMBER(i);
+			return *this;
+		}
+
+		JsonDoc& JsonDoc::operator<< (unsigned int u)
+		{
+			JSONDOC_PUSHMEMBER(u);
+			return *this;
+		}
+
+		JsonDoc& JsonDoc::operator<< (long long l)
+		{
+			JSONDOC_PUSHMEMBER(l);
+			return *this;
+		}
+
+		JsonDoc& JsonDoc::operator<< (unsigned long long ul)
+		{
+			JSONDOC_PUSHMEMBER(ul);
+			return *this;
+		}
+
+		JsonDoc& JsonDoc::operator<< (float f)
+		{
+			JSONDOC_PUSHMEMBER(f);
+			return *this;
+		}
+
+		JsonDoc& JsonDoc::operator<< (double d)
+		{
+			JSONDOC_PUSHMEMBER(d);
+			return *this;
+		}
+
+		JsonDoc& JsonDoc::operator<< (const char* s)
+		{
+			if (!m_doc.IsArray())
+				m_doc.SetArray();
+
+			rapidjson::Value value(s, m_doc.GetAllocator());
+			m_doc.PushBack(value, m_doc.GetAllocator());
+			return *this;
+		}
+
+		JsonDoc& JsonDoc::operator<< (const std::string& s)
+		{
+			if (!m_doc.IsArray())
+				m_doc.SetArray();
+
+			rapidjson::Value value(s.c_str(), m_doc.GetAllocator());
+			m_doc.PushBack(value, m_doc.GetAllocator());
+			return *this;
 		}
 
 		std::string JsonDoc::GetJsonString() const

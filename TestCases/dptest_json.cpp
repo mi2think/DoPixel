@@ -70,6 +70,10 @@ void simple_dpjson_serialize()
 		JsonDoc js;
 		js << JVAR_IN(score);
 		EXPECT_TRUE(js.GetJsonString() == "{\"score\":100}");
+
+		unsigned int a = 0;
+		js >> JVAR_OUT_MANUAL("score", a);
+		EXPECT_TRUE(a == score);
 	}
 
 	// long long
@@ -78,6 +82,10 @@ void simple_dpjson_serialize()
 		JsonDoc js;
 		js << JVAR_IN(maxNum);
 		EXPECT_TRUE(js.GetJsonString() == "{\"maxNum\":-50123456789}");
+
+		long long a = 0;
+		js >> JVAR_OUT_MANUAL("maxNum", a);
+		EXPECT_TRUE(a == maxNum);
 	}
 
 	// unsigned long long
@@ -86,7 +94,56 @@ void simple_dpjson_serialize()
 		JsonDoc js;
 		js << JVAR_IN(maxNum);
 		EXPECT_TRUE(js.GetJsonString() == "{\"maxNum\":50123456789}");
+
+		unsigned long long a = 0;
+		js >> JVAR_OUT_MANUAL("maxNum", a);
+		EXPECT_TRUE(a == maxNum);
 	}
+
+	// float
+	{
+
+	}
+
+	// array >> bool >> int >> unsigned int >> long long >> unsigned long long >> std::string >> float >> double
+	{
+		JsonDoc js;
+		js << JVAR_IN_MANUAL("he", 15);
+		JsonDoc js2;
+		
+		js2 << true;
+		js2 << -1;
+		js2 << 1;
+		js2 << -50123456789;
+		js2 << 50123456789;
+		js2 << "hi";
+		js2 << 3.12f;
+		js2 << 3.14159265853;
+		js2 << js;
+
+		bool b = false;
+		int i = -1;
+		unsigned int u = 1;
+		long long l = 0;
+		unsigned long long ul = 0;
+		std::string s;
+		float f;
+		double d;
+
+		js2[0] >> b;
+		js2[1] >> i;
+		js2[2] >> u;
+		js2[3] >> l;
+		js2[4] >> ul;
+		js2[5] >> s;
+		js2[6] >> f;
+		js2[7] >> d;
+
+		EXPECT_TRUE(b == true && i == -1 && u == 1 && l == -50123456789 && ul == 50123456789 && s == "hi");
+		EXPECT_TRUE(fabs(f - 3.12f) < 0.00001);
+		EXPECT_TRUE(fabs(d - 3.14159265853) < 0.000000001);
+	}
+
 
 	// nested
 	{
@@ -101,12 +158,32 @@ void simple_dpjson_serialize()
 				JsonDoc js2;
 				js2 << JVAR_IN_MANUAL("a", i);
 
-				jsArray.PushBack(js2);
+				jsArray << js2;
 			}
 		}
 		js << JVAR_IN(jsArray);
 
-		os_cout << js.GetJsonString() << "\n";
+		EXPECT_TRUE(js.GetJsonString() == "{\"hello\":\"world\",\"jsArray\":[{\"a\":0},{\"a\":1},{\"a\":2},{\"a\":3},{\"a\":4}]}");
+	}
+
+	// array
+	{
+		const char* jsonString = "{\"hello\":\"world\", \"num\":10, \"arrayNum\":[1, 2, 3] }";
+		JsonDoc jsonDoc;
+		if (jsonDoc.ParseJsonString(jsonString))
+		{
+			if (jsonDoc.HasMember("arrayNum"))
+			{
+				JsonValue arrayNum = jsonDoc.GetMember("arrayNum");
+				int a[3] = { 0 };
+				for (size_t i = 0; i < arrayNum.Size(); ++i)
+				{
+					arrayNum[i] >> a[i];
+				}
+
+				EXPECT_TRUE(a[0] == 1 && a[1] == 2 && a[2] == 3);
+			}
+		}
 	}
 }
 
