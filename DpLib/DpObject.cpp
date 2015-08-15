@@ -243,8 +243,6 @@ namespace DoPixel
 			// vertex normals of each poly are commonly used for lighting compute for gouraud shading.
 			// we want to average the normals of all poly that are adjacent to a given vertex
 
-			const double threshold = cos(angle2radian(90));
-
 			// k: vertex index
 			// v: poly index which share the same vertex 
 			std::map<int, std::vector<int>> vertexSharedByPolys;
@@ -279,22 +277,19 @@ namespace DoPixel
 				auto& polyIndexList = vertexSharedByPolys[i];
 				assert(polyIndexList.size() > 0);
 
-				// technically vertex belong to
-				Poly& poly0 = pList[polyIndexList[0]];
-				Vector4f n0 = poly0.GetFacetNormal();
-
-				// average normal
-				Vector4f n(0, 0, 0, 1);
-				n += n0;
-				for (unsigned int j = 1; j < polyIndexList.size(); ++j)
+				Vector4f n;
+				for (unsigned int j = 0; j < polyIndexList.size(); ++j)
 				{
 					Poly& polyj = pList[polyIndexList[j]];
 					Vector4f nj = polyj.GetFacetNormal();
-					if (DotProduct(n0, nj) > threshold)
-						n += nj;
+					n += nj;
+				}
+
+				if (polyIndexList.size() > 1)
+				{
+					n /= polyIndexList.size();
 				}
 				n.Normalize();
-
 				vListLocal[i].n = n;
 			}
 		}
