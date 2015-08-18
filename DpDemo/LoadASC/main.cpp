@@ -46,7 +46,7 @@ void LoadASC::Run(float fElapsedTime)
 	// Try to cull object
 	object.ResetCull();
 
-	if (!object.Cull(camera, Vector4f(0, 0, 0, 1), Camera::CULL_PLANE_XYZ))
+	if (!object.Cull(camera, Vector4f(0, 0, 0, 1), CULL_PLANE_XYZ))
 	{
 		object.ModelToWorld(Vector4f(0, 0, 0, 1));
 		renderList.InsertObject(object);

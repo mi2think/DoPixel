@@ -71,6 +71,10 @@ namespace DoPixel
 			{
 				return x * x + y * y;
 			}
+			Vector2 Interpolate(const Vector2& v1, float t) const
+			{
+				return *this + (v1 - *this) * t;
+			}
 		};
 
 		template <typename T, typename U>

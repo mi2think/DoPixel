@@ -56,6 +56,26 @@ namespace DoPixel
 				return *this;
 			}
 
+			Color Interpolate(const Color& color1, float t) const
+			{
+				float a0 = a;
+				float r0 = r;
+				float g0 = g;
+				float b0 = b;
+				
+				float a01 = float(color1.a) - a0;
+				float r01 = float(color1.r) - r0;
+				float g01 = float(color1.g) - g0;
+				float b01 = float(color1.b) - b0;
+
+				Color color;
+				color.a = (unsigned char)Math::Clamp(a0 + a01 * t, 0.0f, 255.0f);
+				color.r = (unsigned char)Math::Clamp(r0 + r01 * t, 0.0f, 255.0f);
+				color.g = (unsigned char)Math::Clamp(g0 + g01 * t, 0.0f, 255.0f);
+				color.b = (unsigned char)Math::Clamp(b0 + b01 * t, 0.0f, 255.0f);
+				return color;
+			}
+
 			static const Color white;
 			static const Color gray;
 			static const Color black;

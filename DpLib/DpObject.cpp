@@ -197,13 +197,6 @@ namespace DoPixel
 
 			// recompute radius
 			UpdateRadius(allFrames);
-
-			// scale poly normal length
-			for (int i = 0; i < numPolys; ++i)
-			{
-				// why 'scale.x * scale.y * scale.z' ???
-				pList[i].nlength *= (scale.x * scale.y * scale.z);
-			}
 		}
 
 		void Object::UpdateRadius(bool allFrames)
@@ -437,7 +430,7 @@ namespace DoPixel
 			float _maxRadius = maxRadius[currFrame];
 
 			// Cull Z
-			if (cullFlag & Camera::CULL_PLANE_Z)
+			if (cullFlag & CULL_PLANE_Z)
 			{
 				if (spherePos.z + _maxRadius < camera.nearClipZ || spherePos.z - _maxRadius > camera.farClipZ)
 				{
@@ -447,7 +440,7 @@ namespace DoPixel
 			}
 
 			// Cull X
-			if (cullFlag & Camera::CULL_PLANE_X)
+			if (cullFlag & CULL_PLANE_X)
 			{
 				float xtest = 0.5f * spherePos.z * camera.viewPlaneWidth / camera.viewDist;
 				if (spherePos.x - _maxRadius > xtest || spherePos.x + _maxRadius < -xtest)
@@ -458,7 +451,7 @@ namespace DoPixel
 			}
 
 			// Cull Y
-			if (cullFlag & Camera::CULL_PLANE_Y)
+			if (cullFlag & CULL_PLANE_Y)
 			{
 				float ytest = 0.5f * spherePos.z *  camera.viewPlaneHeight / camera.viewDist;
 				if (spherePos.y - _maxRadius > ytest || spherePos.y + _maxRadius < -ytest)
@@ -932,6 +925,274 @@ namespace DoPixel
 				float dp = DotProduct(view, n);
 				if (dp <= 0.0f)
 					pf->state |= POLY_STATE_BACKFACE;
+			}
+		}
+
+		void RenderList::ClipPolys(const Camera& camera, int clipFlag)
+		{
+			// using near/far z clip plane for clip poly, also using left/right, top/bottom clip plane for
+			// simple accept or refuse test
+			// in camera space
+
+			enum ClipCode 
+			{
+				CLIP_CODE_GZ	= 0x1,	// z > z_max
+				CLIP_CODE_LZ	= 0x2,	// z < z_min
+				CLIP_CODE_IZ	= 0x4,	// z_min =< z =< z_max
+
+				CLIP_CODE_GX	= 0x1,	// x > x_max
+				CLIP_CODE_LX	= 0x2,	// x < x_min
+				CLIP_CODE_IX	= 0x4,	// x_min =< x =< x_max
+
+				CLIP_CODE_GY	= 0x1,	// y > y_max
+				CLIP_CODE_LY	= 0x2,	// y < y_min
+				CLIP_CODE_IY	= 0x4,	// y_min =< y =< y_max
+
+				CLIP_CODE_NULL	= 0x0,
+			};
+
+			int vertexCode[3] = { 0 };
+
+			// for each poly in list, clip or cull it
+			for (int i = 0; i < numPolyFaces; ++i)
+			{
+				PolyFace* pf = pPolyFace[i];
+				if (!pf || !(pf->state & POLY_STATE_ACTIVE) || (pf->state & POLY_STATE_BACKFACE) || (pf->state & POLY_STATE_CLIPPED))
+					continue;
+
+				Vertex& v0 = pf->tlist[0];
+				Vertex& v1 = pf->tlist[1];
+				Vertex& v2 = pf->tlist[2];
+
+				// cull poly by left/right clip plane
+				if ((clipFlag & CULL_PLANE_X) != 0)
+				{
+					// tan(theta / 2) = (w / 2) / h = |x| / z
+					// => |x| = (w / 2) * z / h
+
+					float z_factor = 0.5f * camera.viewPlaneWidth / camera.viewPlaneHeight;
+
+					// vertex 0
+					float z_test = z_factor * v0.z;
+					if (v0.x > z_test)
+						vertexCode[0] = CLIP_CODE_GX;
+					else if (v0.x < -z_test)
+						vertexCode[0] = CLIP_CODE_LX;
+					else
+						vertexCode[0] = CLIP_CODE_IX;
+
+					// vertex 1
+					z_test = z_factor * v1.z;
+					if (v1.x > z_test)
+						vertexCode[1] = CLIP_CODE_GX;
+					else if (v1.x < -z_test)
+						vertexCode[1] = CLIP_CODE_LX;
+					else
+						vertexCode[1] = CLIP_CODE_IX;
+
+					// vertex 2
+					z_test = z_factor * v2.z;
+					if (v2.x > z_test)
+						vertexCode[2] = CLIP_CODE_GX;
+					else if (v2.x < -z_test)
+						vertexCode[2] = CLIP_CODE_LX;
+					else
+						vertexCode[2] = CLIP_CODE_IX;
+				
+					// simple refuse test
+					if (vertexCode[0] == CLIP_CODE_GX && vertexCode[1] == CLIP_CODE_GX && vertexCode[2] == CLIP_CODE_GX
+						|| vertexCode[0] == CLIP_CODE_LX && vertexCode[1] == CLIP_CODE_LX && vertexCode[2] == CLIP_CODE_LX)
+					{
+						pf->state |= POLY_STATE_CLIPPED;
+						continue;
+					}
+				}
+
+				// cull poly by top/bottom clip plane
+				if ((clipFlag & CULL_PLANE_Y) != 0)
+				{
+					// tan(theta / 2) = (w / 2) / h = |y| / z
+					// => |y| = (w / 2) * z / h
+
+					float z_factor = 0.5f * camera.viewPlaneWidth / camera.viewPlaneHeight;
+
+					// vertex 0
+					float z_test = z_factor * v0.z;
+					if (v0.y > z_test)
+						vertexCode[0] = CLIP_CODE_GY;
+					else if (v0.y < -z_test)
+						vertexCode[0] = CLIP_CODE_LY;
+					else
+						vertexCode[0] = CLIP_CODE_IY;
+
+					// vertex 1
+					z_test = z_factor * v1.z;
+					if (v1.y > z_test)
+						vertexCode[1] = CLIP_CODE_GY;
+					else if (v1.y < -z_test)
+						vertexCode[1] = CLIP_CODE_LY;
+					else
+						vertexCode[1] = CLIP_CODE_IY;
+
+					// vertex 2
+					z_test = z_factor * v2.z;
+					if (v2.y > z_test)
+						vertexCode[2] = CLIP_CODE_GY;
+					else if (v2.y < -z_test)
+						vertexCode[2] = CLIP_CODE_LY;
+					else
+						vertexCode[2] = CLIP_CODE_IY;
+
+					// simple refuse test
+					if (vertexCode[0] == CLIP_CODE_GY && vertexCode[1] == CLIP_CODE_GY && vertexCode[2] == CLIP_CODE_GY
+						|| vertexCode[0] == CLIP_CODE_LY && vertexCode[1] == CLIP_CODE_LY && vertexCode[2] == CLIP_CODE_LY)
+					{
+						pf->state |= POLY_STATE_CLIPPED;
+						continue;
+					}
+				}
+
+				// clip or cull poly by near/far clip plane
+				if ((clipFlag & CULL_PLANE_Z) != 0)
+				{
+					// vertex in frustum
+					int numVertexIn = 0;
+					
+					// vertex 0
+					if (v0.z > camera.farClipZ)
+						vertexCode[0] = CLIP_CODE_GZ;
+					else if (v0.z < camera.nearClipZ)
+						vertexCode[0] = CLIP_CODE_LZ;
+					else
+					{
+						vertexCode[0] = CLIP_CODE_IZ;
+						++numVertexIn;
+					}
+
+					// vertex 1
+					if (v1.z > camera.farClipZ)
+						vertexCode[1] = CLIP_CODE_GZ;
+					else if (v1.z < camera.nearClipZ)
+						vertexCode[1] = CLIP_CODE_LZ;
+					else
+					{
+						vertexCode[1] = CLIP_CODE_IZ;
+						++numVertexIn;
+					}
+
+					// vertex 2
+					if (v2.z > camera.farClipZ)
+						vertexCode[2] = CLIP_CODE_GZ;
+					else if (v2.z < camera.nearClipZ)
+						vertexCode[2] = CLIP_CODE_LZ;
+					else
+					{
+						vertexCode[2] = CLIP_CODE_IZ;
+						++numVertexIn;
+					}
+
+					// simple refuse test
+					if (vertexCode[0] == CLIP_CODE_GZ && vertexCode[1] == CLIP_CODE_GZ && vertexCode[2] == CLIP_CODE_GZ
+						|| vertexCode[0] == CLIP_CODE_LZ && vertexCode[1] == CLIP_CODE_LZ && vertexCode[2] == CLIP_CODE_LZ)
+					{
+						pf->state |= POLY_STATE_CLIPPED;
+						continue;
+					}
+
+					// test if any vertex outside the near z clip plane
+					if (((vertexCode[0] | vertexCode[1] | vertexCode[2]) & CLIP_CODE_IZ) != 0)
+					{
+						int vindex0 = 0;
+						int vindex1 = 1;
+						int vindex2 = 2;
+
+						if (numVertexIn == 1)
+						{
+							// first, find the inner vertex, and assign it to _v0
+							if (vertexCode[0] == CLIP_CODE_IZ)
+								;
+							else if (vertexCode[1] == CLIP_CODE_IZ)
+							{
+								vindex0 = 1;
+								vindex1 = 2;
+								vindex2 = 0;
+							}
+							else
+							{
+								vindex0 = 2;
+								vindex1 = 0;
+								vindex2 = 1;
+							}
+							Vertex* _v0 = &(pf->tlist[vindex0]);
+							Vertex* _v1 = &(pf->tlist[vindex1]);
+							Vertex* _v2 = &(pf->tlist[vindex2]);
+
+							// second, clip edge of poly
+							// p = v0.p + v01.p * t
+							
+							// clip v0 -> v1
+							Vector4f v01 = pf->tlist->p - _v0->p;
+							float t1 = (camera.nearClipZ - _v0->z) / v01.z;
+							Vertex vt1 = _v0->Interpolate(*_v1, t1);
+
+							// clip v0 -> v2
+							Vector4f v02 = _v2->p - _v0->p;
+							float t2 = (camera.nearClipZ - _v0->z) / v02.z;
+							Vertex vt2 = _v0->Interpolate(*_v1, t2);
+
+							// cover old vertex by using clipped vertex
+							*_v1 = vt1;
+							*_v2 = vt2;
+						}
+						else if (numVertexIn == 2)
+						{
+							// first, find outside vertex
+							if (vertexCode[0] == CLIP_CODE_LZ)
+								;
+							else if (vertexCode[1] == CLIP_CODE_LZ)
+							{
+								vindex0 = 1;
+								vindex1 = 2;
+								vindex2 = 0;
+							}
+							else
+							{
+								vindex0 = 2;
+								vindex1 = 0;
+								vindex2 = 1;
+							}
+							Vertex* _v0 = &(pf->tlist[vindex0]);
+							Vertex* _v1 = &(pf->tlist[vindex1]);
+							Vertex* _v2 = &(pf->tlist[vindex2]);
+
+							// second, clip edge of poly
+							// p = v0.p + v01.p * t
+
+							// clip v0 -> v1
+							Vector4f v01 = _v1->p - _v0->p;
+							float t1 = (camera.nearClipZ - _v0->z) / v01.z;
+							Vertex vt1 = _v0->Interpolate(*_v1, t1);
+
+							// clip v0 -> v2
+							Vector4f v02 = _v2->p - _v0->p;
+							float t2 = (camera.nearClipZ - _v0->z) / v02.z;
+							Vertex vt2 = _v0->Interpolate(*_v1, t2);
+
+							// cover v0 by vt1
+							*_v0 = vt1;
+
+							// generate a new poly, then insert end of render list
+							PolyFace newPolyFace = *pf;
+							// cover v1 by vt1
+							// cover v0 by vt2
+							newPolyFace.tlist[vindex1] = vt1;
+							newPolyFace.tlist[vindex0] = vt2;
+							newPolyFace.tlist[vindex2] = *_v2;
+							
+							InsertPolyFace(newPolyFace);
+						}
+					}
+				}
 			}
 		}
 

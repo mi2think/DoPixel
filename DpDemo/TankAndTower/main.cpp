@@ -108,7 +108,7 @@ void TankAndTower::Run(float fElapsedTime)
 	{
 		tower.ResetCull();
 
-		if (!tower.Cull(camera, towerPos[i], Camera::CULL_PLANE_XYZ))
+		if (!tower.Cull(camera, towerPos[i], CULL_PLANE_XYZ))
 		{
 			tower.ModelToWorld(towerPos[i]);
 
@@ -128,7 +128,7 @@ void TankAndTower::Run(float fElapsedTime)
 
 		tank.Transform(mRot, TRANSFORM_LOCAL_TO_TRANS, true, true);
 
-		if (!tank.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
+		if (!tank.Cull(camera, worldPos, CULL_PLANE_XYZ))
 		{
 			// Since local has transformed(rotate) 
 			tank.ModelToWorld(worldPos, TRANSFORM_TRANS_ONLY);
@@ -168,7 +168,7 @@ void TankAndTower::Run(float fElapsedTime)
 			worldPos.y = float(maker.maxRadius[0]);
 			worldPos.z = r2 - UNIVERSE_RADIUS + z * POINT_SIZE;
 
-			if (!maker.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
+			if (!maker.Cull(camera, worldPos, CULL_PLANE_XYZ))
 			{
 				maker.ModelToWorld(worldPos);
 				renderList.InsertObject(maker);

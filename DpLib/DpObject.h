@@ -65,6 +65,9 @@ namespace DoPixel
 			TRANSFORM_LOCAL_TO_TRANS,	// Transform local vertex to trans vertex
 		};
 
+		// Cull flag
+		enum { CULL_PLANE_X = 0x1, CULL_PLANE_Y = 0x2, CULL_PLANE_Z = 0x4, CULL_PLANE_XYZ = CULL_PLANE_X | CULL_PLANE_Y | CULL_PLANE_Z };
+
 		// using outer vertex list
 		struct Poly
 		{
@@ -81,8 +84,6 @@ namespace DoPixel
 
 			Vector2f* clist;	// texture coord list
 			int coord[3];		// index of texture coord list
-
-			float nlength;		// length of normal vector
 
 			Vector4f GetFacetNormal() const
 			{
@@ -118,7 +119,6 @@ namespace DoPixel
 			int materialId;
 
 			Vector4f normal;	// normal
-			float nlength;		// length of normal vector
 
 			float avg_z;		// avg of z, for simple sort
 
@@ -135,7 +135,6 @@ namespace DoPixel
 				
 				texture = poly.texture;
 				materialId = poly.materialId;
-				nlength = poly.nlength;
 
 				vlist[0] = poly.vlist[poly.vert[0]];
 				vlist[1] = poly.vlist[poly.vert[1]];
@@ -302,6 +301,8 @@ namespace DoPixel
 			void SortByZ(int sortType = SORT_AvgZ);
 
 			void RemoveBackfaces(const Camera& camera);
+
+			void ClipPolys(const Camera& camera, int clipFlag);
 
 			void CameraToPerspective(const Camera& camera);
 

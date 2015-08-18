@@ -140,7 +140,7 @@ void GouraudWaterModel::Run(float fElapsedTime)
 	// model to world
 	Vector4f worldPos = Vector4f(-50.0f, 0.0f, 120.0f, 1.0f);
 
-	if (!objConstantWater.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
+	if (!objConstantWater.Cull(camera, worldPos, CULL_PLANE_XYZ))
 	{
 		// Since local has transformed(rotate) 
 		objConstantWater.ModelToWorld(worldPos, TRANSFORM_TRANS_ONLY, true);
@@ -160,7 +160,7 @@ void GouraudWaterModel::Run(float fElapsedTime)
 	// model to world
 	worldPos = Vector4f(0.0f, 0.0f, 120.0f, 1.0f);
 
-	if (!objFlatWater.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
+	if (!objFlatWater.Cull(camera, worldPos, CULL_PLANE_XYZ))
 	{
 		// Since local has transformed(rotate) 
 		objFlatWater.ModelToWorld(worldPos, TRANSFORM_TRANS_ONLY, true);
@@ -180,7 +180,7 @@ void GouraudWaterModel::Run(float fElapsedTime)
 	// model to world
 	worldPos = Vector4f(50.0f, 0.0f, 120.0f, 1.0f);
 
-	if (!objGouraudWater.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
+	if (!objGouraudWater.Cull(camera, worldPos, CULL_PLANE_XYZ))
 	{
 		// Since local has transformed(rotate) 
 		objGouraudWater.ModelToWorld(worldPos, TRANSFORM_TRANS_ONLY, true);

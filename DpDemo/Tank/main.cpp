@@ -50,7 +50,7 @@ void Tank::Run(float fElapsedTime)
 			worldPos.z = float(500 + z * OBJECT_SPACING + OBJECT_SPACING / 2);
 
 			// Try to cull object
-			if (!object.Cull(camera, worldPos, Camera::CULL_PLANE_XYZ))
+			if (!object.Cull(camera, worldPos, CULL_PLANE_XYZ))
 			{
 				object.ModelToWorld(worldPos);
 				

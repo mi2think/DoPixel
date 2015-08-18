@@ -32,8 +32,6 @@ namespace DoPixel
 			enum { MODEL_EULER, MODEL_UVN, MODEL_UVNSimple,};
 			// Euler rotate seq
 			enum { ROTATE_SEQ_XYZ, ROTATE_SEQ_XZY, ROTATE_SEQ_YXZ, ROTATE_SEQ_YZX, ROTATE_SEQ_ZXY, ROTATE_SEQ_ZYX };
-			// Cull object flag
-			enum { CULL_PLANE_X = 0x1, CULL_PLANE_Y = 0x2, CULL_PLANE_Z = 0x4, CULL_PLANE_XYZ = CULL_PLANE_X | CULL_PLANE_Y | CULL_PLANE_Z };
 			
 			int state;
 			int attr;

@@ -78,6 +78,18 @@ namespace DoPixel
 					Color	 litColor;	// if has Attr_Light
 				};
 			};
+
+			Vertex Interpolate(const Vertex& v1, float t) const
+			{
+				// vt = v0 + (v1 - v0) * t, t:[0, 1]
+				Vertex vt;
+				vt.p = this->p.Interpolate(v1.p, t);
+				vt.color = this->color.Interpolate(v1.color, t);
+				vt.n = this->n.Interpolate(v1.n, t);
+				vt.uv0 = this->uv0.Interpolate(v1.uv0, t);
+				vt.attr = this->attr;
+				return vt;
+			}
 		};
 
 		class Color;
