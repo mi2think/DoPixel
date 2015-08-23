@@ -19,11 +19,11 @@
 #include <string>
 #include <map>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace D3D
+	namespace d3d
 	{
-		class TextureAlloc : public Core::NoCopyable
+		class TextureAlloc : public core::NoCopyable
 		{
 		public:
 			// Create Tex by file name

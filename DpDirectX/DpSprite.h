@@ -18,9 +18,9 @@
 #include <d3d9.h>
 #include <string>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace D3D
+	namespace d3d
 	{
 		class Sprite
 		{
@@ -30,11 +30,11 @@ namespace DoPixel
 
 			void Load(const std::string& fileName);
 
-			void SetPos(const Math::Point& pt) { m_pos = pt; }
+			void SetPos(const math::Point& pt) { m_pos = pt; }
 
-			Math::Point GetPos() const { return m_pos; }
+			math::Point GetPos() const { return m_pos; }
 
-			void Render(const Math::Point& pt);
+			void Render(const math::Point& pt);
 
 			unsigned int GetWidth() const { return m_width; }
 
@@ -48,7 +48,7 @@ namespace DoPixel
 
 			IDirect3DTexture9*	m_texture;
 
-			Math::Point		m_pos;
+			math::Point		m_pos;
 		};
 	}
 }

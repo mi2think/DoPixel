@@ -13,9 +13,9 @@
 #include <string>
 #include <cassert>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		FileStream::FileStream()
 			: file(nullptr)

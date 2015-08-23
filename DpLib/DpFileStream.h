@@ -16,9 +16,9 @@
 #include "DpNoCopy.h"
 #include <cstdio>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		class FileStream : public NoCopyable
 		{

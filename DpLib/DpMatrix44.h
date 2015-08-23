@@ -18,9 +18,9 @@
 #include <vector>
 #include <algorithm>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Math
+	namespace math
 	{
 		template <typename T> class Matrix44;
 		typedef Matrix44<float> Matrix44f;

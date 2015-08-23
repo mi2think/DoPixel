@@ -20,9 +20,9 @@
 
 #include <map>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		/* For .PLG file, format.
 
@@ -858,9 +858,9 @@ namespace DoPixel
 							StrUtility::StrReplaceAnychar(formatStrLine, strLine, ",", " ");
 							if (parser.RegexPatternMatch(formatStrLine, regexInfo2))
 							{
-								auto r = Math::Clamp(parser.GetMatchedVal<float>(0) * 255 + 0.5f, 0.0f, 255.0f);
-								auto g = Math::Clamp(parser.GetMatchedVal<float>(1) * 255 + 0.5f, 0.0f, 255.0f);
-								auto b = Math::Clamp(parser.GetMatchedVal<float>(2) * 255 + 0.5f, 0.0f, 255.0f);
+								auto r = math::Clamp(parser.GetMatchedVal<float>(0) * 255 + 0.5f, 0.0f, 255.0f);
+								auto g = math::Clamp(parser.GetMatchedVal<float>(1) * 255 + 0.5f, 0.0f, 255.0f);
+								auto b = math::Clamp(parser.GetMatchedVal<float>(2) * 255 + 0.5f, 0.0f, 255.0f);
 
 								material.color.Set((unsigned char)r, (unsigned char)g, (unsigned char)b);
 								break;
@@ -878,13 +878,13 @@ namespace DoPixel
 							fnGetLine(strLine);
 							if (parser.RegexPatternMatch(strLine, regexInfo4))
 							{
-								auto alpha = Math::Clamp(parser.GetMatchedVal<float>(0) * 255 + 0.5f, 0.0f, 255.0f);
+								auto alpha = math::Clamp(parser.GetMatchedVal<float>(0) * 255 + 0.5f, 0.0f, 255.0f);
 								auto ka = parser.GetMatchedVal<float>(1);
 								auto kd = 1.0f;	// hard code for now
 								auto ks = parser.GetMatchedVal<float>(2);
 								auto power = parser.GetMatchedVal<float>(3);
 
-								material.color.a = (unsigned char)Math::Clamp(alpha * 255 + 0.5f, 0.0f, 255.0f);
+								material.color.a = (unsigned char)math::Clamp(alpha * 255 + 0.5f, 0.0f, 255.0f);
 								material.kambient = ka;
 								material.kdiffuse = kd;
 								material.kspecular = ks;

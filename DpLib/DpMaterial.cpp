@@ -14,9 +14,9 @@
 #include "DpFileStream.h"
 #include "stb/stb_image.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		Texture::Texture()
 			: width(0)

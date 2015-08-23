@@ -13,9 +13,9 @@
 #ifndef __DP_REF__
 #define __DP_REF__
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		template<typename T>
 		class Ref

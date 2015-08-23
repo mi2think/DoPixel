@@ -15,9 +15,9 @@
 
 #include "DpMath.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Math
+	namespace math
 	{
 		template <typename T> class Vector4;
 		typedef Vector4<float> Vector4f;

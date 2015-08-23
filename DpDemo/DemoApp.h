@@ -13,8 +13,8 @@
 #include <map>
 #include <vector>
 
-using namespace DoPixel::Core;
-using namespace DoPixel::Math;
+using namespace dopixel::core;
+using namespace dopixel::math;
 
 class DemoApp
 {

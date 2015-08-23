@@ -9,8 +9,8 @@
 #include "glew.h"
 #include "glut.h"
 
-using namespace DoPixel::Core;
-using namespace DoPixel::Math;
+using namespace dopixel::core;
+using namespace dopixel::math;
 
 class OpenGLDemoApp
 {

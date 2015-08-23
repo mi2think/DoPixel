@@ -14,9 +14,9 @@
 #include <cassert>
 #include <regex>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		namespace StrUtility
 		{

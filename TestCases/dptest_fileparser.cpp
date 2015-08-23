@@ -11,8 +11,8 @@
 *********************************************************************/
 #include "DpUnitTest.h"
 #include "DpFileParser.h"
-using namespace DoPixel::DpTest;
-using namespace DoPixel::Core;
+using namespace dopixel::dptest;
+using namespace dopixel::core;
 
 #pragma warning(push,3)
 #pragma warning(disable:4706)

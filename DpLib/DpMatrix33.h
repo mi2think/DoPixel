@@ -16,9 +16,9 @@
 #include "DpVector3.h"
 #include <cassert>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Math
+	namespace math
 	{
 		template <typename T> class Matrix33;
 		typedef Matrix33<float> Matrix33f;

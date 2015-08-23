@@ -12,7 +12,7 @@
 #pragma comment(lib, "DpLib.lib")
 #pragma comment(lib, "DpDirectX.lib")
 
-using namespace DoPixel::D3D;
+using namespace dopixel::d3d;
 
 HWND g_hwnd = NULL;
 

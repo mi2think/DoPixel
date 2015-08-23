@@ -13,9 +13,9 @@
 #ifndef __DP_NO_COPY__
 #define __DP_NO_COPY__
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		class NoCopyable
 		{

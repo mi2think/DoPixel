@@ -16,9 +16,9 @@
 #include "DpColor.h"
 #include "DpVector2.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 #pragma pack(1)
 		struct TgaHeader
@@ -47,7 +47,7 @@ namespace DoPixel
 
 			bool Load(const char* fileName);
 
-			Color GetColor(const Math::Point& pos) const;
+			Color GetColor(const math::Point& pos) const;
 
 			int GetWidth() const { return m_tgaHeader.ImageWidth; }
 

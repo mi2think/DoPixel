@@ -18,9 +18,9 @@
 #include <cassert>
 #include <cstring>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Math
+	namespace math
 	{
 		class Quaternion
 		{

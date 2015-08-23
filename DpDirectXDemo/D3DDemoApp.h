@@ -10,9 +10,9 @@
 
 #include <windows.h>
 
-using namespace DoPixel::D3D;
-using namespace DoPixel::Core;
-using namespace DoPixel::Math;
+using namespace dopixel::d3d;
+using namespace dopixel::core;
+using namespace dopixel::math;
 
 class D3DDemoApp
 {

@@ -7,7 +7,7 @@
 	file ext:	h
 	author:		mi2think@gmail.com
 	
-	purpose:	Core
+	purpose:	core
 *********************************************************************/
 
 #ifndef __DP_CORE__
@@ -22,9 +22,9 @@
 
 #include <vector>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 #define SAFE_DELETE(p)		do { if (p != nullptr) { delete p; p = nullptr; } } while(0)
 #define SAFE_DELETEARRAY(p) do { if (p != nullptr) { delete[] p; p = nullptr; } } while(0)

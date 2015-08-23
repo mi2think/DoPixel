@@ -15,9 +15,9 @@
 
 #include <windows.h>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		class Timer
 		{

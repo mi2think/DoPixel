@@ -17,9 +17,9 @@
 #include "DpFileStream.h"
 #include "DpStrUtility.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		class FileParser : public NoCopyable
 		{

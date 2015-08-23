@@ -17,11 +17,11 @@
 #include "DpVector4.h"
 #include "DpGeometry.h"
 #include "DpColor.h"
-using namespace DoPixel::Math;
+using namespace dopixel::math;
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		enum FillMode
 		{

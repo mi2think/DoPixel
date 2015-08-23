@@ -23,12 +23,12 @@ purpose:	Direct3D device
 #include <map>
 #include <vector>
 
-using namespace DoPixel::Core;
-using namespace DoPixel::Math;
+using namespace dopixel::core;
+using namespace dopixel::math;
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace D3D
+	namespace d3d
 	{
 		void DebugDXTrace(HRESULT hr, const char* file, int line);
 		#define DEBUG_DXTRACE(hr) DebugDXTrace(hr, __FILE__, __LINE__)
@@ -97,9 +97,9 @@ namespace DoPixel
 			void DrawText(const char* text, const Point& pos, Color color);
 
 			// Clip rect
-			Math::RectF SetClipRect(const Math::RectF& rect) { Math::RectF rc = m_clipRect; m_clipRect = rect; return rc; }
+			math::RectF SetClipRect(const math::RectF& rect) { math::RectF rc = m_clipRect; m_clipRect = rect; return rc; }
 
-			Math::RectF GetClipRect() const { return m_clipRect; }
+			math::RectF GetClipRect() const { return m_clipRect; }
 
 			// Get a texture, the size of it is equal with the size of client
 			IDirect3DTexture9* GetClientTexture() const { return m_pTexture; }

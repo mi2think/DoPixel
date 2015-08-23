@@ -17,12 +17,12 @@
 #define PRINT_REGEX_MATCH_INFO
 #ifdef PRINT_REGEX_MATCH_INFO
 #include "DpConsole.h"
-using namespace DoPixel::Console;
+using namespace dopixel::Console;
 #endif
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		FileParser::RegexInfo::RegexInfo(const std::string& fmt)
 		{

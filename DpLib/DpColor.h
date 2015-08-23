@@ -15,9 +15,9 @@
 
 #include "DpMath.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		#define RGB24(r, g, b) (((r) << 16) + ((g) << 8) + (b))
 		#define RGB32(a, r, g, b) (((a) << 24) + ((r) << 16) + ((g) << 8) + (b))
@@ -50,9 +50,9 @@ namespace DoPixel
 
 			Color& operator*=(float k)
 			{
-				r = (unsigned char)Math::Clamp(r * k, 0.0f, 255.0f);
-				g = (unsigned char)Math::Clamp(g * k, 0.0f, 255.0f);
-				b = (unsigned char)Math::Clamp(b * k, 0.0f, 255.0f);
+				r = (unsigned char)math::Clamp(r * k, 0.0f, 255.0f);
+				g = (unsigned char)math::Clamp(g * k, 0.0f, 255.0f);
+				b = (unsigned char)math::Clamp(b * k, 0.0f, 255.0f);
 				return *this;
 			}
 
@@ -69,10 +69,10 @@ namespace DoPixel
 				float b01 = float(color1.b) - b0;
 
 				Color color;
-				color.a = (unsigned char)Math::Clamp(a0 + a01 * t, 0.0f, 255.0f);
-				color.r = (unsigned char)Math::Clamp(r0 + r01 * t, 0.0f, 255.0f);
-				color.g = (unsigned char)Math::Clamp(g0 + g01 * t, 0.0f, 255.0f);
-				color.b = (unsigned char)Math::Clamp(b0 + b01 * t, 0.0f, 255.0f);
+				color.a = (unsigned char)math::Clamp(a0 + a01 * t, 0.0f, 255.0f);
+				color.r = (unsigned char)math::Clamp(r0 + r01 * t, 0.0f, 255.0f);
+				color.g = (unsigned char)math::Clamp(g0 + g01 * t, 0.0f, 255.0f);
+				color.b = (unsigned char)math::Clamp(b0 + b01 * t, 0.0f, 255.0f);
 				return color;
 			}
 

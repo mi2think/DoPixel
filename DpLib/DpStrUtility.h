@@ -16,9 +16,9 @@
 #include <string>
 #include <vector>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		namespace StrUtility
 		{

@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-namespace DoPixel
+namespace dopixel
 {
 	namespace Console
 	{

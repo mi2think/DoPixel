@@ -15,11 +15,11 @@
 
 #include "DpConsole.h"
 #include <vector>
-using namespace DoPixel::Console;
+using namespace dopixel::Console;
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace DpTest
+	namespace dptest
 	{	
 		class TestCase
 		{

@@ -13,7 +13,7 @@
 #include "DpConsole.h"
 #include <windows.h>
 
-namespace DoPixel
+namespace dopixel
 {
 	namespace Console
 	{

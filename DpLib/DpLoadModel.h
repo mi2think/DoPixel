@@ -16,9 +16,9 @@ purpose:	Load 3D model file
 #include "DpObject.h"
 #include "DpVector4.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		//////////////////////////////////////////////////////////////////////////
 		// .PLG file

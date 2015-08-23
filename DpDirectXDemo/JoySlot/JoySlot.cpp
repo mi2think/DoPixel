@@ -33,7 +33,7 @@ void Car::Stop(int _carIndex)
 	Load(s_carName[carIndex]);
 }
 
-void Car::SetPos(const DoPixel::Math::Point& pt)
+void Car::SetPos(const dopixel::math::Point& pt)
 {
 //	assert(pt.y >= CarGroup::ymin);
 

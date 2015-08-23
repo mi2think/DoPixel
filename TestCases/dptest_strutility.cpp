@@ -11,8 +11,8 @@
 *********************************************************************/
 #include "DpStrUtility.h"
 #include "DpUnitTest.h"
-using namespace DoPixel::DpTest;
-using namespace DoPixel::Core;
+using namespace dopixel::dptest;
+using namespace dopixel::core;
 
 DPTEST(StrUtility)
 {

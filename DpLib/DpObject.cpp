@@ -18,11 +18,11 @@
 #include <cassert>
 #include <map>
 
-using namespace DoPixel::Math;
+using namespace dopixel::math;
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		Object::Object()
 			: id(0)
@@ -1454,9 +1454,9 @@ namespace DoPixel
 					}
 				}
 
-				rSum = Math::Clamp(rSum, 0.0f, 255.0f);
-				gSum = Math::Clamp(gSum, 0.0f, 255.0f);
-				bSum = Math::Clamp(bSum, 0.0f, 255.0f);
+				rSum = math::Clamp(rSum, 0.0f, 255.0f);
+				gSum = math::Clamp(gSum, 0.0f, 255.0f);
+				bSum = math::Clamp(bSum, 0.0f, 255.0f);
 
 				vertex0.litColor = Color((unsigned char)rSum, (unsigned char)gSum, (unsigned char)bSum);
 				vertex1.litColor = vertex0.litColor;
@@ -1578,17 +1578,17 @@ namespace DoPixel
 					}
 				}
 
-				rSum0 = Math::Clamp(rSum0, 0.0f, 255.0f);
-				gSum0 = Math::Clamp(gSum0, 0.0f, 255.0f);
-				bSum0 = Math::Clamp(bSum0, 0.0f, 255.0f);
+				rSum0 = math::Clamp(rSum0, 0.0f, 255.0f);
+				gSum0 = math::Clamp(gSum0, 0.0f, 255.0f);
+				bSum0 = math::Clamp(bSum0, 0.0f, 255.0f);
 
-				rSum1 = Math::Clamp(rSum1, 0.0f, 255.0f);
-				gSum1 = Math::Clamp(gSum1, 0.0f, 255.0f);
-				bSum1 = Math::Clamp(bSum1, 0.0f, 255.0f);
+				rSum1 = math::Clamp(rSum1, 0.0f, 255.0f);
+				gSum1 = math::Clamp(gSum1, 0.0f, 255.0f);
+				bSum1 = math::Clamp(bSum1, 0.0f, 255.0f);
 
-				rSum2 = Math::Clamp(rSum2, 0.0f, 255.0f);
-				gSum2 = Math::Clamp(gSum2, 0.0f, 255.0f);
-				bSum2 = Math::Clamp(bSum2, 0.0f, 255.0f);
+				rSum2 = math::Clamp(rSum2, 0.0f, 255.0f);
+				gSum2 = math::Clamp(gSum2, 0.0f, 255.0f);
+				bSum2 = math::Clamp(bSum2, 0.0f, 255.0f);
 
 				vertex0.litColor = Color((unsigned char)rSum0, (unsigned char)gSum0, (unsigned char)bSum0);
 				vertex1.litColor = Color((unsigned char)rSum1, (unsigned char)gSum1, (unsigned char)bSum1);

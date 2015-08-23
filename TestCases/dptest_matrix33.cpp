@@ -12,8 +12,8 @@
 
 #include "DpMatrix33.h"
 #include "DpUnitTest.h"
-using namespace DoPixel::Math;
-using namespace DoPixel::DpTest;
+using namespace dopixel::math;
+using namespace dopixel::dptest;
 
 DPTEST(Matrix33)
 {

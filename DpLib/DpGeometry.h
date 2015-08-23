@@ -16,9 +16,9 @@
 #include "DpVector2.h"
 #include "DpVector3.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Math
+	namespace math
 	{
 		struct Line2D
 		{

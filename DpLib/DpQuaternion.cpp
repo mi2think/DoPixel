@@ -14,9 +14,9 @@
 #include "DpQuaternion.h"
 #include "DpMatrix43.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Math
+	namespace math
 	{
 		Quaternion QuaternionRotationMatrix(const Matrix43f& _m)
 		{

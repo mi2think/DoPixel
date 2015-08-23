@@ -15,9 +15,9 @@
 
 #include <functional>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		class ScopeGuard
 		{

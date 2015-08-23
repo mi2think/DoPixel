@@ -15,9 +15,9 @@
 #include "DpFileStream.h"
 #include "stb/stb_image.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		void Tga::Clear()
 		{
@@ -203,7 +203,7 @@ namespace DoPixel
 			free(image);
 		}
 
-		Color Tga::GetColor(const Math::Point& pos) const
+		Color Tga::GetColor(const math::Point& pos) const
 		{
 			assert(pos.x < m_tgaHeader.ImageWidth && pos.y < m_tgaHeader.ImageHeight);
 			assert(m_color != NULL);

@@ -12,9 +12,9 @@
 
 #include "DpColor.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		const Color Color::white	= Color(255, 255, 255);
 		const Color Color::gray		= Color(100, 100, 100);

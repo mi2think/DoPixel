@@ -13,9 +13,9 @@
 #include "DpCore.h"
 #include "DpMaterial.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		void ZBuffer::Create(int width, int height)
 		{
@@ -53,6 +53,11 @@ namespace DoPixel
 			, shadeMode(Shade_Flat)
 			, texture(nullptr)
 		{}
+
+		Device::~Device()
+		{
+			zbuffer.Delete();
+		}
 
 		void Device::SetRenderState(RenderState rs, int value)
 		{

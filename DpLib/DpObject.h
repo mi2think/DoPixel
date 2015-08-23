@@ -20,11 +20,11 @@
 #include "DpMaterial.h"
 #include "DpDevice.h"
 
-using namespace DoPixel::Math;
+using namespace dopixel::math;
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		class Camera;
 		class Light;

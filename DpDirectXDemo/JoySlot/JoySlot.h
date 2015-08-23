@@ -17,7 +17,7 @@ public:
 
 	void Clear() {  mark = false; }
 
-	void SetPos(const DoPixel::Math::Point& pt);
+	void SetPos(const dopixel::math::Point& pt);
 private:
 	int carIndex;
 	bool mark;

@@ -1,9 +1,9 @@
 #include "DpJson.h"
 #include "DpRef.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		JsonValue::JsonValue()
 			: m_value(nullptr)

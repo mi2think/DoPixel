@@ -6,9 +6,9 @@
 
 #include <d3dx9.h>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace D3D
+	namespace d3d
 	{
 		static const float s_half = 0.5f;
 
@@ -32,7 +32,7 @@ namespace DoPixel
 
 			assert(_stricmp(ext, "tga") == 0);
 
-			Core::Tga tga(fileName.c_str());
+			core::Tga tga(fileName.c_str());
 			m_width = tga.GetWidth();
 			m_height = tga.GetHeight();
 
@@ -99,12 +99,12 @@ namespace DoPixel
 			}
 		}
 
-		void Sprite::Render(const Math::Point& pt)
+		void Sprite::Render(const math::Point& pt)
 		{
 			if (m_texture == NULL)
 				return;
 
-			Math::Point pos = m_pos;
+			math::Point pos = m_pos;
 			pos += pt;
 			RectF spriteRect(pos.x, pos.y, pos.x + m_width, pos.y + m_height);
 

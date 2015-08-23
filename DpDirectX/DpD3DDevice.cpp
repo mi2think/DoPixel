@@ -16,9 +16,9 @@ purpose:	Direct3D device
 #include <DxErr.h>
 #include <algorithm>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace D3D
+	namespace d3d
 	{
 		const DWORD D3DDevice::stVertex::FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
 		const DWORD D3DDevice::stVertexTex::FVF = D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_DIFFUSE;

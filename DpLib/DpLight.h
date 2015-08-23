@@ -16,11 +16,11 @@
 #include "DpColor.h"
 #include "DpVector4.h"
 #include <cassert>
-using namespace DoPixel::Math;
+using namespace dopixel::math;
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		class Light
 		{

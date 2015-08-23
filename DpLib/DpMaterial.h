@@ -16,9 +16,9 @@
 #include "DpCore.h"
 #include "DpColor.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		class Texture
 		{

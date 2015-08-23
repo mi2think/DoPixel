@@ -18,11 +18,11 @@
 #include <d3dx9.h>
 #include <algorithm>
 
-using namespace DoPixel::Core;
+using namespace dopixel::core;
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace D3D
+	namespace d3d
 	{
 		IDirect3DTexture9* TextureAlloc::CreateTexture(const std::string& fileName)
 		{

@@ -7,7 +7,7 @@
 	file ext:	h
 	author:		mi2think@gmail.com
 	
-	purpose:	Some Math Def
+	purpose:	Some math Def
 *********************************************************************/
 #ifndef __DP_MATH__
 #define __DP_MATH__
@@ -15,9 +15,9 @@
 #include <cmath>
 #include <cstdlib>
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Math
+	namespace math
 	{
 #define EPSILON_E5 (float)(1E-5)
 #define M_PI	3.1415926f

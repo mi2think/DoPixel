@@ -21,9 +21,9 @@
 #include "rapidjson/reader.h"
 #include "rapidjson/stringbuffer.h"
 
-namespace DoPixel
+namespace dopixel
 {
-	namespace Core
+	namespace core
 	{
 		// a helper class for using rapidjson::Value
 		class JsonValue
