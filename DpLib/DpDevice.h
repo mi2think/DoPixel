@@ -92,6 +92,21 @@ namespace DoPixel
 			}
 		};
 
+		// 32-bit z buffer
+		struct ZBuffer 
+		{
+			unsigned int* buffer;
+			int width;
+			int height;
+			int size;
+			int attr;
+
+			ZBuffer() : buffer(nullptr), width(0), height(0), attr(0) {}
+			void Create(int width, int height);
+			void Clear(unsigned int value);
+			void Delete();
+		};
+
 		class Color;
 		class Texture;
 
@@ -99,6 +114,7 @@ namespace DoPixel
 		{
 		public:
 			Device();
+			~Device();
 			
 			void Init(unsigned char* buffer, int pitch) { frameBuffer = buffer; this->pitch = pitch; }
 
@@ -141,6 +157,8 @@ namespace DoPixel
 			int fillMode;
 			int shadeMode;
 			Texture* texture;
+
+			ZBuffer zbuffer;
 		};
 	}
 }

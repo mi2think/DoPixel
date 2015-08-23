@@ -17,6 +17,32 @@ namespace DoPixel
 {
 	namespace Core
 	{
+		void ZBuffer::Create(int width, int height)
+		{
+			this->width = width;
+			this->height = height;
+			buffer = new unsigned int[width * height];
+		}
+
+		void ZBuffer::Clear(unsigned int value)
+		{
+			auto dest = buffer;
+			auto count = width * height;
+			_asm
+			{
+				mov edi, dest
+				mov ecx, count
+				mov eax, value
+				rep stosd
+			}
+		}
+
+		void ZBuffer::Delete()
+		{
+			SAFE_DELETEARRAY(buffer);
+		}
+		//////////////////////////////////////////////////////////////////////////
+
 #define Round(x) ((int)((x) + 0.5))
 
 		Device::Device()
