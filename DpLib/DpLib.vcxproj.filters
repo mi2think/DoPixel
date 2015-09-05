@@ -156,6 +156,9 @@
     <ClInclude Include="DpJson.h">
       <Filter>DpLoadRes</Filter>
     </ClInclude>
+    <ClInclude Include="DpTriangle.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">

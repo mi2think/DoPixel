@@ -59,6 +59,13 @@ namespace dopixel
 			zbuffer.Delete();
 		}
 
+		void Device::Create(int width, int height)
+		{
+			this->width = width;
+			this->height = height;
+			zbuffer.Create(width, height);
+		}
+
 		void Device::SetRenderState(RenderState rs, int value)
 		{
 			switch (rs)
@@ -359,7 +366,7 @@ namespace dopixel
 				}
 			}
 		}
-
+		/*
 		void Device::DrawFlatTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
 		{
 			Color color = ((v0.attr & Vertex::Attr_Lit) != 0 ? v0.litColor : v0.color);
@@ -747,7 +754,19 @@ namespace dopixel
 				}
 			}
 		}
+		*/
 
+		void Device::DrawFlatTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
+		{
+			#include "DpTriangle.h"
+		}
+		void Device::DrawGouraudTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
+		{
+			#define INTERP_RGB 1
+			#include "DpTriangle.h"
+		}
+
+		/*
 		void Device::DrawGouraudTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
 		{
 			Point p0(v0.x, v0.y);
@@ -1432,7 +1451,7 @@ namespace dopixel
 				}
 			}
 		}
-
+		*/
 		void Device::DrawTexturedTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
 		{
 			Vertex p0 = v0;

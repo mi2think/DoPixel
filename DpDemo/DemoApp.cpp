@@ -81,6 +81,7 @@ void DemoApp::Create(int wndWidth, int wndHeight, const char* wndName, bool bWin
 	}
 
 	GetD3DDevice()->Init(g_hwnd, clientWidth, clientHeight, bWindow);
+	device.Create(clientWidth, clientHeight);
 	device.SetClipRect(RectI(0, 0, clientWidth, clientHeight));
 
 	OnCreate();

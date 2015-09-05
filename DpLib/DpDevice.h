@@ -98,7 +98,6 @@ namespace dopixel
 			unsigned int* buffer;
 			int width;
 			int height;
-			int size;
 			int attr;
 
 			ZBuffer() : buffer(nullptr), width(0), height(0), attr(0) {}
@@ -110,12 +109,15 @@ namespace dopixel
 		class Color;
 		class Texture;
 
+		// render content
 		class Device
 		{
 		public:
 			Device();
 			~Device();
 			
+			void Create(int width, int height);
+
 			void Init(unsigned char* buffer, int pitch) { frameBuffer = buffer; this->pitch = pitch; }
 
 			void WritePixel(int x, int y, const Color& color) const { unsigned char* p = frameBuffer + (x + y * pitch) * bitsPerPixel; *((unsigned int*)p) = color.value; }
@@ -148,7 +150,10 @@ namespace dopixel
 			// Draw a textured triangle
 			void DrawTexturedTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const;
 
-		private:
+		public:
+			int width;
+			int height;
+
 			unsigned char* frameBuffer;
 			int pitch;
 			int bitsPerPixel;
