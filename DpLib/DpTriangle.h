@@ -272,7 +272,10 @@
 							if (x >= clipRect.left && x < clipRect.right)
 							{
 #if INTERP_RGB
-								*p = Color((unsigned char)r, (unsigned char)g, (unsigned char)b).value;
+								unsigned char rc = (unsigned char)math::Clamp<float>(r + 0.5f, 0.0f, 255.0f);
+								unsigned char gc = (unsigned char)math::Clamp<float>(g + 0.5f, 0.0f, 255.0f);
+								unsigned char bc = (unsigned char)math::Clamp<float>(b + 0.5f, 0.0f, 255.0f);
+								*p = Color(rc, gc, bc).value;
 								r += gradients.drdx;
 								g += gradients.dgdx;
 								b += gradients.dbdx;
