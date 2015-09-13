@@ -159,6 +159,12 @@
     <ClInclude Include="DpTriangle.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
+    <ClInclude Include="DpEnums.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="DpVertex.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">

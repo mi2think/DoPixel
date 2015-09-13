@@ -15,6 +15,8 @@
 #include "DpDevice.h"
 #include "DpLight.h"
 #include "DpCore.h"
+#include "DpDevice.h"
+
 #include <cassert>
 #include <map>
 

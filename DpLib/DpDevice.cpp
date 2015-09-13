@@ -21,10 +21,10 @@ namespace dopixel
 		{
 			this->width = width;
 			this->height = height;
-			buffer = new unsigned int[width * height];
+			buffer = new float[width * height];
 		}
 
-		void ZBuffer::Clear(unsigned int value)
+		void ZBuffer::Clear(float value)
 		{
 			auto dest = buffer;
 			auto count = width * height;

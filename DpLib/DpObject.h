@@ -18,7 +18,7 @@
 #include "DpMatrix44.h"
 #include "DpColor.h"
 #include "DpMaterial.h"
-#include "DpDevice.h"
+#include "DpVertex.h"
 
 using namespace dopixel::math;
 
@@ -28,7 +28,7 @@ namespace dopixel
 	{
 		class Camera;
 		class Light;
-
+		class Device;
 		//////////////////////////////////////////////////////////////////////////
 
 		enum

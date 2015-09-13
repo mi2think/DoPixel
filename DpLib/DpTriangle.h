@@ -213,6 +213,7 @@
 		Edge edgeTB(gradients, pVertices, top, bottom);		// edge - top to bottom
 		Edge edgeTM(gradients, pVertices, top, middle);		// edge - top to middle
 		Edge edgeMB(gradients, pVertices, middle, bottom);	// edge - middle to bottom
+		Color color = v0.color;
 
 		// sub triangles
 		unsigned int pitchBits = pitch * bitsPerPixel;
@@ -265,7 +266,7 @@
 					if (width > 0)
 					{
 						int x = x_start;
-						unsigned int* p = (unsigned int*)(buffer + x_start * bitsPerPixel);
+						unsigned int* p = (unsigned int*)(buffer + x * bitsPerPixel);
 						while (width--)
 						{
 							// test x clip
@@ -275,7 +276,7 @@
 								unsigned char rc = (unsigned char)math::Clamp<float>(r + 0.5f, 0.0f, 255.0f);
 								unsigned char gc = (unsigned char)math::Clamp<float>(g + 0.5f, 0.0f, 255.0f);
 								unsigned char bc = (unsigned char)math::Clamp<float>(b + 0.5f, 0.0f, 255.0f);
-								*p = Color(rc, gc, bc).value;
+								color.Set(rc, gc, bc);
 								r += gradients.drdx;
 								g += gradients.dgdx;
 								b += gradients.dbdx;
@@ -283,9 +284,7 @@
 #if INTERP_Z
 								z += gradients.dzdx;
 #endif
-#if (!INTERP_RGB) && (!INTERP_UV)
-								*p = v0.color.value;
-#endif
+								*p = color.value;
 								++p;
 							}
 							++x;

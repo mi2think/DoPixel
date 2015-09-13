@@ -94,6 +94,7 @@
     <ClInclude Include="DpConsole.h" />
     <ClInclude Include="DpCore.h" />
     <ClInclude Include="DpDevice.h" />
+    <ClInclude Include="DpEnums.h" />
     <ClInclude Include="DpFileParser.h" />
     <ClInclude Include="DpFileStream.h" />
     <ClInclude Include="DpFps.h" />
@@ -119,6 +120,7 @@
     <ClInclude Include="DpVector2.h" />
     <ClInclude Include="DpVector3.h" />
     <ClInclude Include="DpVector4.h" />
+    <ClInclude Include="DpVertex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\stb\stb_image.c" />
