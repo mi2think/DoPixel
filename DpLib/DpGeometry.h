@@ -60,7 +60,7 @@ namespace dopixel
 			{
 				Vector3f u = p1 - p0;
 				Vector3f v = p2 - p0;
-				Vector3f n = CrossProduct(u, v);
+				this->n = CrossProduct(u, v);
 				n.Normalize();
 				d = -DotProduct(n, p0);
 			}

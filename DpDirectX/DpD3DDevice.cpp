@@ -29,8 +29,8 @@ namespace dopixel
 
 		void DebugDXTrace(HRESULT hr, const char* file, int line)
 		{
-			const char* error = DXGetErrorDescription(hr);
-			DEBUG_TRACE("Dx Error: %s:%d %s\n", file, line, error);
+			//const char* error = DXGetErrorDescription(hr);
+			DEBUG_TRACE("Dx Error: %s:%d %d\n", file, line, (int)hr);
 		}
 
 		D3DDevice::D3DDevice()

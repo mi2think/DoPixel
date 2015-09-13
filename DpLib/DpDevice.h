@@ -79,6 +79,29 @@ namespace dopixel
 				};
 			};
 
+			Vertex() {}
+			Vertex(const Vertex& v)
+				: p(v.p)
+				, color(v.color)
+				, n(v.n)
+				, uv0(v.uv0)
+				, litColor(v.litColor)
+				, i(v.i)
+				, attr(v.attr)
+			{
+			}
+			Vertex& operator=(const Vertex& v)
+			{
+				p = v.p;
+				color = v.color;
+				n = v.n;
+				uv0 = v.uv0;
+				litColor = v.litColor;
+				i = v.i;
+				attr = v.attr;
+				return *this;
+			}
+
 			Vertex Interpolate(const Vertex& v1, float t) const
 			{
 				// vt = v0 + (v1 - v0) * t, t:[0, 1]
