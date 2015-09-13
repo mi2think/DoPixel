@@ -173,7 +173,7 @@ namespace dopixel
 			// Draw a textured triangle
 			void DrawTexturedTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const;
 
-		public:
+		private:
 			int width;
 			int height;
 

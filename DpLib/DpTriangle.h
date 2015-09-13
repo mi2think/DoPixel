@@ -167,59 +167,6 @@
 		}
 	};
 
-	struct SCANLINE_LOOP
-	{
-		static void Loop(const Device& device, int height, const Gradients& gradients, Edge* edgeL, Edge* edgeR, const Vertex& v0)
-		{
-			unsigned int pitchBits = device.pitch * device.bitsPerPixel;
-			unsigned char* buffer = device.frameBuffer + edgeL->y * pitchBits;
-
-			while (height--)
-			{
-				int x_start = (int)ceil(edgeL->x);
-				int width = (int)ceil(edgeR->x) - x_start;
-
-#if INTERP_RGB || INTERP_Z || INTERP_UV
-				float x_pre_step = x_start - edgeL->x;
-#endif
-#if INTERP_RGB
-				float r = edgeL->r + x_pre_step * gradients.drdx;
-				float g = edgeL->g + x_pre_step * gradients.dgdx;
-				float b = edgeL->b + x_pre_step * gradients.dbdx;
-#endif
-#if INTERP_Z
-				float z = edgeL->z + x_pre_step * gradients.dzdx;
-#endif
-				if (width > 0)
-				{
-					unsigned int* p = (unsigned int*)(buffer + x_start * device.bitsPerPixel);
-
-					while (width--)
-					{
-#if INTERP_RGB
-						// draw color
-						*p = Color((unsigned char)r, (unsigned char)g, (unsigned char)b).value;
-
-						r += gradients.drdx;
-						g += gradients.dgdx;
-						b += gradients.dbdx;
-#endif
-#if INTERP_Z
-						z += gradients.dzdx;
-#endif
-#if (!INTERP_RGB) && (!INTERP_UV)
-						*p = v0.color.value;
-#endif
-						++p;
-					}
-				}
-				edgeL->Step();
-				edgeR->Step();
-				buffer += pitchBits;
-			}
-		}
-	};
-
 	// begin deal
 	{
 		const Vertex* pVertices[3] = { &v0, &v1, &v2 };
@@ -266,33 +213,87 @@
 		Edge edgeTB(gradients, pVertices, top, bottom);		// edge - top to bottom
 		Edge edgeTM(gradients, pVertices, top, middle);		// edge - top to middle
 		Edge edgeMB(gradients, pVertices, middle, bottom);	// edge - middle to bottom
-		Edge* edgeL; // edge - left
-		Edge* edgeR; // edge - right
 
-		// triangle is clockwise, so if bottom > middle then middle is right
-		if (middleIsLeft)
+		// sub triangles
+		unsigned int pitchBits = pitch * bitsPerPixel;
+		for (int subTriangle = 0; subTriangle <= 1; ++subTriangle)
 		{
-			edgeL = &edgeTM;
-			edgeR = &edgeTB;
-		}
-		else
-		{
-			edgeL = &edgeTB;
-			edgeR = &edgeTM;
-		}
-		SCANLINE_LOOP::Loop(*this, edgeTM.height, gradients, edgeL, edgeR, v0);
+			Edge* edgeL; // edge - left
+			Edge* edgeR; // edge - right
+			int height;
 
-		if (middleIsLeft)
-		{
-			edgeL = &edgeMB;
-			edgeR = &edgeTB;
+			if (subTriangle == 0) {
+				// top half
+				if (middleIsLeft) {
+					edgeL = &edgeTM; edgeR = &edgeTB;
+				} else {
+					edgeL = &edgeTB; edgeR = &edgeTM;
+				}
+				height = edgeTM.height;
+			} else {
+				// bottom half
+				if (middleIsLeft) {
+					edgeL = &edgeMB; edgeR = &edgeTB;
+				} else {
+					edgeL = &edgeTB; edgeR = &edgeMB;
+				}
+				height = edgeMB.height;
+			}
+
+			// scan line
+			unsigned char* buffer = frameBuffer + edgeL->y * pitchBits;
+			while (height--)
+			{
+				// test y clip
+				int y = edgeL->y;
+				if (y >= clipRect.top && y < clipRect.bottom)
+				{
+					int x_start = (int)ceil(edgeL->x);
+					int width = (int)ceil(edgeR->x) - x_start;
+
+#if INTERP_RGB || INTERP_Z || INTERP_UV
+					float x_pre_step = x_start - edgeL->x;
+#endif
+#if INTERP_RGB
+					float r = edgeL->r + x_pre_step * gradients.drdx;
+					float g = edgeL->g + x_pre_step * gradients.dgdx;
+					float b = edgeL->b + x_pre_step * gradients.dbdx;
+#endif
+#if INTERP_Z
+					float z = edgeL->z + x_pre_step * gradients.dzdx;
+#endif
+					if (width > 0)
+					{
+						int x = x_start;
+						unsigned int* p = (unsigned int*)(buffer + x_start * bitsPerPixel);
+						while (width--)
+						{
+							// test x clip
+							if (x >= clipRect.left && x < clipRect.right)
+							{
+#if INTERP_RGB
+								*p = Color((unsigned char)r, (unsigned char)g, (unsigned char)b).value;
+								r += gradients.drdx;
+								g += gradients.dgdx;
+								b += gradients.dbdx;
+#endif
+#if INTERP_Z
+								z += gradients.dzdx;
+#endif
+#if (!INTERP_RGB) && (!INTERP_UV)
+								*p = v0.color.value;
+#endif
+								++p;
+							}
+							++x;
+						}
+					}
+				}
+				edgeL->Step();
+				edgeR->Step();
+				buffer += pitchBits;
+			}
 		}
-		else
-		{
-			edgeL = &edgeTB;
-			edgeR = &edgeMB;
-		}
-		SCANLINE_LOOP::Loop(*this, edgeMB.height, gradients, edgeL, edgeR, v0);
 	}
 }
 
