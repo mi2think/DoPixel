@@ -50,6 +50,10 @@ namespace dopixel
 
 			void Init(unsigned char* buffer, int pitch) { frameBuffer = buffer; this->pitch = pitch; }
 
+			void BeginScene();
+
+			void EndScene();
+
 			void WritePixel(int x, int y, const Color& color) const { unsigned char* p = frameBuffer + (x + y * pitch) * bitsPerPixel; *((unsigned int*)p) = color.value; }
 			
 			RectI SetClipRect(const RectI& rect) { RectI rc = clipRect; clipRect = rect; return rc; }

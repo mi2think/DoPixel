@@ -69,6 +69,19 @@ namespace dopixel
 			zbuffer.Create(width, height);
 		}
 
+		void Device::BeginScene()
+		{
+			if (zEnable != ZEnable_False)
+			{
+				zbuffer.Clear(zEnable == ZEnable_Z ? 320000.0f : -1.0f);
+			}
+		}
+
+		void Device::EndScene()
+		{
+
+		}
+
 		void Device::SetRenderState(RenderState rs, int value)
 		{
 			switch (rs)

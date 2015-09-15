@@ -29,6 +29,10 @@ void LoadASC::OnCreate()
 	wireMode = false;
 
 	LoadObjectFrom3DSASC(object, "car01.asc", Vector4f(5, 5, 5, 1), Vector4f(0, 0, 0, 1), Vector4f(0, 0, 0, 1), VERTEX_FLAGS_SWAP_YZ | VERTEX_FLAGS_INVERT_WINDING_ORDER);
+
+	device.SetRenderState(RS_ZEnable, ZEnable_INVZ);
+	device.SetRenderState(RS_ZFUNC, CMP_Less);
+	device.SetRenderState(RS_ZWriteEnable, True);
 }
 
 void LoadASC::Run(float fElapsedTime)

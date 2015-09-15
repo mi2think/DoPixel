@@ -265,6 +265,7 @@
 
 			// scan line
 			unsigned char* buffer = frameBuffer + edgeL->y * pitchBits;
+			float* bufferz = zbuffer.buffer + edgeL->y * zbuffer.width;
 			while (height--)
 			{
 				// test y clip
@@ -295,6 +296,51 @@
 							// test x clip
 							if (x >= clipRect.left && x < clipRect.right)
 							{
+								// test z pass
+#if INTERP_Z || INTERP_INVZ
+								if (zEnable != ZEnable_False)
+								{
+									float& zf = *(bufferz + x);
+									bool zpass = false;
+									switch (zFunc)
+									{
+									case CMP_Never:
+									default:
+										zpass = false;
+										break;
+									case CMP_Less:
+										zpass = (z < zf);
+										break;
+									case CMP_Equal:
+										zpass = FCMP(z, zf);
+										break;
+									case CMP_LessEqual:
+										zpass = ((z < zf) || FCMP(z, zf));
+										break;
+									case CMP_Greater:
+										zpass = (z > zf);
+										break;
+									case CMP_NotEqual:
+										zpass = (!FCMP(z, zf));
+										break;
+									case CMP_GreaterEqual:
+										zpass = ((z > zf) || FCMP(z, zf));
+										break;
+									case CMP_Always:
+										zpass = true;
+										break;
+									}
+#if INTERP_INVZ
+									// inv z
+									if (zFunc != CMP_Never && zFunc != CMP_Always)
+										zpass = !zpass;
+#endif
+									if (! zpass)
+										continue;
+									else if (zWriteEnable == True)
+										zf = z;
+								}
+#endif
 #if INTERP_RGB
 								unsigned char rc = (unsigned char)math::Clamp<float>(r + 0.5f, 0.0f, 255.0f);
 								unsigned char gc = (unsigned char)math::Clamp<float>(g + 0.5f, 0.0f, 255.0f);
@@ -316,7 +362,7 @@
 								vr = math::Clamp<float>(vr, 0.0f, 1.0f);
 								texture->Sample(color, ur, vr);
 #endif
-								*(p++) = color.value;
+								*p = color.value;
 
 #if INTERP_RGB
 								r += gradients.drdx;
@@ -332,12 +378,14 @@
 #endif
 							}
 							++x;
+							++p;
 						}
 					}
 				}
 				edgeL->Step();
 				edgeR->Step();
 				buffer += pitchBits;
+				bufferz += zbuffer.width;
 			}
 		}
 	}

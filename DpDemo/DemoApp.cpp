@@ -152,9 +152,11 @@ bool DemoApp::Loop()
 				}
 
 				device.Init((unsigned char*)lockRect.pBits, lockRect.Pitch / 4);
+				device.BeginScene();
 
 				Render(1.0f);
 
+				device.EndScene();
 				pDrawSurface->UnlockRect();
 			}
 
