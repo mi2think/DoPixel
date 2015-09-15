@@ -62,23 +62,26 @@ namespace dopixel
 			bool ClipLine(Point& pc0, Point& pc1, const Point& p0, const Point& p1) const;
 
 			// Draw a Line, using DDA
-			void DrawLineDDA(const Point& p0, const Point& p1, const Color& color) const;
+			void DrawLineDDA(const Point& p0, const Point& p1, const Color& color);
 			
 			// Draw a Line, using Bresenham, has better performance
-			void DrawLine(const Point& p0, const Point& p1, const Color& color) const;
+			void DrawLine(const Point& p0, const Point& p1, const Color& color);
 
 			// Draw a triangle with now render state
 			void DrawTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
 		private:
-			// Draw a flat triangle
-			void DrawFlatTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const;
+			void draw_wireframe_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+			void draw_flat_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+			void draw_gouraud_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+			void draw_textured_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
 
-			// Draw a gouraud triangle
-			void DrawGouraudTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const;
+			void draw_flat_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+			void draw_gouraud_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+			void draw_textured_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
 
-			// Draw a textured triangle
-			void DrawTexturedTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const;
-
+			void draw_flat_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+			void draw_gouraud_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+			void draw_textured_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
 		private:
 			int width;
 			int height;
@@ -90,6 +93,9 @@ namespace dopixel
 			
 			int fillMode;
 			int shadeMode;
+			int zEnable;
+			int zFunc;
+			int zWriteEnable;
 			Texture* texture;
 
 			ZBuffer zbuffer;

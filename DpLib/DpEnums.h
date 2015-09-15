@@ -41,12 +41,26 @@ namespace dopixel
 			CMP_Always,
 		};
 
+		enum Boolen
+		{
+			False,
+			True,
+		};
+
+		enum ZEnable
+		{
+			ZEnable_False,
+			ZEnable_Z,
+			ZEnable_INVZ,
+		};
+
 		enum RenderState
 		{
 			RS_FillMode,
 			RS_ShadeMode,
+			RS_ZEnable,
 			RS_ZFUNC,
-			RS_ZWrite,
+			RS_ZWriteEnable,
 		};
 	}
 }

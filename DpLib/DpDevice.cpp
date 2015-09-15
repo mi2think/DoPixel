@@ -51,6 +51,9 @@ namespace dopixel
 			, bitsPerPixel(4)
 			, fillMode(Fill_Solid)
 			, shadeMode(Shade_Flat)
+			, zEnable(False)
+			, zFunc(CMP_Never)
+			, zWriteEnable(False)
 			, texture(nullptr)
 		{}
 
@@ -76,10 +79,19 @@ namespace dopixel
 			case RS_ShadeMode:
 				shadeMode = value;
 				break;
+			case RS_ZEnable:
+				zEnable = value;
+				break;
+			case RS_ZFUNC:
+				zFunc = value;
+				break;
+			case RS_ZWriteEnable:
+				zWriteEnable = value;
+				break;
 			}
 		}
 
-		void Device::DrawLineDDA(const Point& p0, const Point& p1, const Color& color) const
+		void Device::DrawLineDDA(const Point& p0, const Point& p1, const Color& color)
 		{
 			Point pc0;
 			Point pc1;
@@ -129,7 +141,7 @@ namespace dopixel
 			}
 		}
 
-		void Device::DrawLine(const Point& p0, const Point& p1, const Color& color) const
+		void Device::DrawLine(const Point& p0, const Point& p1, const Color& color)
 		{
 			Point pc0;
 			Point pc1;
@@ -342,642 +354,106 @@ namespace dopixel
 		{
 			if (fillMode == Fill_Wireframe)
 			{
-				// just draw three lines, with color of first vertex
-				DrawLine(Point(v0.x, v0.y), Point(v1.x, v1.y), v0.color);
-				DrawLine(Point(v1.x, v1.y), Point(v2.x, v2.y), v0.color);
-				DrawLine(Point(v0.x, v0.y), Point(v2.x, v2.y), v0.color);
+				draw_wireframe_triangle(v0, v1, v2);
 			}
 			else
 			{
 				if (texture != nullptr)
 				{
-					DrawTexturedTriangle(v0, v1, v2);
+					if (zEnable == ZEnable_Z)
+						draw_textured_zb_triangle(v0, v1, v2);
+					else if (zEnable == ZEnable_INVZ)
+						draw_textured_inv_zb_triangle(v0, v1, v2);
+					else
+						draw_textured_triangle(v0, v1, v2);
 				}
 				else
 				{
 					if (shadeMode == Shade_Flat)
 					{
-						DrawFlatTriangle(v0, v1, v2);
+						if (zEnable == ZEnable_Z)
+							draw_flat_zb_triangle(v0, v1, v2);
+						else if (zEnable == ZEnable_INVZ)
+							draw_flat_inv_zb_triangle(v0, v1, v2);
+						else
+							draw_flat_triangle(v0, v1, v2);
 					}
 					else if (shadeMode == Shade_Gouraud)
 					{
-						DrawGouraudTriangle(v0, v1, v2);
+						if (zEnable == ZEnable_Z)
+							draw_gouraud_zb_triangle(v0, v1, v2);
+						else if (zEnable == ZEnable_INVZ)
+							draw_gouraud_inv_zb_triangle(v0, v1, v2);
+						else
+							draw_gouraud_triangle(v0, v1, v2);
 					}
 				}
 			}
 		}
 
-		void Device::DrawFlatTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
+		void Device::draw_wireframe_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+		{
+			// just draw three lines, with color of first vertex
+			DrawLine(Point(v0.x, v0.y), Point(v1.x, v1.y), v0.color);
+			DrawLine(Point(v1.x, v1.y), Point(v2.x, v2.y), v0.color);
+			DrawLine(Point(v0.x, v0.y), Point(v2.x, v2.y), v0.color);
+		}
+
+		void Device::draw_flat_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
 		{
 			#include "DpTriangle.h"
 		}
 
-		void Device::DrawGouraudTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
+		void Device::draw_gouraud_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
 		{
 			#define INTERP_RGB 1
 			#include "DpTriangle.h"
 		}
 
-		void Device::DrawTexturedTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2) const
+		void Device::draw_textured_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
 		{
-			Vertex p0 = v0;
-			Vertex p1 = v1;
-			Vertex p2 = v2;
-
-			if (FCMP(p0.x, p1.x) && FCMP(p1.x, p2.x) || FCMP(p0.y, p1.y) && FCMP(p1.y, p2.y))
-				return;
-
-			// Sort p0, p1, p2 in ascending y order
-			if (p1.y < p0.y)
-				Swap(p1, p0);
-	
-			if (p2.y < p0.y)
-				Swap(p0, p2);
-
-			if (p2.y < p1.y)
-				Swap(p2, p1);
-
-			// Cull
-			if (p2.y < clipRect.top || p0.y > clipRect.bottom ||
-				p0.x < clipRect.left && p1.x < clipRect.left && p2.x < clipRect.left ||
-				p0.x > clipRect.right && p1.x > clipRect.right && p2.x > clipRect.right)
-				return;
-
-			enum TypeTriangle { TypeFlatTop, TypeFlatBottom, TypeGeneral };
-
-			TypeTriangle type;
-			if (FCMP(p0.y, p1.y))
-				type = TypeFlatTop;
-			else if (FCMP(p1.y, p2.y))
-				type = TypeFlatBottom;
-			else
-				type = TypeGeneral;
-
-			if (type == TypeFlatTop || type == TypeFlatBottom)
-			{
-				if (type == TypeFlatTop)
-				{
-					if (p1.x < p0.x)
-						Swap(p1, p0);
-				}
-				else
-				{
-					if (p2.x < p1.x)
-						Swap(p2, p1);
-				}
-
-				float x1 = p0.x;
-				float y1 = p0.y;
-				float x2 = p1.x;
-				//float y2 = p1.y;
-				float x3 = p2.x;
-				float y3 = p2.y;
-
-				float height = y3 - y1;
-
-				float dx_left;
-				float dx_right;
-
-				// uv
-				Vector2f uv1 = p0.uv0;
-				Vector2f uv2 = p1.uv0;
-				Vector2f uv3 = p2.uv0;
-
-				float du_left;
-				float dv_left;
-				float du_right;
-				float dv_right;
-
-				// starting points
-				float xs;
-				float xe;
-
-				float is_u;
-				float is_v;
-				float ie_u;
-				float ie_v;
-
-				if (type == TypeFlatTop)
-				{
-					dx_left = (x3 - x1) / height;
-					dx_right = (x3 - x2) / height;
-
-					du_left = (uv3.x - uv1.x) / height;
-					dv_left = (uv3.y - uv1.y) / height;
-					du_right = (uv3.x - uv2.x) / height;
-					dv_right = (uv3.y - uv2.y) / height;
-
-					xs = x1;
-					xe = x2;
-
-					is_u = uv1.x;
-					is_v = uv1.y;
-					ie_u = uv2.x;
-					ie_v = uv2.y;
-				}
-				else
-				{
-					dx_left = (x2 - x1) / height;
-					dx_right = (x3 - x1) / height;
-
-					du_left = (uv2.x - uv1.x) / height;
-					dv_left = (uv2.y - uv1.y) / height;
-					du_right = (uv3.x - uv1.x) / height;
-					dv_right = (uv3.y - uv1.y) / height;
-
-					xs = x1;
-					xe = x1;
-
-					is_u = uv1.x;
-					is_v = uv1.y;
-					ie_u = uv1.x;
-					ie_v = uv1.y;
-				}
-
-				int iy1, iy3;
-
-				// check y1
-				float dy = 0.0f;
-				if (y1 < clipRect.top)
-				{
-					dy = clipRect.top - y1;
-
-					// clip y1
-					float y1_clip = (float)clipRect.top;
-
-					//make sure top left fill convention is observed
-					iy1 = (int)y1_clip;
-				}
-				else
-				{
-					//make sure top left fill convention is observed
-					iy1 = (int)ceil(y1);
-
-					dy = iy1 - y1;
-				}
-				// compute new xs and xe
-				xs = xs + dx_left * dy;
-				is_u = is_u + du_left * dy;
-				is_v = is_v + dv_left * dy;
-
-				xe = xe + dx_right * dy;
-				ie_u = ie_u + du_right * dy;
-				ie_v = ie_v + dv_right * dy;
-
-				// check y3
-				if (y3 > clipRect.bottom)
-				{
-					// clip y
-					float y3_clip = (float)clipRect.bottom;
-
-					// make sure top left fill convention is observed
-					iy3 = int(y3_clip - 1);
-				}
-				else
-				{
-					// make sure top left fill convention is observed
-					iy3 = (int)ceil(y3) - 1;
-				}
-
-				unsigned int pitchBits = pitch * bitsPerPixel;
-				unsigned char* buffer = frameBuffer + iy1 * pitchBits;
-				Color simpleColor;
-
-				// check x
-				if (x1 >= clipRect.left && x1 <= clipRect.right &&
-					x2 >= clipRect.left && x2 <= clipRect.right &&
-					x3 >= clipRect.left && x3 <= clipRect.right)
-				{
-					for (int loop_y = iy1; loop_y <= iy3; ++loop_y, buffer += pitchBits)
-					{
-						// point start
-						int xstart = (int)ceil(xs);
-						int xend = (int)ceil(xe) - 1;
-
-						// uv step
-						float di_u = 0.0f;
-						float di_v = 0.0f;
-
-						float dx = xe - xs;
-						if (dx > 0)
-						{
-							di_u = (ie_u - is_u) / dx;
-							di_v = (ie_v - is_v) / dx;
-						}
-						else
-						{
-							di_u = ie_u - is_u;
-							di_v = ie_v - is_v;
-						}
-
-						// uv start
-						float istart_u = is_u;
-						float istart_v = is_v;
-
-						unsigned char* p = buffer + xstart * bitsPerPixel;
-						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
-						{
-							texture->Sample(simpleColor, istart_u, istart_v);
-
-							*((unsigned int*)p) = simpleColor.value;
-
-							istart_u += di_u;
-							istart_v += di_v;
-						}
-
-						xs += dx_left;
-						xe += dx_right;
-
-						is_u += du_left;
-						is_v += dv_left;
-						ie_u += du_right;
-						ie_v += dv_right;
-					}
-				}
-				else
-				{
-					// clip x
-					for (int loop_y = iy1; loop_y <= iy3; ++loop_y)
-					{
-						// clip test
-						float xs_clip = xs;
-						float xe_clip = xe;
-
-						if (xs_clip < clipRect.left)
-						{
-							xs_clip = (float)clipRect.left;
-							if (xe_clip < clipRect.left)
-								continue;
-						}
-
-						if (xe_clip > clipRect.right)
-						{
-							xe_clip = (float)clipRect.right;
-							if (xs_clip > clipRect.right)
-								continue;
-						}
-
-						// uv step
-						float di_u = 0.0f;
-						float di_v = 0.0f;
-
-						float dx = xe - xs;
-						if (dx > 0)
-						{
-							di_u = (ie_u - is_u) / dx;
-							di_v = (ie_v - is_v) / dx;
-						}
-						else
-						{
-							di_u = ie_u - is_u;
-							di_v = ie_v - is_v;
-						}
-
-						// point start
-						int xstart = 0;
-						int xend = 0;
-
-
-						if (FCMP(xs_clip, xs))
-							xstart = (int)ceil(xs);
-						else
-							xstart = (int)xs_clip;
-
-						if (FCMP(xe_clip, xe))
-							xend = (int)ceil(xe) - 1;
-						else
-							xend = (int)xe_clip;
-
-						// uv start
-						float istart_u = is_u;
-						float istart_v = is_v;
-
-						unsigned char* p = buffer + xstart * bitsPerPixel;
-						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
-						{
-							texture->Sample(simpleColor, istart_u, istart_v);
-
-							*((unsigned int*)p) = simpleColor.value;
-
-							istart_u += di_u;
-							istart_v += di_v;
-						}
-
-						xs += dx_left;
-						xe += dx_right;
-
-						is_u += du_left;
-						is_v += dv_left;
-						ie_u += du_right;
-						ie_v += dv_right;
-					}
-				}
-			}
-			else
-			{
-				// new point
-				float xnew = p0.x + (p2.x - p0.x) * (p1.y - p0.y) / (p2.y - p0.y);
-				float ynew = p1.y;
-
-				float x1 = p0.x;
-				float y1 = p0.y;
-				float x2 = p1.x;
-				float y2 = p1.y;
-				float x3 = p2.x;
-				float y3 = p2.y;
-
-				float height_left;
-				float height_right;
-				float dx_left;
-				float dx_right;;
-
-				// uv
-				Vector2f uv1 = p0.uv0;
-				Vector2f uv2 = p1.uv0;
-				Vector2f uv3 = p2.uv0;
-
-				float du_left;
-				float dv_left;
-				float du_right;
-				float dv_right;
-
-				enum TypeNewPoint { TypeLHS, TypeRHS };
-				TypeNewPoint type = xnew > x2 ? TypeRHS : TypeLHS;
-
-				if (type == TypeRHS)
-				{
-					height_left = y2 - y1;
-					height_right = y3 - y1;
-					dx_left = (x2 - x1) / height_left;
-					dx_right = (x3 - x1) / height_right;
-
-					du_left = (uv2.x - uv1.x) / height_left;
-					dv_left = (uv2.y - uv1.y) / height_left;
-					du_right = (uv3.x - uv1.x) / height_right;
-					dv_right = (uv3.y - uv1.y) / height_right;
-				}
-				else
-				{
-					height_left = y3 - y1;
-					height_right = y2 - y1;
-					dx_left = (x3 - x1) / height_left;
-					dx_right = (x2 - x1) / height_right;
-
-					du_left = (uv3.x - uv1.x) / height_left;
-					dv_left = (uv3.y - uv1.y) / height_left;
-					du_right = (uv2.x - uv1.x) / height_right;
-					dv_right = (uv2.y - uv1.y) / height_right;
-				}
-
-				// starting points
-				float xs = x1;
-				float xe = x1;
-
-				float is_u = uv1.x;
-				float is_v = uv1.y;
-				float ie_u = uv1.x;
-				float ie_v = uv1.y;
-
-				int iy1, iy3;
-
-				// check y1
-				float dy = 0.0f;
-				if (y1 < clipRect.top)
-				{
-					dy = clipRect.top - y1;
-
-					float y1_clip = (float)clipRect.top;
-
-					//make sure top left fill convention is observed
-					iy1 = (int)y1_clip;
-				}
-				else
-				{
-					//make sure top left fill convention is observed
-					iy1 = (int)ceil(y1);
-
-					dy = iy1 - y1;
-				}
-				// compute new xs and ys
-				xs = xs + dx_left * dy;
-				is_u = is_u + du_left * dy;
-				is_v = is_v + dv_left * dy;
-
-				xe = xe + dx_right * dy;
-				ie_u = ie_u + du_right * dy;
-				ie_v = ie_v + du_right * dy;
-
-				// check y3
-				if (y3 > clipRect.bottom)
-				{
-					// clip y
-					float y3_clip = (float)clipRect.bottom;
-
-					// make sure top left fill convention is observed
-					iy3 = int(y3_clip - 1);
-				}
-				else
-				{
-					// make sure top left fill convention is observed
-					iy3 = (int)ceil(y3) - 1;
-				}
-
-				// check yrestart
-				int yrestart = int(ynew + 0.5f);
-				if (yrestart < iy1)
-					yrestart = iy1;
-
-				unsigned int pitchBits = pitch * bitsPerPixel;
-				unsigned char* buffer = frameBuffer + iy1 * pitchBits;
-				Color sampleColor;
-
-				// check x
-				if (x1 >= clipRect.left && x1 <= clipRect.right &&
-					x2 >= clipRect.left && x2 <= clipRect.right &&
-					x3 >= clipRect.left && x3 <= clipRect.right)
-				{
-					for (int loop_y = iy1; loop_y <= iy3; ++loop_y, buffer += pitchBits)
-					{
-						// test for loop_y hitting second region, if so change interpolant
-						if (loop_y == yrestart)
-						{
-							float height_new = (y3 - ynew);
-
-							if (type == TypeLHS)
-							{
-								dx_right = (x3 - x2) / height_new;
-
-								du_right = (uv3.x - uv2.x) / height_new;
-								dv_right = (uv3.y - uv2.y) / height_new;
-
-								xe = x2;
-								ie_u = uv2.x;
-								ie_v = uv2.y;
-							}
-							else
-							{
-								dx_left = (x3 - x2) / height_new;
-
-								du_left = (uv3.x - uv2.x) / height_new;
-								dv_left = (uv3.y - uv2.y) / height_new;
-
-								xs = x2;
-								is_u = uv2.x;
-								is_v = uv2.y;
-							}
-						}
-
-						// uv step
-						float di_u = 0.0f;
-						float di_v = 0.0f;
-
-						float dx = xe - xs;
-						if (dx > 0)
-						{
-							di_u = (ie_u - is_u) / dx;
-							di_v = (ie_v - is_v) / dx;
-						}
-						else
-						{
-							di_u = ie_u - is_u;
-							di_v = ie_v - is_v;
-						}
-
-						// point start
-						int xstart = (int)ceil(xs);
-						int xend = (int)ceil(xe) - 1;
-
-						// uv start
-						float istart_u = is_u;
-						float istart_v = is_v;
-
-						unsigned char* p = buffer + xstart * bitsPerPixel;
-						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
-						{
-							texture->Sample(sampleColor, istart_u, istart_v);
-
-							*((unsigned int*)p) = sampleColor.value;
-
-							istart_u += di_u;
-							istart_v += di_v;
-						}
-
-						xs += dx_left;
-						xe += dx_right;
-
-						is_u += du_left;
-						is_v += dv_left;
-						ie_u += du_right;
-						ie_v += dv_right;
-					}
-				}
-				else
-				{
-					// clip x
-					for (int loop_y = iy1; loop_y <= iy3; ++loop_y, buffer += pitchBits)
-					{
-						// test for loop_y hitting second region, if so change interpolant
-						if (loop_y == yrestart)
-						{
-							float height_new = (y3 - ynew);
-
-							if (type == TypeLHS)
-							{
-								dx_right = (x3 - x2) / height_new;
-
-								du_right = (uv3.x - uv2.x) / height_new;
-								dv_right = (uv3.y - uv2.y) / height_new;
-
-								xe = x2;
-								ie_u = uv2.x;
-								ie_v = uv2.y;
-							}
-							else
-							{
-								dx_left = (x3 - x2) / height_new;
-
-								du_left = (uv3.x - uv2.x) / height_new;
-								dv_left = (uv3.y - uv2.y) / height_new;
-
-								xs = x2;
-								is_u = uv2.x;
-								is_v = uv2.y;
-							}
-						}
-
-						// clip test
-						float xs_clip = xs;
-						float xe_clip = xe;
-
-						if (xs_clip < clipRect.left)
-						{
-							xs_clip = (float)clipRect.left;
-							if (xe_clip < clipRect.left)
-								continue;
-						}
-
-						if (xe_clip > clipRect.right)
-						{
-							xe_clip = (float)clipRect.right;
-							if (xs_clip > clipRect.right)
-								continue;
-						}
-
-						// uv step
-						float di_u = 0.0f;
-						float di_v = 0.0f;
-
-						float dx = xe - xs;
-						if (dx > 0)
-						{
-							di_u = (ie_u - is_u) / dx;
-							di_v = (ie_v - is_v) / dx;
-						}
-						else
-						{
-							di_u = ie_u - is_u;
-							di_v = ie_v - is_v;
-						}
-
-						// point start
-						int xstart = 0;
-						int xend = 0;
-
-						if (FCMP(xs_clip, xs))
-							xstart = (int)ceil(xs);
-						else
-							xstart = (int)xs_clip;
-
-						if (FCMP(xe_clip, xe))
-							xend = (int)ceil(xe) - 1;
-						else
-							xend = (int)xe_clip;
-
-						float istart_u = is_u;
-						float istart_v = is_v;
-
-						unsigned char* p = buffer + xstart * bitsPerPixel;
-						for (int loop_x = xstart; loop_x <= xend; ++loop_x, p += bitsPerPixel)
-						{
-							texture->Sample(sampleColor, istart_u, istart_v);
-
-							*((unsigned int*)p) = sampleColor.value;
-
-							istart_u += di_u;
-							istart_v += di_v;
-						}
-
-						xs += dx_left;
-						xe += dx_right;
-
-						is_u += du_left;
-						is_v += dv_left;
-						ie_u += du_right;
-						ie_v += dv_right;
-					}
-				}
-			}
-
+			#define INTERP_UV 1
+			#include "DpTriangle.h"
+		}
+
+		void Device::draw_flat_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+		{
+			#define INTERP_Z 1
+			#include "DpTriangle.h"
+		}
+
+		void Device::draw_gouraud_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+		{
+			#define INTERP_Z 1
+			#define INTERP_RGB 1
+			#include "DpTriangle.h"
+		}
+
+		void Device::draw_textured_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+		{
+			#define INTERP_Z 1
+			#define INTERP_UV 1
+			#include "DpTriangle.h"
+		}
+
+		void Device::draw_flat_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+		{
+			#define INTERP_INVZ 1
+			#include "DpTriangle.h"
+		}
+
+		void Device::draw_gouraud_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+		{
+			#define INTERP_INVZ 1
+			#define INTERP_RGB 1
+			#include "DpTriangle.h"
+		}
+
+		void Device::draw_textured_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+		{
+			#define INTERP_INVZ 1
+			#define INTERP_UV_DIVZ 1
+			#include "DpTriangle.h"
 		}
 	}
 }

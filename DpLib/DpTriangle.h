@@ -12,17 +12,11 @@
 
 
 /*
- *
- * INTERP_Z		- if defined, interpolate Z values
- * INTERP_RGB	- if defined, interpolate RGB values
- * INTERP_UV	- if defined, interpolate UV values
- *
- *
- *
- *
- *
- *
- *
+ * INTERP_Z			- if defined, interpolate Z values
+ * INTERP_INVZ		- if defined, interpolate 1/Z values
+ * INTERP_RGB		- if defined, interpolate RGB values
+ * INTERP_UV		- if defined, interpolate UV values
+ * INTERP_UV_DIVZ	- if defined, interpolate UV values
  *
  */
 
@@ -36,20 +30,19 @@
 		float dgdx; float dgdy;
 		float dbdx; float dbdy;
 #endif
-#if INTERP_Z
-		float z[3];					// 1/z for each vertex
-		float dzdx; float dzdy;		// d(1/z)/dx, d(1/z)/dy
+#if INTERP_Z || INTERP_INVZ
+		float z[3];					// z for each vertex ; or 1/z for each vertex
+		float dzdx; float dzdy;		// dz/dx, dz/dy ; or d(1/z)/dx, d(1/z)/dy
 #endif
-#if INTERP_UV
-		float u[3];					// u/z for each vertex
-		float v[3];					// v/z for each vertex
-		float dudx; float dudy;		// d(u/z)/dx, d(u/z)/dy
-		float dvdx; float dvdy;		// d(v/z)/dx, d(v/z)/dy
+#if INTERP_UV || INTERP_UV_DIVZ
+		float u[3];					// u for each vertex ; or u/z for each vertex
+		float v[3];					// v for each vertex ; or v/z for each vertex
+		float dudx; float dudy;		// du/dx, du/dy ; or d(u/z)/dx, d(u/z)/dy
+		float dvdx; float dvdy;		// dv/dx, dv/dy ; or d(v/z)/dx, d(v/z)/dy
 #endif
 
 		Gradients(const Vertex** pVertices)
 		{
-#if INTERP_RGB || INTERP_Z || INTERP_UV
 			const int counter = 3;
 
 			// common sub compute
@@ -85,13 +78,36 @@
 			dgdy = oneOverdy * ((g[1] - g[2]) * x0_x2 - (g[0] - g[2]) * x1_x2);
 			dbdy = oneOverdy * ((b[1] - b[2]) * x0_x2 - (b[0] - b[2]) * x1_x2);
 #endif
+#if INTERP_Z || INTERP_INVZ
 #if INTERP_Z
+			z[0] = pVertices[0]->z;
+			z[1] = pVertices[1]->z;
+			z[2] = pVertices[2]->z;
+#endif
+#if INTERP_INVZ
 			z[0] = 1.0f / pVertices[0]->z;
 			z[1] = 1.0f / pVertices[1]->z;
 			z[2] = 1.0f / pVertices[2]->z;
+#endif
 			dzdx = oneOverdx * ((z[1] - z[2]) * y0_y2 - (z[0] - z[2]) * y1_y2);
 			dzdy = oneOverdy * ((z[1] - z[2]) * x0_x2 - (z[0] - z[2]) * x1_x2);
 #endif
+#if INTERP_UV || INTERP_UV_DIVZ
+			for (int i = 0; i < counter; ++i)
+			{
+				u[i] = pVertices[i]->u0;
+				v[i] = pVertices[i]->v0;
+#if INTERP_UV_DIVZ
+				// INTERP_INVZ must defined before
+				u[i] *= z[i];
+				v[i] *= z[i];
+#endif
+			}
+			dudx = oneOverdx * ((u[1] - u[2]) * y0_y2 - (u[0] - u[2]) * y1_y2);
+			dudy = oneOverdy * ((u[1] - u[2]) * x0_x2 - (u[0] - u[2]) * x1_x2);
+
+			dvdx = oneOverdx * ((v[1] - v[2]) * y0_y2 - (v[0] - v[2]) * y1_y2);
+			dvdy = oneOverdy * ((v[1] - v[2]) * x0_x2 - (v[0] - v[2]) * x1_x2);
 #endif
 		}
 	};
@@ -105,13 +121,14 @@
 		float g; float dgdy;		// and dr/dy, dg/dy, db/dy
 		float b; float dbdy;
 #endif
-#if INTERP_Z
-		float z; float dzdy;		// current 1/z, d(1/z)/dy
+#if INTERP_Z || INTERP_INVZ
+		float z; float dzdy;		// current z, dz/dy ; or current 1/z, d(1/z)/dy
 #endif
-#if INTERP_UV
-		float u; float dudy;		// u/z, d(u/z)/dy
-		float v; float dvdy;		// v/z, d(v/z)/dy
+#if INTERP_UV || INTERP_UV_DIVZ
+		float u; float dudy;		// u, du/dy ; or u/z, d(u/z)/dy
+		float v; float dvdy;		// v, dv/dy ; or v/z, d(v/z)/dy
 #endif
+
 		Edge(const Gradients& gradients, const Vertex** pVertices, int top, int bottom)
 		{
 			const Vertex* vtop = *(pVertices + top);
@@ -128,9 +145,7 @@
 
 			dxdy = real_width / real_height;
 			x = vtop->x + y_pre_step * dxdy;
-#if INTERP_RGB || INTERP_Z || INTERP_UV
 			float x_pre_step = x - vtop->x;
-#endif
 #if INTERP_RGB
 			drdy = gradients.drdy + dxdy * gradients.drdx;
 			dgdy = gradients.dgdy + dxdy * gradients.dgdx;
@@ -140,12 +155,16 @@
 			g = vtop->color.g + y_pre_step * dgdy + x_pre_step * gradients.drdx;
 			b = vtop->color.b + y_pre_step * dbdy + x_pre_step * gradients.drdx;
 #endif
-#if INTERP_Z
-			// 1/z step depend on both y step and x step
+#if INTERP_Z || INTERP_INVZ
+			// z or 1/z step depend on both y step and x step
 			dzdy = gradients.dzdy + dxdy * gradients.dzdx;
 			z = gradients.z[top] + y_pre_step * gradients.dzdy + x_pre_step * gradients.dzdx;
 #endif
-#if INTERP_UV
+#if INTERP_UV || INTERP_UV_DIVZ
+			dudy = gradients.dudy + dxdy * gradients.dudx;
+			dvdy = gradients.dvdy + dxdy * gradients.dvdx;
+			u = gradients.u[top] + y_pre_step * gradients.dudy + x_pre_step * gradients.dudx;
+			v = gradients.v[top] + y_pre_step * gradients.dvdy + x_pre_step * gradients.dvdx;
 #endif
 		}
 
@@ -154,14 +173,17 @@
 			x += dxdy;
 			++y;
 			--height;
-
 #if INTERP_RGB
 			r += drdy;
 			g += dgdy;
 			b += dbdy;
 #endif
-#if INTERP_Z
+#if INTERP_Z || INTERP_INVZ
 			z += dzdy;
+#endif
+#if INTERP_UV || INTERP_UV_DIVZ
+			u += dudy;
+			v += dvdy;
 #endif
 			return height;
 		}
@@ -251,17 +273,18 @@
 				{
 					int x_start = (int)ceil(edgeL->x);
 					int width = (int)ceil(edgeR->x) - x_start;
-
-#if INTERP_RGB || INTERP_Z || INTERP_UV
 					float x_pre_step = x_start - edgeL->x;
-#endif
 #if INTERP_RGB
 					float r = edgeL->r + x_pre_step * gradients.drdx;
 					float g = edgeL->g + x_pre_step * gradients.dgdx;
 					float b = edgeL->b + x_pre_step * gradients.dbdx;
 #endif
-#if INTERP_Z
+#if INTERP_Z || INTERP_INVZ
 					float z = edgeL->z + x_pre_step * gradients.dzdx;
+#endif
+#if INTERP_UV || INTERP_UV_DIVZ
+					float u = edgeL->u + x_pre_step * gradients.dudx;
+					float v = edgeL->v + x_pre_step * gradients.dvdx;
 #endif
 					if (width > 0)
 					{
@@ -277,15 +300,36 @@
 								unsigned char gc = (unsigned char)math::Clamp<float>(g + 0.5f, 0.0f, 255.0f);
 								unsigned char bc = (unsigned char)math::Clamp<float>(b + 0.5f, 0.0f, 255.0f);
 								color.Set(rc, gc, bc);
+#endif
+#if INTERP_UV || INTERP_UV_DIVZ
+								// r : mean reality
+								float ur = u;
+								float vr = v;
+#if INTERP_UV_DIVZ
+								// INTERP_INVZ must defined before
+								// here: u : u/z, v : v/z, z : 1.0f/z
+								float zr = 1.0f / z;
+								ur *= zr;
+								vr *= zr;
+#endif
+								ur = math::Clamp<float>(ur, 0.0f, 1.0f);
+								vr = math::Clamp<float>(vr, 0.0f, 1.0f);
+								texture->Sample(color, ur, vr);
+#endif
+								*(p++) = color.value;
+
+#if INTERP_RGB
 								r += gradients.drdx;
 								g += gradients.dgdx;
 								b += gradients.dbdx;
 #endif
-#if INTERP_Z
+#if INTERP_Z  || INTERP_INVZ
 								z += gradients.dzdx;
 #endif
-								*p = color.value;
-								++p;
+#if INTERP_UV || INTERP_UV_DIVZ
+								u += gradients.dudx;
+								v += gradients.dvdx;
+#endif
 							}
 							++x;
 						}
@@ -300,5 +344,7 @@
 }
 
 #undef INTERP_Z
+#undef INTERP_INVZ
 #undef INTERP_RGB
 #undef INTERP_UV
+#undef INTERP_UV_DIVZ
