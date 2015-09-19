@@ -293,6 +293,7 @@
 						unsigned int* p = (unsigned int*)(buffer + x * bitsPerPixel);
 						while (width--)
 						{
+							bool zpass = true;
 							// test x clip
 							if (x >= clipRect.left && x < clipRect.right)
 							{
@@ -301,7 +302,6 @@
 								if (zEnable != ZEnable_False)
 								{
 									float& zf = *(bufferz + x);
-									bool zpass = false;
 									switch (zFunc)
 									{
 									case CMP_Never:
@@ -335,9 +335,7 @@
 									if (zFunc != CMP_Never && zFunc != CMP_Always)
 										zpass = !zpass;
 #endif
-									if (! zpass)
-										continue;
-									else if (zWriteEnable == True)
+									if (zpass && zWriteEnable == True)
 										zf = z;
 								}
 #endif
@@ -362,23 +360,25 @@
 								vr = math::Clamp<float>(vr, 0.0f, 1.0f);
 								texture->Sample(color, ur, vr);
 #endif
-								*p = color.value;
-
-#if INTERP_RGB
-								r += gradients.drdx;
-								g += gradients.dgdx;
-								b += gradients.dbdx;
-#endif
-#if INTERP_Z  || INTERP_INVZ
-								z += gradients.dzdx;
-#endif
-#if INTERP_UV || INTERP_UV_DIVZ
-								u += gradients.dudx;
-								v += gradients.dvdx;
-#endif
+								if (zpass)
+								{
+									*p = color.value;
+								}
 							}
 							++x;
 							++p;
+#if INTERP_RGB
+							r += gradients.drdx;
+							g += gradients.dgdx;
+							b += gradients.dbdx;
+#endif
+#if INTERP_Z  || INTERP_INVZ
+							z += gradients.dzdx;
+#endif
+#if INTERP_UV || INTERP_UV_DIVZ
+							u += gradients.dudx;
+							v += gradients.dvdx;
+#endif
 						}
 					}
 				}

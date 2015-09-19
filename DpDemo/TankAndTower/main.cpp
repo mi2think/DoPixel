@@ -80,6 +80,22 @@ void TankAndTower::OnCreate()
 	lightIndex3 = lightFactory.AddSunLight(Vector4f(-1, 0, -1, 1), Color::gray);
 	
 	lightIndex4 = lightFactory.AddSpotLight(Light::ATTR_SPOTLIGHT2, Vector4f(0, 200, 0, 1), Vector4f(-1, 0, -1, 1), Color::red, 0 ,0.001f, 0, 0, 0, 1);
+
+	device.SetRenderState(RS_ZEnable, ZEnable_Z);
+	device.SetRenderState(RS_ZFUNC, CMP_Less);
+	device.SetRenderState(RS_ZWriteEnable, True);
+
+	////////////////////////////////////////////////////////////////////////////
+	//change player to red color
+	for (int i = 0; i < player.numPolys; ++i)
+	{
+		Poly& poly = player.pList[i];
+		for (int j = 0; j < 3; ++j)
+		{
+			Vertex& v = poly.vlist[poly.vert[j]];
+			v.color.Set(255, 0, 0);
+		}
+	}
 }
 
 void TankAndTower::Run(float fElapsedTime)
@@ -178,7 +194,7 @@ void TankAndTower::Run(float fElapsedTime)
 
 	renderList.RemoveBackfaces(camera);
 
-	renderList.Lighting(camera, lightFactory.GetLights());
+	//renderList.Lighting(camera, lightFactory.GetLights());
 
 	renderList.WorldToCamera(camera);
 

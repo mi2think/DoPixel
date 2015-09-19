@@ -13,6 +13,8 @@
 #include "DpCore.h"
 #include "DpMaterial.h"
 
+#include <limits>
+
 namespace dopixel
 {
 	namespace core
@@ -28,12 +30,9 @@ namespace dopixel
 		{
 			auto dest = buffer;
 			auto count = width * height;
-			_asm
+			for (int i = 0; i < count; ++i)
 			{
-				mov edi, dest
-				mov ecx, count
-				mov eax, value
-				rep stosd
+				dest[i] = value;
 			}
 		}
 
@@ -73,7 +72,7 @@ namespace dopixel
 		{
 			if (zEnable != ZEnable_False)
 			{
-				zbuffer.Clear(zEnable == ZEnable_Z ? 320000.0f : -1.0f);
+				zbuffer.Clear(zEnable == ZEnable_Z ? FLT_MAX : FLT_MIN);
 			}
 		}
 

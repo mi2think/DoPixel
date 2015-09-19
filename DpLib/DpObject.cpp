@@ -305,6 +305,9 @@ namespace dopixel
 			{
 				for (int i = 0; i < count; ++i, ++v1, ++v2)
 				{
+					// copy
+					*v2 = *v1;
+					// update position
 					v2->p = v1->p * m;
 					if ((v1->attr & Vertex::Attr_Normal) != 0)
 						v2->n = v1->n * m;
