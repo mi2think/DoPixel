@@ -15,5 +15,6 @@
     <ClCompile Include="dptest_loadmodel.cpp" />
     <ClCompile Include="dptest_ref.cpp" />
     <ClCompile Include="dptest_json.cpp" />
+    <ClCompile Include="dptest_event.cpp" />
   </ItemGroup>
 </Project>
