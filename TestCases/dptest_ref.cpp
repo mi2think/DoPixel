@@ -54,6 +54,12 @@ DPTEST(Ref)
 		EXPECT_TRUE(r3->GetId() == 2);
 		EXPECT_TRUE(r3.Count() == 2);
 		EXPECT_TRUE(r4.Count() == 2);
+
+		Ref<Derived> r5 = r3.As<Derived>();
+		EXPECT_TRUE(r5->GetId() == 2);
+		EXPECT_TRUE(r3.Count() == 3);
+		EXPECT_TRUE(r4.Count() == 3);
+		EXPECT_TRUE(r5.Count() == 3);
 	}
 
 	EXPECT_TRUE(r3->GetId() == 2);
