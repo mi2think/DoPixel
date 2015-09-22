@@ -98,6 +98,17 @@ namespace dopixel
 			return static_cast<const EventType*>(&event);
 		}
 
+		// event listener
+		class IEventListener
+		{
+		public:
+			virtual ~IEventListener() {}
+
+			// handle event, return true if eat event, else false
+			virtual bool OnEvent(const Event& event) = 0;
+		};
+
+
 		// Event dispatch
 		class EventDispatch
 		{
@@ -121,7 +132,7 @@ namespace dopixel
 			}
 
 			template<typename T, typename EventType>
-			void Dispatch(const T* obj, bool (T::*method)(const EventType&))
+			void Dispatch(T* obj, bool (T::*method)(const EventType&))
 			{
 				if (handled_)
 					return;
@@ -130,6 +141,22 @@ namespace dopixel
 				{
 					handled_ |= (obj->*method)(*staticEvent);
 				}
+			}
+
+			void Dispatch(IEventListener* listener)
+			{
+				if (handled_)
+					return;
+
+				handled_ |= listener->OnEvent(event_);
+			}
+
+			void Dispatch(IEventListener& listener)
+			{
+				if (handled_)
+					return;
+
+				handled_ |= listener.OnEvent(event_);
 			}
 
 			bool GetResult() const { return handled_; }

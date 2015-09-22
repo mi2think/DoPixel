@@ -28,9 +28,10 @@ DPTEST(Event)
 		USER_EVENT2,
 		USER_EVENT3,
 		USER_EVENT4,
+		USER_EVENT5
 	};
 
-
+	// const EventType* event_cast(const Event& event)
 	{
 		class MyEvent1 : public BaseEvent<USER_EVENT1, s1>
 		{
@@ -59,6 +60,7 @@ DPTEST(Event)
 		OnMyEvent1(myEvent1);
 	}
 
+	// Ref<EventType> event_cast(const EventRef& event)
 	{
 		class MyEvent2 : public BaseEvent<USER_EVENT2, s2>
 		{
@@ -81,6 +83,7 @@ DPTEST(Event)
 		OnMyEvent2(myEvent2);
 	}
 
+	// EventDispatch
 	{
 		class MyEvent3 : public BaseEvent<USER_EVENT3>
 		{
@@ -111,5 +114,52 @@ DPTEST(Event)
 		EXPECT_TRUE(dispatch.GetResult() == false);
 		dispatch.Dispatch((bool(*)(const MyEvent3&))OnMyEvent3);
 		EXPECT_TRUE(dispatch.GetResult() == true);
+	}
+
+	// IEventListener
+	{
+		class MyEvent5 : public BaseEvent<USER_EVENT5>
+		{
+		public:
+			MyEvent5(int a) : a_(a) {}
+
+			int GetParam() const { return a_; }
+		private:
+			int a_;
+		};
+
+		class UserHandle : public IEventListener
+		{
+		public:
+			UserHandle(int a) : a_(a) {}
+
+			bool OnEvent(const Event& event)
+			{
+				EventDispatch dispatch(event);
+				dispatch.Dispatch(this, &UserHandle::OnEvent5);
+				return dispatch.GetResult();
+			}
+
+			bool OnEvent5(const MyEvent5& event)
+			{
+				a_ += event.GetParam();
+				return true;
+			}
+
+			int GetParam() const { return a_; }
+		private:
+			int a_;
+		};
+
+		auto OnEvent = [](IEventListener* listener, const Event& event)
+		{
+			if (listener)
+				listener->OnEvent(event);
+		};
+
+		MyEvent5 myEvent5(1);
+		UserHandle userHandle(2);
+		OnEvent(&userHandle, myEvent5);
+		EXPECT_TRUE(userHandle.GetParam() == 3);
 	}
 }
