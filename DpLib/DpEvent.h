@@ -75,7 +75,7 @@ namespace dopixel
 		};
 
 		// down-cast an event reference
-		// usgae:
+		// usage:
 		//
 		// Ref<MyEvent> me = event_cast<MyEvent>(e);
 		template<typename EventType>
@@ -97,6 +97,44 @@ namespace dopixel
 			}
 			return static_cast<const EventType*>(&event);
 		}
+
+		// Event dispatch
+		class EventDispatch
+		{
+		public:
+			EventDispatch(const Event& event)
+				: event_(event)
+				, handled_(false)
+			{
+			}
+
+			template<typename EventType>
+			void Dispatch(bool (*func)(const EventType&))
+			{
+				if (handled_)
+					return;
+
+				if (const EventType* staticEvent = event_cast<EventType>(event_))
+				{
+					handled_ |= (*func)(*staticEvent);
+				}
+			}
+
+			template<typename T, typename EventType>
+			void Dispatch(const T* obj, bool (T::*method)(const EventType&))
+			{
+				if (handled_)
+					return;
+
+				if (const EventType* staticEvent = event_cast<EventType>(event_))
+				{
+					handled_ |= (obj->*method)(*staticEvent);
+				}
+			}
+		private:
+			const Event& event_;
+			bool handled_;
+		};
 	}
 }
 

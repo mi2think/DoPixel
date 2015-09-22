@@ -149,12 +149,12 @@ namespace dopixel
 			{
 				return !operator>(r);
 			}
-		private:
+
 			Ref(T* p, int* c) : ptr(p), counter(c)
 			{
 				IncRef();
 			}
-
+		private:
 			void IncRef()
 			{
 				if (counter)
