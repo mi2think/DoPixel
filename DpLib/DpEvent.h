@@ -131,6 +131,9 @@ namespace dopixel
 					handled_ |= (obj->*method)(*staticEvent);
 				}
 			}
+
+			bool GetResult() const { return handled_; }
+			void SetResult(bool handled) { handled_ = handled; }
 		private:
 			const Event& event_;
 			bool handled_;
