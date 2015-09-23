@@ -28,7 +28,8 @@ DPTEST(Event)
 		USER_EVENT2,
 		USER_EVENT3,
 		USER_EVENT4,
-		USER_EVENT5
+		USER_EVENT5,
+		USER_EVENT6
 	};
 
 	// const EventType* event_cast(const Event& event)
@@ -161,5 +162,99 @@ DPTEST(Event)
 		UserHandle userHandle(2);
 		OnEvent(&userHandle, myEvent5);
 		EXPECT_TRUE(userHandle.GetParam() == 3);
+	}
+
+	// Event broadcaster
+	{
+		class MyEvent6 : public BaseEvent<USER_EVENT6>
+		{
+		public:
+			MyEvent6(int a) : a_(a) {}
+			
+			int GetParam() const { return a_; }
+		private:
+			int a_;
+		};
+
+		class UserHandle1 : public IEventListener
+		{
+		public:
+			UserHandle1(int a) : a_(a) {}
+
+			bool OnEvent(const Event& event)
+			{
+				EventDispatch dispatch(event);
+				dispatch.Dispatch(this, &UserHandle1::OnEvent6);
+				return dispatch.GetResult();
+			}
+
+			bool OnEvent6(const MyEvent6& event)
+			{
+				a_ += event.GetParam();
+				return true;
+			}
+
+			int GetParam() const { return a_; }
+		private:
+			int a_;
+		};
+
+		class UserHandle2 : public IEventListener
+		{
+		public:
+			UserHandle2(int a) : a_(a) {}
+
+			bool OnEvent(const Event& event)
+			{
+				EventDispatch dispatch(event);
+				dispatch.Dispatch(this, &UserHandle2::OnEvent6);
+				return dispatch.GetResult();
+			}
+
+			bool OnEvent6(const MyEvent6& event)
+			{
+				a_ -= event.GetParam();
+				return true;
+			}
+
+			int GetParam() const { return a_; }
+		private:
+			int a_;
+		};
+
+		class UserHandle3 : public IEventListener, public EventBroadcaster
+		{
+		public:
+			UserHandle3(int a) : a_(a) {}
+
+			bool OnEvent(const Event& event)
+			{
+				EventDispatch dispatch(event);
+				dispatch.Dispatch(this, &UserHandle3::OnEvent6);
+				return dispatch.GetResult();
+			}
+
+			bool OnEvent6(const MyEvent6& event)
+			{
+				a_ *= event.GetParam();
+				return true;
+			}
+
+			int GetParam() const { return a_; }
+		private:
+			int a_;
+		};
+
+		UserHandle1 handle1(1);
+		UserHandle2 handle2(2);
+		UserHandle3 handle3(3);
+
+		handle3.RegisterEventListener(&handle1);
+		handle3.RegisterEventListener(&handle2);
+		handle3.RegisterEventListener(&handle3);
+		handle3.PostEvent(MyEvent6(6));
+		EXPECT_TRUE(handle1.GetParam() == 7);
+		EXPECT_TRUE(handle2.GetParam() == -4);
+		EXPECT_TRUE(handle3.GetParam() == 18);
 	}
 }

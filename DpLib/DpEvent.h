@@ -13,6 +13,7 @@
 #define __DP_EVENT__
 
 #include "DoPixel.h"
+#include <vector>
 
 namespace dopixel
 {
@@ -98,7 +99,7 @@ namespace dopixel
 			return static_cast<const EventType*>(&event);
 		}
 
-		// event listener
+		// Event listener
 		class IEventListener
 		{
 		public:
@@ -108,6 +109,20 @@ namespace dopixel
 			virtual bool OnEvent(const Event& event) = 0;
 		};
 
+		// Event broadcaster
+		class EventBroadcaster
+		{
+		public:
+			EventBroadcaster() {}
+
+			void RegisterEventListener(IEventListener* listener);
+
+			void UnregisterEventListener(IEventListener* listener);
+
+			bool PostEvent(const Event& event);
+		private:
+			std::vector<IEventListener*> listeners_;
+		};
 
 		// Event dispatch
 		class EventDispatch
