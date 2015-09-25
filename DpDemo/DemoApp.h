@@ -1,6 +1,8 @@
 #ifndef __DEMO_APP__
 #define __DEMO_APP__
 
+#include "DpKeyEvent.h"
+#include "DpKeyState.h"
 #include "DpNoCopy.h"
 #include "DpDevice.h"
 #include "DpColor.h"
@@ -36,6 +38,7 @@ public:
 
 	virtual void Render(float fElapsedTime) {}
 
+	virtual void OnEvent(const Event& event) {}
 protected:
 	Device device;
 

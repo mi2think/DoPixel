@@ -13,8 +13,12 @@
 #define __DOPIXEL__
 
 #include "DpRef.h"
-
 #include <string>
+
+#ifndef ASSERT
+#include <cassert>
+#define ASSERT assert
+#endif
 
 namespace dopixel
 {
@@ -27,10 +31,11 @@ namespace dopixel
 		class CameraController;
 		class Event;
 
-
 		typedef Ref<Camera> CameraRef;
 		typedef Ref<CameraController> CameraControllerRef;
 		typedef Ref<Event> EventRef;
+
+		const char* str_format(const char* format, ...);
 	}
 }
 

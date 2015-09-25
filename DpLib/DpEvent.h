@@ -30,14 +30,14 @@ namespace dopixel
 			// subclass must override this and return their class type
 			static int GetStaticEventType();
 
-			virtual CString ToString() const { return typeid(*this).name(); }
+			virtual CString ToCString() const { return typeid(*this).name(); }
 
 			typedef enum {
 				UNDEFINED,
 
 				// Key event type
 				KEY_PRESS,
-				KEY_REASE,
+				KEY_RELEASE,
 
 				// Mouse event type
 				MOUSE_MOVE,
@@ -66,12 +66,12 @@ namespace dopixel
 
 			static int GetStaticEventType() { return EventType; }
 
-			virtual CString ToString() const
+			virtual CString ToCString() const
 			{
 				if (*EventName)
 					return EventName;
 				else
-					return Event::ToString();
+					return Event::ToCString();
 			}
 		};
 

@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="DpCommon">
-      <UniqueIdentifier>{ab084571-0c16-45a5-a838-df80dec3e080}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Dp3DEngine">
       <UniqueIdentifier>{2ce2c535-db23-466e-b853-a16cc11ad39e}</UniqueIdentifier>
     </Filter>
@@ -19,49 +16,31 @@
     <Filter Include="Vendor\rapidjson">
       <UniqueIdentifier>{77e30a77-b43f-4cb7-b158-980d5c7961f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DpMath">
+      <UniqueIdentifier>{74715c8f-b5c6-4951-ab09-3b1681d3500c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DpCore">
+      <UniqueIdentifier>{ab084571-0c16-45a5-a838-df80dec3e080}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DpVector3.h">
-      <Filter>DpCommon</Filter>
-    </ClInclude>
     <ClInclude Include="DpUnitTest.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpConsole.h">
-      <Filter>DpCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="DpMath.h">
-      <Filter>DpCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="DpMatrix33.h">
-      <Filter>DpCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="DpMatrix43.h">
-      <Filter>DpCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="DpQuaternion.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpGeometry.h">
-      <Filter>DpCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="DpVector2.h">
-      <Filter>DpCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="DpVector4.h">
-      <Filter>DpCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="DpMatrix44.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpObject.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
     <ClInclude Include="DpScopeGuard.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpColor.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpCamera.h">
       <Filter>Dp3DEngine</Filter>
@@ -76,7 +55,7 @@
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
     <ClInclude Include="DpNoCopy.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpFileStream.h">
       <Filter>DpLoadRes</Filter>
@@ -85,25 +64,25 @@
       <Filter>DpLoadRes</Filter>
     </ClInclude>
     <ClInclude Include="DpCore.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpTimer.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpFps.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpFileParser.h">
       <Filter>DpLoadRes</Filter>
     </ClInclude>
     <ClInclude Include="DpStrUtility.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpLoadModel.h">
       <Filter>DpLoadRes</Filter>
     </ClInclude>
     <ClInclude Include="DpRef.h">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="..\Vendor\stb\stb_image.h">
       <Filter>Vendor\stb</Filter>
@@ -165,13 +144,46 @@
     <ClInclude Include="DpVertex.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
+    <ClInclude Include="DpMath.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
+    <ClInclude Include="DpMatrix33.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
+    <ClInclude Include="DpMatrix43.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
+    <ClInclude Include="DpMatrix44.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
+    <ClInclude Include="DpVector2.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
+    <ClInclude Include="DpVector3.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
+    <ClInclude Include="DpVector4.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
+    <ClInclude Include="DpEvent.h">
+      <Filter>DpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="DoPixel.h">
+      <Filter>DpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="DpQuaternion.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
+    <ClInclude Include="DpKeyEvent.h">
+      <Filter>DpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="DpKeyState.h">
+      <Filter>DpCore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">
-      <Filter>DpCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="DpQuaternion.cpp">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClCompile>
     <ClCompile Include="DpObject.cpp">
       <Filter>Dp3DEngine</Filter>
@@ -180,10 +192,10 @@
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpColor.cpp">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClCompile>
     <ClCompile Include="DpStrUtility.cpp">
-      <Filter>DpCommon</Filter>
+      <Filter>DpCore</Filter>
     </ClCompile>
     <ClCompile Include="DpLoadModel.cpp">
       <Filter>DpLoadRes</Filter>
@@ -208,6 +220,21 @@
     </ClCompile>
     <ClCompile Include="DpJson.cpp">
       <Filter>DpLoadRes</Filter>
+    </ClCompile>
+    <ClCompile Include="DpCamera.cpp">
+      <Filter>Dp3DEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="DpEvent.cpp">
+      <Filter>DpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="DpQuaternion.cpp">
+      <Filter>DpMath</Filter>
+    </ClCompile>
+    <ClCompile Include="DoPixel.cpp">
+      <Filter>DpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="DpKeyState.cpp">
+      <Filter>DpCore</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

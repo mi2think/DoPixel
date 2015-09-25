@@ -103,14 +103,23 @@ bool DemoApp::MsgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		return 0;
 	case WM_KEYDOWN:
-		switch (wParam)
+	case WM_SYSKEYDOWN:
 		{
-		case VK_ESCAPE:
-			SendMessage(hwnd, WM_CLOSE, 0, 0);
-			break;
+			KeyPressEvent event(wParam);
+			OnEvent(event);
+			KeyState::OnKeyPress(event);
+			if (event.GetKey() == KEY_ESCAPE)
+				SendMessage(hwnd, WM_CLOSE, 0, 0);
 		}
 		break;
-
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		{
+			KeyReleaseEvent event(wParam);
+			OnEvent(event);
+			KeyState::OnKeyRelease(event);
+		}
+		break;
 	}
 	return true;
 }
