@@ -69,9 +69,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureCube", "DpDirectXDem
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureTriangle", "DpDemo\TextureTriangle\TextureTriangle.vcxproj", "{9C336BC5-9246-4956-A711-4AB21686A3CB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_OpenAWindow", "DpOpenGLDemo\OpenAWindow\OpenAWindow.vcxproj", "{2E03BE74-2A27-423E-8CC3-0F22AFA11BC3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_OpenAWindow", "DpOpenGLDemo\01_OpenAWindow\01_OpenAWindow.vcxproj", "{2E03BE74-2A27-423E-8CC3-0F22AFA11BC3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_HelloDot", "DpOpenGLDemo\HelloDot\HelloDot.vcxproj", "{D59829B7-4EC9-476E-ABC5-56FE4D7969B5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_HelloDot", "DpOpenGLDemo\02_HelloDot\02_HelloDot.vcxproj", "{D59829B7-4EC9-476E-ABC5-56FE4D7969B5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03_FirstTriangle", "DpOpenGLDemo\03_FirstTriangle\03_FirstTriangle.vcxproj", "{5920FAA8-12D9-47A8-A907-2384DF8145A8}"
 EndProject
