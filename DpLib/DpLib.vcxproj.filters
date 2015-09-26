@@ -177,7 +177,10 @@
     <ClInclude Include="DpKeyEvent.h">
       <Filter>DpCore</Filter>
     </ClInclude>
-    <ClInclude Include="DpKeyState.h">
+    <ClInclude Include="DpMouseEvent.h">
+      <Filter>DpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="DpInputState.h">
       <Filter>DpCore</Filter>
     </ClInclude>
   </ItemGroup>
@@ -233,7 +236,7 @@
     <ClCompile Include="DoPixel.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
-    <ClCompile Include="DpKeyState.cpp">
+    <ClCompile Include="DpInputState.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
   </ItemGroup>

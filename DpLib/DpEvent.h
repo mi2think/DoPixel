@@ -42,10 +42,8 @@ namespace dopixel
 				// Mouse event type
 				MOUSE_MOVE,
 				MOUSE_PRESS,
-				MOUSE_REASE,
+				MOUSE_RELEASE,
 				MOUSE_WHELL,
-				MOUSE_ENTER,
-				MOUSE_LEAVE,
 				
 				// User define must begin at this ID
 				USER = 100

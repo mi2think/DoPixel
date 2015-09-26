@@ -6,6 +6,8 @@
 #include <string>
 #include <algorithm>
 
+#include <windowsx.h>	// for GET_X_LPARAM and GET_Y_LPARAM
+
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 //#pragma comment(lib, "DxErr.lib")
@@ -15,12 +17,21 @@
 using namespace dopixel::d3d;
 
 HWND g_hwnd = NULL;
+static int s_clickCount = 0;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	DemoApp* app = (DemoApp*)GetWindowLong(g_hwnd, GWL_USERDATA);
 	if (app && g_hwnd == hWnd)
+	{
 		app->MsgProc(hWnd, uMsg, wParam, lParam);
+	}
+	else
+	{
+		if (GetCapture() != g_hwnd && s_clickCount > 0)
+			s_clickCount = 0;
+	}
+
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
@@ -101,13 +112,13 @@ bool DemoApp::MsgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
-		return 0;
+		break;
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
 		{
 			KeyPressEvent event(wParam);
 			OnEvent(event);
-			KeyState::OnKeyPress(event);
+			InputState::OnKeyPress(event);
 			if (event.GetKey() == KEY_ESCAPE)
 				SendMessage(hwnd, WM_CLOSE, 0, 0);
 		}
@@ -117,7 +128,82 @@ bool DemoApp::MsgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			KeyReleaseEvent event(wParam);
 			OnEvent(event);
-			KeyState::OnKeyRelease(event);
+			InputState::OnKeyRelease(event);
+		}
+		break;
+	case WM_MOUSEMOVE:
+		{
+			MouseMoveEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			OnEvent(event);
+		}
+		break;
+	case WM_LBUTTONDOWN:
+		{
+			SetCapture(g_hwnd);
+			++s_clickCount;
+			MousePressEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), MOUSE_LBUTTON);
+			InputState::OnMousePress(event);
+			OnEvent(event);
+		}
+		break;
+	case WM_LBUTTONUP:
+		{
+			if (--s_clickCount < 1)
+			{
+				s_clickCount = 0;
+				ReleaseCapture();
+			}
+			MouseReleaseEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), MOUSE_LBUTTON);
+			InputState::OnMouseRelease(event);
+			OnEvent(event);
+		}
+		break;
+	case WM_RBUTTONDOWN:
+		{
+			SetCapture(g_hwnd);
+			++s_clickCount;
+			MousePressEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), MOUSE_RBUTTON);
+			InputState::OnMousePress(event);
+			OnEvent(event);
+		}
+		break;
+	case WM_RBUTTONUP:
+		{
+			if (--s_clickCount < 1)
+			{
+				s_clickCount = 0;
+				ReleaseCapture();
+			}
+			MouseReleaseEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), MOUSE_RBUTTON);
+			InputState::OnMouseRelease(event);
+			OnEvent(event);
+		}
+		break;
+	case WM_MBUTTONDOWN:
+		{
+			SetCapture(g_hwnd);
+			++s_clickCount;
+			MousePressEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), MOUSE_MBUTTON);
+			InputState::OnMousePress(event);
+			OnEvent(event);
+		}
+		break;
+	case WM_MBUTTONUP:
+		{
+			if (--s_clickCount < 1)
+			{
+				s_clickCount = 0;
+				ReleaseCapture();
+			}
+			MouseReleaseEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), MOUSE_MBUTTON);
+			InputState::OnMouseRelease(event);
+			OnEvent(event);
+		}
+		break;
+	case WM_MOUSEWHEEL:
+		{
+			MouseWheelEvent event(GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA);
+			OnEvent(event);
 		}
 		break;
 	}

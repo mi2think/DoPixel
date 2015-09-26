@@ -103,7 +103,7 @@
     <ClInclude Include="DpGeometry.h" />
     <ClInclude Include="DpJson.h" />
     <ClInclude Include="DpKeyEvent.h" />
-    <ClInclude Include="DpKeyState.h" />
+    <ClInclude Include="DpInputState.h" />
     <ClInclude Include="DpLight.h" />
     <ClInclude Include="DpMaterial.h" />
     <ClInclude Include="DpLoadModel.h" />
@@ -111,6 +111,7 @@
     <ClInclude Include="DpMatrix33.h" />
     <ClInclude Include="DpMatrix43.h" />
     <ClInclude Include="DpMatrix44.h" />
+    <ClInclude Include="DpMouseEvent.h" />
     <ClInclude Include="DpNoCopy.h" />
     <ClInclude Include="DpObject.h" />
     <ClInclude Include="DpQuaternion.h" />
@@ -138,7 +139,7 @@
     <ClCompile Include="DpFileParser.cpp" />
     <ClCompile Include="DpFileStream.cpp" />
     <ClCompile Include="DpJson.cpp" />
-    <ClCompile Include="DpKeyState.cpp" />
+    <ClCompile Include="DpInputState.cpp" />
     <ClCompile Include="DpLoadModel.cpp" />
     <ClCompile Include="DpMaterial.cpp" />
     <ClCompile Include="DpObject.cpp" />

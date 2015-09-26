@@ -18,7 +18,7 @@ namespace dopixel
 {
 	namespace core
 	{
-		enum EKEY_CODE
+		enum KeyCode
 		{
 			KEY_LBUTTON			= 0x01,  // Left mouse button
 			KEY_RBUTTON			= 0x02,  // Right mouse button
