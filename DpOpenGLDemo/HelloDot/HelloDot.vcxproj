@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2E03BE74-2A27-423E-8CC3-0F22AFA11BC3}</ProjectGuid>
-    <RootNamespace>OpenAWindow</RootNamespace>
+    <ProjectGuid>{D59829B7-4EC9-476E-ABC5-56FE4D7969B5}</ProjectGuid>
+    <RootNamespace>HelloDot</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
-    <ProjectName>01_OpenAWindow</ProjectName>
+    <ProjectName>02_HelloDot</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\..\Vendor;..\..\DpLib;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\Debug\;..\..\Vendor\GL\GL_Lib\x86\;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\DpLib;..\..\Vendor;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\Vendor\GL\GL_Lib\x86\;..\..\Debug\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
