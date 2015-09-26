@@ -32,6 +32,7 @@ namespace dopixel
 		public:
 			MouseMoveEvent(int x, int y) : x_(x), y_(y) {}
 
+			CString ToCString() { return str_format("MouseMoveEvent:(%d,%d)", x_, y_); }
 			int GetX() const { return x_; }
 			int GetY() const { return y_; }
 		private:
@@ -47,7 +48,8 @@ namespace dopixel
 				, y_(y)
 				, buttonType_(buttonType)
 			{}
-
+			
+			CString ToCString() { return str_format("MousePressEvent:(%d,%d,%d)", buttonType_, x_, y_); }
 			int GetX() const { return x_; }
 			int GetY() const { return y_; }
 			MouseButtonType GetButtonType() const { return buttonType_; }
@@ -66,6 +68,7 @@ namespace dopixel
 				, buttonType_(buttonType)
 			{}
 
+			CString ToCString() { return str_format("MouseReleaseEvent:(%d,%d,%d)", buttonType_, x_, y_); }
 			int GetX() const { return x_; }
 			int GetY() const { return y_; }
 			MouseButtonType GetButtonType() const { return buttonType_; }
@@ -80,6 +83,7 @@ namespace dopixel
 		public:
 			MouseWheelEvent(float wheelDelta) : wheelDelta_(wheelDelta) {}
 
+			CString ToCString() { return str_format("MouseWheelEvent:(%.2f)", wheelDelta_); }
 			float GetWheelDelta() const { return wheelDelta_; }
 		private:
 			float wheelDelta_;
