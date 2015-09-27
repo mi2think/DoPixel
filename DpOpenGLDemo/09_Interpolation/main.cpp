@@ -131,7 +131,7 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(640, 480);
 	glutInitWindowPosition(0, 0);
-	glutCreateWindow("tutorial 08");
+	glutCreateWindow("tutorial 09");
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(RenderScene);
