@@ -85,6 +85,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "07_RotationTransformation",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "08_ScalingTransformation", "DpOpenGLDemo\08_ScalingTransformation\08_ScalingTransformation.vcxproj", "{544D29EE-E059-49AB-AEF1-1CCCF834C417}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "09_Interpolation", "DpOpenGLDemo\09_Interpolation\09_Interpolation.vcxproj", "{AB2129B1-13CC-4C01-B21F-2002667881B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -265,6 +267,14 @@ Global
 		{544D29EE-E059-49AB-AEF1-1CCCF834C417}.Release|Win32.Build.0 = Release|Win32
 		{544D29EE-E059-49AB-AEF1-1CCCF834C417}.Release|x64.ActiveCfg = Release|x64
 		{544D29EE-E059-49AB-AEF1-1CCCF834C417}.Release|x64.Build.0 = Release|x64
+		{AB2129B1-13CC-4C01-B21F-2002667881B0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AB2129B1-13CC-4C01-B21F-2002667881B0}.Debug|Win32.Build.0 = Debug|Win32
+		{AB2129B1-13CC-4C01-B21F-2002667881B0}.Debug|x64.ActiveCfg = Debug|x64
+		{AB2129B1-13CC-4C01-B21F-2002667881B0}.Debug|x64.Build.0 = Debug|x64
+		{AB2129B1-13CC-4C01-B21F-2002667881B0}.Release|Win32.ActiveCfg = Release|Win32
+		{AB2129B1-13CC-4C01-B21F-2002667881B0}.Release|Win32.Build.0 = Release|Win32
+		{AB2129B1-13CC-4C01-B21F-2002667881B0}.Release|x64.ActiveCfg = Release|x64
+		{AB2129B1-13CC-4C01-B21F-2002667881B0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -292,5 +302,6 @@ Global
 		{DA79FFD9-17CE-4DDD-9712-9F3F7B85B38F} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{172115BB-26FB-40F8-A8F8-86ABD41AABCF} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{544D29EE-E059-49AB-AEF1-1CCCF834C417} = {492FEE1D-F038-4594-847F-8790D133612D}
+		{AB2129B1-13CC-4C01-B21F-2002667881B0} = {492FEE1D-F038-4594-847F-8790D133612D}
 	EndGlobalSection
 EndGlobal
