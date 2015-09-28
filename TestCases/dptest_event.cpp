@@ -55,7 +55,7 @@ DPTEST(Event)
 			EXPECT_TRUE(myEvent != nullptr);
 			EXPECT_EQ(myEvent->GetX(), 1);
 			EXPECT_EQ(myEvent->GetY(), 2);
-			EXPECT_EQ(myEvent->ToString(), s1);
+			EXPECT_EQ(myEvent->ToCString(), s1);
 		};
 		MyEvent1 myEvent1(1, 2);
 		OnMyEvent1(myEvent1);
