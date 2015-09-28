@@ -13,10 +13,13 @@
 #ifndef __DP_MATRIX44__
 #define __DP_MATRIX44__
 
+#include "DpCore.h"
 #include "DpMath.h"
+#include "DpVector3.h"
 #include "DpVector4.h"
 #include <vector>
 #include <algorithm>
+#include <cassert>
 
 namespace dopixel
 {
@@ -203,6 +206,21 @@ namespace dopixel
 			{
 				m41 = m42 = m43 = 0;
 			}
+
+			//// Transpose
+			void Transpose()
+			{
+				for (int i = 0; i < R; ++i)
+				{
+					for (int j = i; j < C; ++j)
+					{
+						if (i != j)
+						{
+							core::Swap(m[i][j], m[j][i]);
+						}
+					}
+				}
+			}
 		};
 
 		template <typename T, typename U>
@@ -210,6 +228,23 @@ namespace dopixel
 		{
 			Matrix44<T> n = _m;
 			n *= k;
+			return n;
+		}
+
+		// Matrix n and _m must not be same one
+		template <typename T>
+		inline Matrix44<T>& MatrixTranspose(Matrix44<T>& n, const Matrix44<T>& _m)
+		{
+			assert(&n != &_m);
+
+			for (int i = 0; i < Matrix44<T>::R; ++i)
+			{
+				for (int j = 0; j < Matrix44<T>::C; ++j)
+				{
+					n.m[i][j] = _m.m[j][i];
+				}
+			}
+
 			return n;
 		}
 
@@ -262,6 +297,39 @@ namespace dopixel
 				 - _m.m12 * (_m.m21 * (m33m44 - m43m34) - _m.m23 * (m31m44 - m41m34) + _m.m24 * (m31m43 - m41m33))
 				 + _m.m13 * (_m.m21 * (m32m44 - m42m34) - _m.m22 * (m31m44 - m41m34) + _m.m24 * (m31m42 - m41m32))
 				 - _m.m14 * (_m.m21 * (m32m43 - m42m33) - _m.m22 * (m31m43 - m41m33) + _m.m23 * (m31m42 - m41m32)));
+		}
+
+		// Translation
+
+		template <typename T>
+		inline Matrix44<T>& MaxtrixTranslation(Matrix44<T>& n, const Vector3<T>& v)
+		{
+			for (int i = 0; i < Matrix44<T>::R; ++i)
+			{
+				for (int j = 0; j < Matrix44<T>::C; ++j)
+				{
+					i == j ? n.m[i][j] = 1 : n.m[i][j] = 0;
+				}
+			}
+
+			n.m41 = v.x;
+			n.m42 = v.y;
+			n.m43 = v.z;
+
+			return n;
+		}
+
+		// Scale
+
+		// scale by coordinate axis
+		template <typename T>
+		inline Matrix44<T>& MatrixScaling(Matrix44<T>& n, const Vector3<T>& v)
+		{
+			n.m11 = v.x;  n.m12 = 0.0f; n.m13 = 0.0f; n.m14 = 0.0f;
+			n.m21 = 0.0f; n.m22 = v.y;  n.m23 = 0.0f; n.m24 = 0.0f;
+			n.m31 = 0.0f; n.m32 = 0.0f; n.m33 = v.z;  n.m34 = 0.0f;
+			n.m41 = 0.0f; n.m42 = 0.0f;	n.m43 = 0.0f; n.m44 = 1.0f;
+			return n;
 		}
 
 		// Rotate
@@ -318,7 +386,7 @@ namespace dopixel
 			MatrixRotationX(mx, angleX);
 			
 			Matrix44<T> my;
-			MatrixRotationX(my, angleY);
+			MatrixRotationY(my, angleY);
 
 			Matrix44<T> mz;
 			MatrixRotationZ(mz, angleZ);
@@ -327,6 +395,24 @@ namespace dopixel
 			MatrixMultiply(n, mx, my);
 
 			return MatrixMultiply(m, n, mz);
+		}
+
+		template <typename T>
+		inline Matrix44<T>& MatrixRotationZYX(Matrix44<T>& m, float angleX, float angleY, float angleZ)
+		{
+			Matrix44<T> mx;
+			MatrixRotationX(mx, angleX);
+
+			Matrix44<T> my;
+			MatrixRotationY(my, angleY);
+
+			Matrix44<T> mz;
+			MatrixRotationZ(mz, angleZ);
+
+			Matrix44<T> n;
+			MatrixMultiply(n, mz, my);
+
+			return MatrixMultiply(m, n, mx);
 		}
 
 		// Assume v through the origin, v must be normal Vector

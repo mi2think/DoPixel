@@ -190,7 +190,7 @@ namespace dopixel
 		};
 
 		template <typename T, typename U>
-		Matrix33<T> operator*(U k, const Matrix33<T>& _m)
+		inline Matrix33<T> operator*(U k, const Matrix33<T>& _m)
 		{
 			Matrix33<T> n = _m;
 			n *= k;
@@ -199,7 +199,7 @@ namespace dopixel
 
 		// Matrix n and _m must not be same one
 		template <typename T>
-		Matrix33<T>& MatrixTranspose(Matrix33<T>& n, const Matrix33<T>& _m)
+		inline Matrix33<T>& MatrixTranspose(Matrix33<T>& n, const Matrix33<T>& _m)
 		{
 			assert(&n != &_m);
 
@@ -210,14 +210,14 @@ namespace dopixel
 		}
 
 		template <typename T>
-		float MatrixDeterminant(const Matrix33<T>& _m)
+		inline float MatrixDeterminant(const Matrix33<T>& _m)
 		{
 			return _m.m11 * (_m.m22 * _m.m33 - _m.m23 * _m.m32) + _m.m12 * (_m.m23 * _m.m31 - _m.m21 * _m.m33)
 				 + _m.m13 * (_m.m21 * _m.m32 - _m.m22 * _m.m31);
 		}
 
 		template <typename T>
-		Matrix33<T>& MatrixInverse(Matrix33<T>& n, const Matrix33<T>& _m)
+		inline Matrix33<T>& MatrixInverse(Matrix33<T>& n, const Matrix33<T>& _m)
 		{
 			float det = MatrixDeterminant(_m);
 
@@ -243,7 +243,7 @@ namespace dopixel
 		}
 
 		template <typename OS, typename T>
-		OS& operator<<(OS& os, const Matrix33<T>& _m)
+		inline OS& operator<<(OS& os, const Matrix33<T>& _m)
 		{
 			os << "\n";
 			os << "|" << _m.m11 << "\t" << _m.m12 << "\t" << _m.m13 << "|\n";
@@ -255,7 +255,7 @@ namespace dopixel
 		//////////////////////////////////////////////////////////////////////////
 
 		template <typename T, typename U>
-		Vector3<T> operator*(const Vector3<T>& _v, const Matrix33<U>& _m)
+		inline Vector3<T> operator*(const Vector3<T>& _v, const Matrix33<U>& _m)
 		{
 			Vector3<T> v;
 			v.x = T(_v.x * _m.m11 + _v.y * _m.m21 + _v.z * _m.m31);

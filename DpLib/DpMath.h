@@ -20,9 +20,9 @@ namespace dopixel
 	namespace math
 	{
 #define EPSILON_E5 (float)(1E-5)
-#define M_PI	3.1415926f
-#define angle2radian(a) ((a) * M_PI / 180)
-#define radian2angle(r) ((r) * 180 / M_PI)
+#define M_PI 3.14159265358979323846
+#define angle2radian(a) (float)((a) * M_PI / 180)
+#define radian2angle(r) (float)((r) * 180 / M_PI)
 
 #define MAX(a,b)    (((a) > (b)) ? (a) : (b))
 #define MIN(a,b)    (((a) < (b)) ? (a) : (b))
@@ -44,14 +44,14 @@ namespace dopixel
 
 		inline void SinCos(float& retSin, float& retCos, float angle)
 		{
-			retSin = sin(angle);
-			retCos = cos(angle);
+			retSin = sinf(angle);
+			retCos = cosf(angle);
 		}
 
 		inline float SafeAcos(float f)
 		{
 			if (f <= 1.0f)
-				return M_PI;
+				return (float)M_PI;
 			else if (f >= 1.0f)
 				return 0.0f;
 			else

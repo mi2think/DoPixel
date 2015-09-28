@@ -94,5 +94,45 @@ DPTEST(Matrix44)
 
 	float det = MatrixDeterminant(m18);
 	EXPECT_EQ(det, 124972.813f);
+
+	// Transpose
+	Matrix44f m22(1, 2, 3, 4,
+		5, 6, 7, 8,
+		9, 10, 11, 12,
+		13, 14, 15, 16);
+	Matrix44f m23;
+	MatrixTranspose(m23, m22);
+	EXPECT_EQ(m23, Matrix44f(1, 5, 9, 13,
+		2, 6, 10, 14,
+		3, 7, 11, 15,
+		4, 8, 12, 16));
+
+	Matrix44f m24 = m22;
+	m24.Transpose();
+	EXPECT_EQ(m24, m23);
+
+	{
+		Matrix44f m25;
+		MatrixRotationZYX(m25, angle2radian(30), angle2radian(45), angle2radian(60));
+		m25.Transpose();
+
+		// OpenGL way
+		Matrix44f x, y, z;
+		MatrixRotationX(x, angle2radian(30));
+		x.Transpose();
+		MatrixRotationY(y, angle2radian(45));
+		y.Transpose();
+		MatrixRotationZ(z, angle2radian(60));
+		z.Transpose();
+
+		Matrix44f xy;
+		MatrixMultiply(xy, x, y);
+
+		Matrix44f xyz;
+		MatrixMultiply(xyz, xy, z);
+
+		EXPECT_EQ(xyz, m25);
+	}
+
 }
 
