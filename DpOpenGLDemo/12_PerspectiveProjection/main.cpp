@@ -12,6 +12,8 @@ using namespace dopixel::math;
 
 #pragma comment(lib, "glew32.lib")
 
+PersProjInfo gPersProjInfo;
+
 GLuint VAO;
 GLuint VBO[2];
 GLuint IBO;
@@ -40,29 +42,29 @@ const char* ps = "#version 330\n"
 void RenderScene()
 {
 	static float scale = 0.0f;
-	scale += 0.01f;
+	scale += 0.1f;
 
 #if USE_OGL
 	glMatrixMode(GL_MODELVIEW_MATRIX);
 	glLoadIdentity();
-	
-	glTranslatef(sinf(scale), 0.0f, 0.0f);
-	
+
+	glScalef(sinf(scale * 0.1f), sinf(scale * 0.1f), sinf(scale * 0.1f));
+
 	glRotatef(sinf(scale) * 90.0f, 1, 0, 0);
 	glRotatef(sinf(scale) * 90.0f, 0, 1, 0);
 	glRotatef(sinf(scale) * 90.0f, 0, 0, 1);
 
-	glScalef(sinf(scale * 0.1f), sinf(scale * 0.1f), sinf(scale * 0.1f));
+	glTranslatef(sinf(scale), 0.0f, 0.0f);
 
 	float m[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX, m);
 	glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, m);
 #else
 	Pipeline p;
-	p.Scale(sinf(scale * 0.1f), sinf(scale * 0.1f), sinf(scale * 0.1f));
-	p.WorldPos(sinf(scale), 0.0f, 0.0f);
-	p.Rotate(angle2radian(sinf(scale) * 90.0f), angle2radian(sinf(scale) * 90.0f), angle2radian(sinf(scale) * 90.0f));
-	glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, &(p.GetOGLWorldTrans().m[0][0]));
+	p.Rotate(0, angle2radian(scale), 0);
+	p.WorldPos(0.0f, 0.0f, 5.0f);
+	p.SetPerspectiveProj(gPersProjInfo);
+	glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, &(p.GetOGLWorldProjTrans().m[0][0]));
 #endif
 
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -148,7 +150,7 @@ void CreateVertexBuffer()
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	Vector4f positions[4] = { { -1.0f, -1.0f, 0.0f, 1.0f },{ 0.0f, -1.0f, 1.0f, 1.0f },{ 1.0f, -1.0f, 0.0f, 1.0f },{ 0.0f, 1.0f, 0.0f, 1.0f } };
+	Vector4f positions[4] = { { -1.0f, -1.0f, 0.5773f, 1.0f },{ 0.0f, -1.0f, -1.15475f, 1.0f },{ 1.0f, -1.0f, 0.5773f, 1.0f },{ 0.0f, 1.0f, 0.0f, 1.0f } };
 	Vector4f colors[4] = { { 1.0, 0.0, 0.0, 1.0 },{ 0.0, 1.0, 0.0, 1.0 },{ 0.0, 0.0, 1.0, 1.0 },{ 1.0, 1.0, 1.0, 1.0 } };
 
 	glGenBuffers(2, VBO);
@@ -176,9 +178,9 @@ int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowSize(1024, 768);
+	glutInitWindowSize(640, 480);
 	glutInitWindowPosition(0, 0);
-	glutCreateWindow("tutorial 11");
+	glutCreateWindow("tutorial 12");
 
 	glutIdleFunc(RenderScene);
 	glutDisplayFunc(RenderScene);
@@ -195,6 +197,13 @@ int main(int argc, char** argv)
 	CreateIndexBuffer();
 
 	CompileShaders();
+
+
+	gPersProjInfo.FOV = 30.0f;
+	gPersProjInfo.Height = 480;
+	gPersProjInfo.Width = 640;
+	gPersProjInfo.zNear = 1.0f;
+	gPersProjInfo.zFar = 100.0f;
 
 	glutMainLoop();
 

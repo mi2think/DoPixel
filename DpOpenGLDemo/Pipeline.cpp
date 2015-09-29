@@ -49,6 +49,11 @@ void Pipeline::Rotate(const Vector3f& rorate)
 	Rotate(rorate.x, rorate.y, rorate.z);
 }
 
+void Pipeline::SetPerspectiveProj(const PersProjInfo& proj)
+{
+	persProjInfo_ = proj;
+}
+
 const Matrix44f& Pipeline::GetOGLWorldTrans()
 {
 	// Note: OpenGL using matrix by col major
@@ -67,8 +72,37 @@ const Matrix44f& Pipeline::GetOGLWorldTrans()
 	rotateTrans.Transpose();
 
 	// (t * r * s) = t' * r' * s'
-	MatrixMultiply(worldTrans_, scaleTrans, rotateTrans);
-	MatrixMultiply(worldTrans_, worldTrans_, translationTrans);
+	MatrixMultiply(worldTrans_, rotateTrans, scaleTrans);
+	MatrixMultiply(worldTrans_, translationTrans, worldTrans_);
 
 	return worldTrans_;
+}
+
+const Matrix44f& Pipeline::GetOGLProjTrans()
+{
+	const PersProjInfo& p = persProjInfo_;
+
+	const float ar = p.Width / p.Height;
+	const float zRange = p.zNear - p.zFar;
+	const float tanHalfFOV = tanf(angle2radian(p.FOV / 2.0f));
+
+	auto& m = projTrans_.m;
+
+	m[0][0] = 1.0f / (tanHalfFOV * ar); m[0][1] = 0.0f;					m[0][2] = 0.0f;							m[0][3] = 0.0;
+	m[1][0] = 0.0f;                     m[1][1] = 1.0f / tanHalfFOV;	m[1][2] = 0.0f;							m[1][3] = 0.0;
+	m[2][0] = 0.0f;                     m[2][1] = 0.0f;					m[2][2] = (-p.zNear - p.zFar) / zRange; m[2][3] = 2.0f * p.zFar * p.zNear / zRange;
+	m[3][0] = 0.0f;                     m[3][1] = 0.0f;					m[3][2] = 1.0f;							m[3][3] = 0.0;
+
+	return projTrans_;
+}
+
+const Matrix44f& Pipeline::GetOGLWorldProjTrans()
+{
+	GetOGLProjTrans();
+
+	GetOGLWorldTrans();
+
+	MatrixMultiply(worldProjTrans_, projTrans_, worldTrans_);
+
+	return worldProjTrans_;
 }

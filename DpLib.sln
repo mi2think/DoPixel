@@ -91,6 +91,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "10_IndexedDraws", "DpOpenGL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "11_ConcatenatingTransformations", "DpOpenGLDemo\11_ConcatenatingTransformations\11_ConcatenatingTransformations.vcxproj", "{47279FBC-D2BF-4A86-B4AB-C1E745A01BEC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "12_PerspectiveProjection", "DpOpenGLDemo\12_PerspectiveProjection\12_PerspectiveProjection.vcxproj", "{B809B2F2-00E2-4D6E-88AE-4F77D2B4A1CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -295,6 +297,14 @@ Global
 		{47279FBC-D2BF-4A86-B4AB-C1E745A01BEC}.Release|Win32.Build.0 = Release|Win32
 		{47279FBC-D2BF-4A86-B4AB-C1E745A01BEC}.Release|x64.ActiveCfg = Release|x64
 		{47279FBC-D2BF-4A86-B4AB-C1E745A01BEC}.Release|x64.Build.0 = Release|x64
+		{B809B2F2-00E2-4D6E-88AE-4F77D2B4A1CE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B809B2F2-00E2-4D6E-88AE-4F77D2B4A1CE}.Debug|Win32.Build.0 = Debug|Win32
+		{B809B2F2-00E2-4D6E-88AE-4F77D2B4A1CE}.Debug|x64.ActiveCfg = Debug|x64
+		{B809B2F2-00E2-4D6E-88AE-4F77D2B4A1CE}.Debug|x64.Build.0 = Debug|x64
+		{B809B2F2-00E2-4D6E-88AE-4F77D2B4A1CE}.Release|Win32.ActiveCfg = Release|Win32
+		{B809B2F2-00E2-4D6E-88AE-4F77D2B4A1CE}.Release|Win32.Build.0 = Release|Win32
+		{B809B2F2-00E2-4D6E-88AE-4F77D2B4A1CE}.Release|x64.ActiveCfg = Release|x64
+		{B809B2F2-00E2-4D6E-88AE-4F77D2B4A1CE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -325,5 +335,6 @@ Global
 		{AB2129B1-13CC-4C01-B21F-2002667881B0} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{10D32DDA-6E57-4CC6-A55C-F5DD7EDB9798} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{47279FBC-D2BF-4A86-B4AB-C1E745A01BEC} = {492FEE1D-F038-4594-847F-8790D133612D}
+		{B809B2F2-00E2-4D6E-88AE-4F77D2B4A1CE} = {492FEE1D-F038-4594-847F-8790D133612D}
 	EndGlobalSection
 EndGlobal

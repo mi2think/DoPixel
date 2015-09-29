@@ -5,6 +5,15 @@
 #include "DpMatrix44.h"
 using namespace dopixel::math;
 
+struct PersProjInfo
+{
+	float FOV;
+	float Width;
+	float Height;
+	float zNear;
+	float zFar;
+};
+
 class Pipeline
 {
 public:
@@ -20,13 +29,23 @@ public:
 	void Rotate(float x, float y, float z);
 	void Rotate(const Vector3f& rorate);
 
+	void SetPerspectiveProj(const PersProjInfo& p);
+
 	const Matrix44f& GetOGLWorldTrans();
+
+	const Matrix44f& GetOGLProjTrans();
+
+	const Matrix44f& GetOGLWorldProjTrans();
 private:
 	Vector3f scale_;
 	Vector3f position_;
 	Vector3f rotate_;
 
+	PersProjInfo persProjInfo_;
+
 	Matrix44f worldTrans_;
+	Matrix44f projTrans_;
+	Matrix44f worldProjTrans_;
 };
 
 #endif
