@@ -1,9 +1,21 @@
 #include "Pipeline.h"
 
+Camera::Camera(const Vector3f& pos, const Vector3f& target, const Vector3f& up)
+	: position_(pos)
+	, target_(target)
+	, up_(up)
+{
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+
+
 Pipeline::Pipeline()
 	: scale_(1, 1, 1)
 	, position_(0, 0, 0)
 	, rotate_(0, 0, 0)
+	, camera_(nullptr)
 {
 
 }
@@ -54,6 +66,11 @@ void Pipeline::SetPerspectiveProj(const PersProjInfo& proj)
 	persProjInfo_ = proj;
 }
 
+void Pipeline::SetCamera(const Camera& camera)
+{
+	camera_ = &camera;
+}
+
 const Matrix44f& Pipeline::GetOGLWorldTrans()
 {
 	// Note: OpenGL using matrix by col major
@@ -72,10 +89,41 @@ const Matrix44f& Pipeline::GetOGLWorldTrans()
 	rotateTrans.Transpose();
 
 	// (t * r * s) = t' * r' * s'
-	MatrixMultiply(worldTrans_, rotateTrans, scaleTrans);
-	MatrixMultiply(worldTrans_, translationTrans, worldTrans_);
+	Matrix44f n;
+	MatrixMultiply(n, rotateTrans, scaleTrans);
+	MatrixMultiply(worldTrans_, translationTrans, n);
 
 	return worldTrans_;
+}
+
+const Matrix44f& Pipeline::GetOGLViewTrans()
+{
+	// Note: inverse translation of camera position!
+	Matrix44f translationTrans;
+	MaxtrixTranslation(translationTrans, -camera_->GetPosition());
+	translationTrans.Transpose();
+
+	// n: target
+	Vector3f n = camera_->GetTarget();
+	n.Normalize();
+	// v: up
+	Vector3f v = camera_->GetUp();
+	v.Normalize();
+	// u: right
+	// u = v x n
+	Vector3f u = CrossProduct(v, n);
+	// v = n x u
+	v = CrossProduct(n, u);
+
+	Matrix44f rotateTrans;
+	auto& m = rotateTrans.m;
+	m[0][0] = u.x;   m[0][1] = u.y;   m[0][2] = u.z;   m[0][3] = 0.0f;
+	m[1][0] = v.x;   m[1][1] = v.y;   m[1][2] = v.z;   m[1][3] = 0.0f;
+	m[2][0] = n.x;   m[2][1] = n.y;   m[2][2] = n.z;   m[2][3] = 0.0f;
+	m[3][0] = 0.0f;  m[3][1] = 0.0f;  m[3][2] = 0.0f;  m[3][3] = 1.0f;
+
+	MatrixMultiply(viewTrans_, rotateTrans, translationTrans);
+	return viewTrans_;
 }
 
 const Matrix44f& Pipeline::GetOGLProjTrans()
@@ -105,4 +153,20 @@ const Matrix44f& Pipeline::GetOGLWorldProjTrans()
 	MatrixMultiply(worldProjTrans_, projTrans_, worldTrans_);
 
 	return worldProjTrans_;
+}
+
+const Matrix44f& Pipeline::GetOGLWorldViewProjTrans()
+{
+	GetOGLWorldTrans();
+
+	GetOGLViewTrans();
+
+	GetOGLProjTrans();
+
+	// world -> view -> projection
+	Matrix44f n;
+	MatrixMultiply(n, projTrans_, viewTrans_);
+	MatrixMultiply(worldViewProjTrans_, n, worldTrans_);
+
+	return worldViewProjTrans_;
 }
