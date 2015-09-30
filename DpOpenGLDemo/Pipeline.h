@@ -8,7 +8,12 @@ using namespace dopixel::math;
 class Camera
 {
 public:
+	Camera();
 	Camera(const Vector3f& pos, const Vector3f& target, const Vector3f& up);
+
+	bool OnKayboard(int key);
+
+	void SetStepScale(float stepScale);
 
 	const Vector3f& GetPosition() const { return position_; }
 	const Vector3f& GetTarget() const { return target_; }
@@ -17,6 +22,8 @@ private:
 	Vector3f position_;
 	Vector3f target_;
 	Vector3f up_;
+
+	float stepScale_;
 };
 
 

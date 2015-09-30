@@ -1,12 +1,54 @@
 #include "Pipeline.h"
 
+#include <GL/freeglut.h> // for key define
+
+Camera::Camera()
+	: position_(0, 0, 0)
+	, target_(0, 0, 1)
+	, up_(0, 1, 0)
+	, stepScale_(1.0f)
+{
+}
+
 Camera::Camera(const Vector3f& pos, const Vector3f& target, const Vector3f& up)
 	: position_(pos)
 	, target_(target)
 	, up_(up)
+	, stepScale_(1.0f)
 {
+	target_.Normalize();
+	up_.Normalize();
 }
 
+bool Camera::OnKayboard(int key)
+{
+	switch (key)
+	{
+	case GLUT_KEY_UP:
+		position_ += target_ * stepScale_;
+		break;
+	case GLUT_KEY_DOWN:
+		position_ -= target_ * stepScale_;
+		break;
+	case GLUT_KEY_LEFT:
+		{
+			Vector3f left = CrossProduct(target_, up_);
+			left.Normalize();
+			position_ += left * stepScale_;
+		}
+		break;
+	case GLUT_KEY_RIGHT:
+		{
+			Vector3f right = CrossProduct(up_, target_);
+			right.Normalize();
+			position_ += right * stepScale_;
+		}
+		break;
+	default:
+		break;
+	}
+	return false;
+}
 
 //////////////////////////////////////////////////////////////////////////
 
