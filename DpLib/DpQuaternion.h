@@ -61,6 +61,7 @@ namespace dopixel
 				_q.x = w * q.x + x * q.w + y * q.z - z * q.y;
 				_q.y = w * q.y + y * q.w + z * q.x - x * q.z;
 				_q.z = w * q.z + z * q.w + x * q.y - y * q.x;
+				return _q;
 			}
 
 			Quaternion& operator*=(const Quaternion& q)
@@ -268,7 +269,26 @@ namespace dopixel
 			q.z = sin(thetaOver2);
 			return q;
 		}
-		
+
+		inline Quaternion operator*(const Quaternion& q, const Vector3f& v)
+		{
+			Quaternion p(v.x, v.y, v.z, 0);
+			return q * p;
+		}
+
+		inline Vector3f QuaternionRotateVector(const Vector3f& v, const Vector3f& axis, float angle)
+		{
+			Vector3f _v;
+
+			Quaternion q = QuaternionRotationAxis(axis, angle);
+			Quaternion qInverse = QuaternionInverse(q);
+			Quaternion p = q * v * qInverse;
+			_v.x = p.x;
+			_v.y = p.y;
+			_v.z = p.z;
+			return _v;
+		}
+
 		// From matrix
 		template <typename T> class Matrix43;
 		typedef Matrix43<float> Matrix43f;

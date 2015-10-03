@@ -1,17 +1,23 @@
 #ifndef __PIPELINE_H__
 #define __PIPELINE_H__
 
+#include "DpVector2.h"
 #include "DpVector3.h"
 #include "DpMatrix44.h"
+#include "DpQuaternion.h"
 using namespace dopixel::math;
 
 class Camera
 {
 public:
-	Camera();
-	Camera(const Vector3f& pos, const Vector3f& target, const Vector3f& up);
+	Camera(int windowWidth, int windowHight);
+	Camera(const Vector3f& pos, const Vector3f& target, const Vector3f& up, int windowWidth, int windowHight);
 
 	bool OnKayboard(int key);
+	void OnMouse(int x, int y);
+
+	void Update();
+	void OnRender();
 
 	void SetStepScale(float stepScale);
 
@@ -19,11 +25,27 @@ public:
 	const Vector3f& GetTarget() const { return target_; }
 	const Vector3f& GetUp() const { return up_; }
 private:
+	void Init();
+
 	Vector3f position_;
 	Vector3f target_;
 	Vector3f up_;
 
 	float stepScale_;
+
+	Vector2i mousePos_;
+	float angleH_;
+	float angleV_;
+
+	bool onLEdge_;	// on left edge
+	bool onREdge_;	// on right edge
+	bool onTEdge_;	// on top edge
+	bool onBEdge_;	// on bottom edge
+
+	int windowWidth_;
+	int windowHeight_;
+
+	bool needUpdate_;
 };
 
 
