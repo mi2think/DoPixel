@@ -165,7 +165,7 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(640, 480);
 	glutInitWindowPosition(0, 0);
-	glutCreateWindow("tutorial 12");
+	glutCreateWindow("tutorial 13");
 
 	glutIdleFunc(RenderScene);
 	glutDisplayFunc(RenderScene);
@@ -192,7 +192,7 @@ int main(int argc, char** argv)
 	Vector3f pos(0.0f, 0.0f, -3.0f);
 	Vector3f target(0.0f, 0.0f, 2.0f);
 	Vector3f up(0.0f, 1.0f, 0.0f);
-	gCamera = new Camera(pos, target, up);
+	gCamera = new Camera(pos, target, up, 640, 480);
 
 	glutMainLoop();
 
