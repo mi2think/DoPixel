@@ -13,6 +13,7 @@
 #define __DOPIXEL__
 
 #include "DpRef.h"
+#include "DpScopeGuard.h"
 #include <string>
 
 #ifndef ASSERT

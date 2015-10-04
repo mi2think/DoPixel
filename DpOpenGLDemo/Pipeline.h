@@ -1,11 +1,33 @@
 #ifndef __PIPELINE_H__
 #define __PIPELINE_H__
 
+#include <GL/glew.h>
+
+#include "DoPixel.h"
 #include "DpVector2.h"
 #include "DpVector3.h"
 #include "DpMatrix44.h"
 #include "DpQuaternion.h"
+using namespace dopixel;
 using namespace dopixel::math;
+
+class Texture
+{
+public:
+	Texture(GLenum textureTarget, const CString& fileName);
+
+	bool Load();
+
+	void Bind(GLenum textureUnit);
+private:
+	CString fileName_;
+	int width_;
+	int height_;
+	unsigned char* data_;
+
+	GLenum textureTarget_;
+	GLuint textureObj_;
+};
 
 class Camera
 {

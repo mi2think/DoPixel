@@ -1,10 +1,62 @@
 #include "Pipeline.h"
 
+#include "DpFileStream.h"
+#include "stb/stb_image.h"
+
 #include <GL/freeglut.h> // for key define
+
+#pragma comment(lib, "DpLib.lib")
+
+Texture::Texture(GLenum textureTarget, const CString& fileName)
+	: textureTarget_(textureTarget)
+	, fileName_(fileName)
+	, width_(0)
+	, height_(0)
+	, data_(nullptr)
+{
+	free(data_);
+}
+
+bool Texture::Load()
+{
+	dopixel::core::FileStream fs(fileName_.c_str(), dopixel::core::FileStream::BinaryRead);
+	size_t size = (size_t)fs.Size();
+	unsigned char* fileData = new unsigned char[size];
+	dopixel::core::ON_SCOPE_EXIT([&fileData]() { SAFE_DELETEARRAY(fileData); });
+
+	if (fileData)
+	{
+		size_t readSize = fs.Read(fileData, size);
+		ASSERT(readSize == size);
+
+		stbi_set_flip_vertically_on_load(true);
+
+		int comp = 0;
+		data_ = stbi_load_from_memory(fileData, size, &width_, &height_, &comp, 4);
+
+		glGenTextures(1, &textureObj_);
+		glBindTexture(textureTarget_, textureObj_);
+		glTexImage2D(textureTarget_, 0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, data_);
+		glTexParameterf(textureTarget_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(textureTarget_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(textureTarget_, 0);
+
+		stbi_set_flip_vertically_on_load(false);
+		return true;
+	}
+	return false;
+}
+
+void Texture::Bind(GLenum textureUnit)
+{
+	glActiveTexture(textureUnit);
+	glBindTexture(textureTarget_, textureObj_);
+}
+
+//////////////////////////////////////////////////////////////////////////
 
 #define MARGIN 10
 #define EDGE_STEP 0.5f
-
 
 Camera::Camera(int windowWidth, int windowHight)
 	: position_(0, 0, 0)
@@ -19,6 +71,8 @@ Camera::Camera(int windowWidth, int windowHight)
 	, onBEdge_(false)
 	, needUpdate_(false)
 {
+	target_.Normalize();
+	up_.Normalize();
 	Init();
 }
 
