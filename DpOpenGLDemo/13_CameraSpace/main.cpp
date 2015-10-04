@@ -126,7 +126,7 @@ void CompileShaders()
 
 	glUseProgram(shaderProgram);
 
-	GLuint gWVPLocation = glGetUniformLocation(shaderProgram, "gWVP");
+	gWVPLocation = glGetUniformLocation(shaderProgram, "gWVP");
 	assert(gWVPLocation != 0xffffffff);
 }
 
