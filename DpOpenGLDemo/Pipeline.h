@@ -3,6 +3,8 @@
 
 #include <GL/glew.h>
 
+#include <list>
+
 #include "DoPixel.h"
 #include "DpVector2.h"
 #include "DpVector3.h"
@@ -10,6 +12,60 @@
 #include "DpQuaternion.h"
 using namespace dopixel;
 using namespace dopixel::math;
+
+class App
+{
+protected:
+	App();
+
+	void CalcFPS();
+
+	void RenderFPS();
+
+	float GetRunningTime();
+private:
+	long long frameTime_;
+	long long startTime_;
+	int frameCount_;
+	int fps_;
+};
+
+// Call back
+class ICallbacks
+{
+public:
+	virtual void KeyboardCB(int key) {}
+
+	virtual void PassiveMouseCB(int x, int y) {}
+
+	virtual void RenderSceneCB() {}
+
+	virtual void MouseCB(int button, int state, int x, int y) {}
+};
+
+class Technique
+{
+public:
+	Technique();
+	virtual ~Technique();
+
+	virtual bool Init();
+
+	void Enable();
+protected:
+	bool AddShader(GLenum shaderType, const char* strShader);
+
+	bool Finalize();
+
+	GLint GetUniformLocation(const char* uniformName);
+
+	GLint GetProgramParam(GLint param);
+
+	GLuint shaderProg_;
+private:
+	typedef std::list<GLuint> ShaderObjList;
+	ShaderObjList shaderObjList_;
+};
 
 class Texture
 {
@@ -29,6 +85,7 @@ private:
 	GLuint textureObj_;
 };
 
+// FPS camera 
 class Camera
 {
 public:

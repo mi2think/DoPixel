@@ -7,6 +7,163 @@
 
 #pragma comment(lib, "DpLib.lib")
 
+long long GetCurrentTimeMillis()
+{
+	return GetTickCount();
+}
+
+App::App()
+	: frameCount_(0)
+	, frameTime_(0)
+	, fps_(0)
+{
+	frameTime_ = startTime_ = GetCurrentTimeMillis();
+}
+
+void App::CalcFPS()
+{
+	++frameCount_;
+
+	long long time = GetCurrentTimeMillis();
+	if (time > frameTime_ + 1000)
+	{
+		frameTime_ = time;
+		fps_ = frameCount_;
+		frameCount_ = 0;
+	}
+}
+
+void App::RenderFPS()
+{
+
+}
+
+float App::GetRunningTime()
+{
+	float runningTime = (float)((double)GetCurrentTimeMillis() - (double)startTime_) / 1000.0f;
+	return runningTime;
+}
+
+//////////////////////////////////////////////////////////////////////////
+Technique::Technique()
+	: shaderProg_(0)
+{
+
+}
+
+Technique::~Technique()
+{
+	for (auto shaderObj : shaderObjList_)
+	{
+		glDeleteShader(shaderObj);
+	}
+
+	if (shaderProg_ != 0)
+	{
+		glDeleteProgram(shaderProg_);
+		shaderProg_ = 0;
+	}
+}
+
+bool Technique::Init()
+{
+	shaderProg_ = glCreateProgram();
+
+	if (shaderProg_ == 0)
+	{
+		fprintf(stderr, "error create shader program\n");
+		return false;
+	}
+	return true;
+}
+
+bool Technique::AddShader(GLenum shaderType, const char* strShader)
+{
+	GLuint shaderObj = glCreateShader(shaderType);
+	if (shaderObj == 0)
+	{
+		fprintf(stderr, "error create shader type:%d\n", shaderType);
+		return false;
+	}
+
+	shaderObjList_.push_back(shaderObj);
+
+	const GLchar* p[1] = { strShader };
+	GLint lengths[1] = { (GLint)strlen(strShader) };
+
+	glShaderSource(shaderObj, 1, p, lengths);
+	glCompileShader(shaderObj);
+	GLint success;
+	glGetShaderiv(shaderObj, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		GLchar infoLog[1024];
+		glGetShaderInfoLog(shaderObj, sizeof(infoLog), nullptr, infoLog);
+		fprintf(stderr, "error compile shader:\n%s\n", infoLog);
+		return false;
+	}
+
+	glAttachShader(shaderProg_, shaderObj);
+
+	return true;
+}
+
+bool Technique::Finalize()
+{
+	GLint success = 0;
+	GLchar errorLog[1024] = { 0 };
+
+	glLinkProgram(shaderProg_);
+	glGetProgramiv(shaderProg_, GL_LINK_STATUS, &success);
+	if (success == 0)
+	{
+		glGetProgramInfoLog(shaderProg_, sizeof(errorLog), nullptr, errorLog);
+		fprintf(stderr, "error link shader program:\n%s\n", errorLog);
+		return false;
+	}
+
+	glValidateProgram(shaderProg_);
+	glGetProgramiv(shaderProg_, GL_VALIDATE_STATUS, &success);
+	if (success == 0)
+	{
+		glGetProgramInfoLog(shaderProg_, sizeof(errorLog), nullptr, errorLog);
+		fprintf(stderr, "error validate shader program:\n%s\n", errorLog);
+		return false;
+	}
+
+	// delete shader objects
+	for (auto shaderObj : shaderObjList_)
+	{
+		glDeleteShader(shaderObj);
+	}
+	shaderObjList_.clear();
+
+	return glGetError() == GL_NO_ERROR;
+}
+
+void Technique::Enable()
+{
+	glUseProgram(shaderProg_);
+}
+
+GLint Technique::GetUniformLocation(const char* uniformName)
+{
+	GLuint location = glGetUniformLocation(shaderProg_, uniformName);
+	if (location == 0xffffffff)
+	{
+		fprintf(stderr, "warning! unable to get location of uniform:'%s'\n", uniformName);
+	}
+	return location;
+}
+
+GLint Technique::GetProgramParam(GLint param)
+{
+	GLint ret;
+	glGetProgramiv(shaderProg_, param, &ret);
+	return ret;
+}
+//////////////////////////////////////////////////////////////////////////
+
 Texture::Texture(GLenum textureTarget, const CString& fileName)
 	: textureTarget_(textureTarget)
 	, fileName_(fileName)
