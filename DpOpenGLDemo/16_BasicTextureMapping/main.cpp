@@ -139,7 +139,7 @@ void CompileShaders()
 	assert(gWVPLocation != 0xffffffff);
 
 	gSampler = glGetUniformLocation(shaderProgram, "gSampler");
-	assert(gWVPLocation != 0xffffffff);
+	assert(gSampler != 0xffffffff);
 }
 
 void CreateVertexBuffer()

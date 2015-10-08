@@ -44,6 +44,8 @@ const char* ps = "#version 330\n"
 
 void RenderScene()
 {
+	gCamera->OnRender();
+
 	static float scale = 0.0f;
 	scale += 0.1f;
 
