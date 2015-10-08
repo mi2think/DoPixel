@@ -183,4 +183,13 @@ private:
 	Matrix44f worldViewProjTrans_;
 };
 
+//////////////////////////////////////////////////////////////////////////
+//functions
+
+void GLUTBackendInit(int argc, char** argv, bool withDepth, bool withStencil);
+bool GLUTBackendCreateWindow(unsigned int width, unsigned int height, bool fullScreen, const char* title);
+void GLUTBackendRun(ICallbacks* callbacks);
+void GLUTBackendSwapBuffers();
+void GLUTBackendLeaveMainLoop();
+
 #endif
