@@ -696,7 +696,8 @@ void GLUTBackendRun(ICallbacks* callbacks)
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glFrontFace(GL_CW);
-	glCullFace(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 
 	if (s_withDepth)
 		glEnable(GL_DEPTH_TEST);
