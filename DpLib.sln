@@ -103,6 +103,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "16_BasicTextureMapping", "D
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17_AmbientLighting", "DpOpenGLDemo\17_AmbientLighting\17_AmbientLighting.vcxproj", "{091F9588-BE8E-4697-8576-4C7BD10A444E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "18_DiffuseLighting", "DpOpenGLDemo\18_DiffuseLighting\18_DiffuseLighting.vcxproj", "{7BCF6965-679A-490D-A932-A083D8289E13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -355,6 +357,14 @@ Global
 		{091F9588-BE8E-4697-8576-4C7BD10A444E}.Release|Win32.Build.0 = Release|Win32
 		{091F9588-BE8E-4697-8576-4C7BD10A444E}.Release|x64.ActiveCfg = Release|x64
 		{091F9588-BE8E-4697-8576-4C7BD10A444E}.Release|x64.Build.0 = Release|x64
+		{7BCF6965-679A-490D-A932-A083D8289E13}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7BCF6965-679A-490D-A932-A083D8289E13}.Debug|Win32.Build.0 = Debug|Win32
+		{7BCF6965-679A-490D-A932-A083D8289E13}.Debug|x64.ActiveCfg = Debug|x64
+		{7BCF6965-679A-490D-A932-A083D8289E13}.Debug|x64.Build.0 = Debug|x64
+		{7BCF6965-679A-490D-A932-A083D8289E13}.Release|Win32.ActiveCfg = Release|Win32
+		{7BCF6965-679A-490D-A932-A083D8289E13}.Release|Win32.Build.0 = Release|Win32
+		{7BCF6965-679A-490D-A932-A083D8289E13}.Release|x64.ActiveCfg = Release|x64
+		{7BCF6965-679A-490D-A932-A083D8289E13}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -391,5 +401,6 @@ Global
 		{18865AF9-674A-4250-8069-4ABE5523BC37} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{DEB6CDDD-07C8-4A67-B87F-8FB5440A1267} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{091F9588-BE8E-4697-8576-4C7BD10A444E} = {492FEE1D-F038-4594-847F-8790D133612D}
+		{7BCF6965-679A-490D-A932-A083D8289E13} = {492FEE1D-F038-4594-847F-8790D133612D}
 	EndGlobalSection
 EndGlobal
