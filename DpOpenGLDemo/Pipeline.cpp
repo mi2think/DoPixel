@@ -108,6 +108,30 @@ bool Technique::AddShader(GLenum shaderType, const char* strShader)
 	return true;
 }
 
+bool Technique::AddShaderFromFile(GLenum shaderType, const char* fileName)
+{
+	dopixel::core::FileStream fs(fileName, dopixel::core::FileStream::TextRead);
+	size_t size = (size_t)fs.Size();
+	char* fileData = new char[size + 1];
+	dopixel::core::ON_SCOPE_EXIT([&fileData]() { SAFE_DELETEARRAY(fileData); });
+
+	if (fileData)
+	{
+		size_t readSize = fs.Read(fileData, size);
+		fileData[readSize] = 0;
+#ifdef _DEBUG
+		if (shaderType == GL_VERTEX_SHADER)
+			fprintf(stdout, "vs:\n");
+		else
+			fprintf(stdout, "ps:\n");
+		fprintf(stdout, "%s", fileData);
+#endif // _DEBUG
+
+		return AddShader(shaderType, fileData);
+	}
+	return false;
+}
+
 bool Technique::Finalize()
 {
 	GLint success = 0;

@@ -55,6 +55,8 @@ public:
 protected:
 	bool AddShader(GLenum shaderType, const char* strShader);
 
+	bool AddShaderFromFile(GLenum shaderType, const char* fileName);
+
 	bool Finalize();
 
 	GLint GetUniformLocation(const char* uniformName);
