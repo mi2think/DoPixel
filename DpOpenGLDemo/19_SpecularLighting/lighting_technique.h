@@ -88,14 +88,14 @@ bool LightingTechnique::Init()
 	directionalLight_.direction = GetUniformLocation("gDirectionalLight.direction");
 	directionalLight_.diffuseIntensity = GetUniformLocation("gDirectionalLight.diffuseIntensity");
 
-	//if (WVPLocation_ == UNVALID_UNIFORM ||
-	//	worldMatrixLocation_ == UNVALID_UNIFORM ||
-	//	samplerLocation_ == UNVALID_UNIFORM ||
-	//	eyeWorldPosLocation_ == UNVALID_UNIFORM ||
-	//	specularIntensityLocation_ == UNVALID_UNIFORM ||
-	//	specularPowerLocation_ == UNVALID_UNIFORM ||
-	//	!directionalLight_.ChechValid())
-	//	return false;
+	if (WVPLocation_ == UNVALID_UNIFORM ||
+		worldMatrixLocation_ == UNVALID_UNIFORM ||
+		samplerLocation_ == UNVALID_UNIFORM ||
+		eyeWorldPosLocation_ == UNVALID_UNIFORM ||
+		specularIntensityLocation_ == UNVALID_UNIFORM ||
+		specularPowerLocation_ == UNVALID_UNIFORM ||
+		!directionalLight_.ChechValid())
+		return false;
 
 	return true;
 }
