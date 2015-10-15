@@ -60,6 +60,8 @@ private:
 	float scale_;
 
 	DirectionalLight directionalLight_;
+	float specularLightIntensity_;
+	float specularLightPower_;
 	LightingTechnique* effect_;
 
 	GLuint VBO_;
@@ -70,6 +72,8 @@ SpecularLighting::SpecularLighting()
 	, camera_(nullptr)
 	, effect_(nullptr)
 	, scale_(0.0f)
+	, specularLightIntensity_(1.0f)
+	, specularLightPower_(32)
 {
 	directionalLight_.color = Vector3f(1.0f, 1.0f, 1.0f);
 	directionalLight_.ambientIntensity = 0.0f;
@@ -220,8 +224,8 @@ void SpecularLighting::RenderSceneCB()
 	effect_->SetDirectionalLight(directionalLight_);
 
 	effect_->SetEyeWorldPos(camera_->GetPosition());
-	effect_->SetSpecularIntensity(1.0f);
-	effect_->SetSpecularPower(32);
+	effect_->SetSpecularIntensity(specularLightIntensity_);
+	effect_->SetSpecularPower(specularLightPower_);
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -261,6 +265,18 @@ void SpecularLighting::KeyboardCB(int key)
 		break;
 	case 'x':
 		directionalLight_.diffuseIntensity -= 0.05f;
+		break;
+	case 'j':
+		specularLightPower_ += 1.0f;
+		break;
+	case 'k':
+		specularLightPower_ -= 1.0f;
+		break;
+	case 'n':
+		specularLightIntensity_ += 0.05f;
+		break;
+	case 'm':
+		specularLightIntensity_ -= 0.05f;
 		break;
 	default:
 		break;
