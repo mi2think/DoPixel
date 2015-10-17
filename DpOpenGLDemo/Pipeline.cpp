@@ -688,7 +688,7 @@ bool GLUTBackendCreateWindow(unsigned int width, unsigned int height, bool fullS
 	if (fullScreen)
 	{
 		int bpp = 32;
-		const char* p = dopixel::core::str_format("%dx%d:%d@60", width, height, bpp);
+		const char* p = dopixel::str_format("%dx%d:%d@60", width, height, bpp);
 		glutGameModeString(p);
 		glutEnterGameMode();
 	}

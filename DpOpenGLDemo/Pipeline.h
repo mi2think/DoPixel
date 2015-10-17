@@ -13,6 +13,8 @@
 using namespace dopixel;
 using namespace dopixel::math;
 
+#define INVALID_UNIFORM 0xffffffff
+
 class App
 {
 protected:
