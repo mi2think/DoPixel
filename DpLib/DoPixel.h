@@ -26,6 +26,8 @@ namespace dopixel
 	typedef std::string		CString;
 	typedef std::wstring	String;
 
+	const char* str_format(const char* format, ...);
+
 	namespace core
 	{
 		class Camera;
@@ -35,8 +37,6 @@ namespace dopixel
 		typedef Ref<Camera> CameraRef;
 		typedef Ref<CameraController> CameraControllerRef;
 		typedef Ref<Event> EventRef;
-
-		const char* str_format(const char* format, ...);
 	}
 }
 

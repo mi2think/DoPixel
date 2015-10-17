@@ -14,19 +14,17 @@
 
 namespace dopixel
 {
-	namespace core
+	const char* str_format(const char* format, ...)
 	{
-		const char* str_format(const char* format, ...)
-		{
-			static char buffer[1024];
-			va_list ap;
-			va_start(ap, format);
-			vsprintf_s(buffer, format, ap);
-			va_end(ap);
-			buffer[1023] = 0;
-			return buffer;
-		}
+		static char buffer[1024];
+		va_list ap;
+		va_start(ap, format);
+		vsprintf_s(buffer, format, ap);
+		va_end(ap);
+		buffer[1023] = 0;
+		return buffer;
 	}
+
 }
 
 

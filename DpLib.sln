@@ -2,7 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
-MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DpLib", "DpLib\DpLib.vcxproj", "{4C95835D-13E9-4AD4-9311-0112334FEE13}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCases", "TestCases\TestCases.vcxproj", "{4B81703A-1C32-4922-B717-6F9FC6D5B218}"
@@ -106,6 +105,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "18_DiffuseLighting", "DpOpenGLDemo\18_DiffuseLighting\18_DiffuseLighting.vcxproj", "{7BCF6965-679A-490D-A932-A083D8289E13}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19_SpecularLighting", "DpOpenGLDemo\19_SpecularLighting\19_SpecularLighting.vcxproj", "{2FBD78CF-A255-4034-850C-D7D94B3542F0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "20_PointLight", "DpOpenGLDemo\20_PointLight\20_PointLight.vcxproj", "{300DCA6A-3186-4022-82BC-3B162A64E15E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -375,6 +376,14 @@ Global
 		{2FBD78CF-A255-4034-850C-D7D94B3542F0}.Release|Win32.Build.0 = Release|Win32
 		{2FBD78CF-A255-4034-850C-D7D94B3542F0}.Release|x64.ActiveCfg = Release|x64
 		{2FBD78CF-A255-4034-850C-D7D94B3542F0}.Release|x64.Build.0 = Release|x64
+		{300DCA6A-3186-4022-82BC-3B162A64E15E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{300DCA6A-3186-4022-82BC-3B162A64E15E}.Debug|Win32.Build.0 = Debug|Win32
+		{300DCA6A-3186-4022-82BC-3B162A64E15E}.Debug|x64.ActiveCfg = Debug|x64
+		{300DCA6A-3186-4022-82BC-3B162A64E15E}.Debug|x64.Build.0 = Debug|x64
+		{300DCA6A-3186-4022-82BC-3B162A64E15E}.Release|Win32.ActiveCfg = Release|Win32
+		{300DCA6A-3186-4022-82BC-3B162A64E15E}.Release|Win32.Build.0 = Release|Win32
+		{300DCA6A-3186-4022-82BC-3B162A64E15E}.Release|x64.ActiveCfg = Release|x64
+		{300DCA6A-3186-4022-82BC-3B162A64E15E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -413,5 +422,6 @@ Global
 		{091F9588-BE8E-4697-8576-4C7BD10A444E} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{7BCF6965-679A-490D-A932-A083D8289E13} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{2FBD78CF-A255-4034-850C-D7D94B3542F0} = {492FEE1D-F038-4594-847F-8790D133612D}
+		{300DCA6A-3186-4022-82BC-3B162A64E15E} = {492FEE1D-F038-4594-847F-8790D133612D}
 	EndGlobalSection
 EndGlobal
