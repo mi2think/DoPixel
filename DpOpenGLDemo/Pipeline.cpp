@@ -124,7 +124,7 @@ bool Technique::AddShaderFromFile(GLenum shaderType, const char* fileName)
 			fprintf(stdout, "vs:\n");
 		else
 			fprintf(stdout, "ps:\n");
-		fprintf(stdout, "%s", fileData);
+		fprintf(stdout, "%s\n", fileData);
 #endif // _DEBUG
 
 		return AddShader(shaderType, fileData);
