@@ -183,6 +183,9 @@
     <ClInclude Include="DpInputState.h">
       <Filter>DpCore</Filter>
     </ClInclude>
+    <ClInclude Include="DpAABB.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">

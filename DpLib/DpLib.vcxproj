@@ -90,6 +90,7 @@
     <ClInclude Include="..\Vendor\stb\stb_image.h" />
     <ClInclude Include="..\Vendor\stb\stb_image_write.h" />
     <ClInclude Include="DoPixel.h" />
+    <ClInclude Include="DpAABB.h" />
     <ClInclude Include="DpCamera.h" />
     <ClInclude Include="DpColor.h" />
     <ClInclude Include="DpConsole.h" />
