@@ -100,7 +100,7 @@ void RenderScene()
 	static float scale = 0.0f;
 	scale += 0.001f;
 
-	glUniform1f(gScaleLocation, sinf(scale));
+	glUniform1f(gScaleLocation, Sin(scale));
 
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);

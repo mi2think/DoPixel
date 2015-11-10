@@ -46,7 +46,7 @@ namespace dopixel
 				big = j4;
 			}
 
-			float bigVal = sqrt(big + 1.0f) * 0.5f;
+			float bigVal = Sqrt(big + 1.0f) * 0.5f;
 			float f = 0.25f / bigVal;
 
 			Quaternion q;

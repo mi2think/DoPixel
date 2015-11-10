@@ -242,5 +242,8 @@
     <ClCompile Include="DpInputState.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
+    <ClCompile Include="DpMath.cpp">
+      <Filter>DpMath</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

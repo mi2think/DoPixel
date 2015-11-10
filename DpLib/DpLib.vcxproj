@@ -143,6 +143,7 @@
     <ClCompile Include="DpInputState.cpp" />
     <ClCompile Include="DpLoadModel.cpp" />
     <ClCompile Include="DpMaterial.cpp" />
+    <ClCompile Include="DpMath.cpp" />
     <ClCompile Include="DpObject.cpp" />
     <ClCompile Include="DpQuaternion.cpp" />
     <ClCompile Include="DpStrUtility.cpp" />

@@ -72,7 +72,7 @@ namespace dopixel
 
 			float Length() const
 			{
-				return sqrt(x * x + y * y + z * z + w * w);
+				return Sqrt(x * x + y * y + z * z + w * w);
 			}
 			float LengthSQ() const
 			{
@@ -115,7 +115,7 @@ namespace dopixel
 					v = Vector3f(1.0f, 0.0f, 0.0f);
 				else
 				{
-					float t = 1.0f / sqrt(s);
+					float t = 1.0f / Sqrt(s);
 					v = Vector3f(x * t, y * t, z * t);
 				}
 			}
@@ -150,15 +150,15 @@ namespace dopixel
 
 		inline Quaternion QuaternionPow(const Quaternion& q, float exp)
 		{
-			if (fabs(q.w) > 0.9999f)
+			if (Abs(q.w) > 0.9999f)
 				return q;
 
-			float alpha = acos(q.w);
+			float alpha = Acos(q.w);
 			float theta = alpha * exp;
-			float f = sin(theta) / sin(alpha);
+			float f = Sin(theta) / Sin(alpha);
 
 			Quaternion _q;
-			_q.w = cos(theta);
+			_q.w = Cos(theta);
 			_q.x = q.x * f;
 			_q.y = q.y * f;
 			_q.z = q.z * f;
@@ -202,12 +202,12 @@ namespace dopixel
 			}
 			else
 			{
-				float sinw = sqrt(1.0f - cosw * cosw);
-				float w = atan2(sinw, cosw);
+				float sinw = Sqrt(1.0f - cosw * cosw);
+				float w = Atan2(sinw, cosw);
 				float f = 1.0f / sinw;
 
-				k0 = sin((1.0f - t) * w) * f;
-				k1 = sin(t * w) * f;
+				k0 = Sin((1.0f - t) * w) * f;
+				k1 = Sin(t * w) * f;
 			}
 
 			Quaternion q;
@@ -224,10 +224,10 @@ namespace dopixel
 			assert(Equal(v.LengthSQ(), 1.0f));
 
 			float thetaOver2 = angle * 0.5f;
-			float sinThetaOver2 = sin(thetaOver2);
+			float sinThetaOver2 = Sin(thetaOver2);
 
 			Quaternion q;
-			q.w = cos(thetaOver2);
+			q.w = Cos(thetaOver2);
 			q.x = v.x * sinThetaOver2;
 			q.y = v.y * sinThetaOver2;
 			q.z = v.z  * sinThetaOver2;
@@ -239,8 +239,8 @@ namespace dopixel
 			float thetaOver2 = angle * 0.5f;
 
 			Quaternion q;
-			q.w = cos(thetaOver2);
-			q.x = sin(thetaOver2);
+			q.w = Cos(thetaOver2);
+			q.x = Sin(thetaOver2);
 			q.y = 0.0f;
 			q.z = 0.0f;
 			return q;
@@ -251,9 +251,9 @@ namespace dopixel
 			float thetaOver2 = angle * 0.5f;
 
 			Quaternion q;
-			q.w = cos(thetaOver2);
+			q.w = Cos(thetaOver2);
 			q.x = 0.0f;
-			q.y = sin(thetaOver2);
+			q.y = Sin(thetaOver2);
 			q.z = 0.0f;
 			return q;
 		}
@@ -263,10 +263,10 @@ namespace dopixel
 			float thetaOver2 = angle * 0.5f;
 
 			Quaternion q;
-			q.w = cos(thetaOver2);
+			q.w = Cos(thetaOver2);
 			q.x = 0.0f;
 			q.y = 0.0f;
-			q.z = sin(thetaOver2);
+			q.z = Sin(thetaOver2);
 			return q;
 		}
 

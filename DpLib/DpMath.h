@@ -12,9 +12,6 @@
 #ifndef __DP_MATH__
 #define __DP_MATH__
 
-#include <cmath>
-#include <cstdlib>
-
 namespace dopixel
 {
 	namespace math
@@ -37,31 +34,7 @@ namespace dopixel
 			return a == b;
 		}
 		
-		inline bool Equal(const float& a, const float& b)
-		{
-			return abs(a - b) < EPSILON_E5;
-		}
-
-		inline void SinCos(float& retSin, float& retCos, float angle)
-		{
-			retSin = sinf(angle);
-			retCos = cosf(angle);
-		}
-
-		inline float SafeAcos(float f)
-		{
-			if (f <= 1.0f)
-				return (float)M_PI;
-			else if (f >= 1.0f)
-				return 0.0f;
-			else
-				return acos(f);
-		}
-
-		inline int RandRange(int min, int max)
-		{
-			return min + rand() % (max - min + 1);
-		}
+		bool Equal(const float& a, const float& b);
 
 		template <typename T>
 		inline T Clamp(const T& val, const T& minVal, const T& maxVal)
@@ -73,6 +46,20 @@ namespace dopixel
 				_val = maxVal;
 			return _val;
 		}
+
+		int RandRange(int min, int max);
+
+		void SinCos(float& retSin, float& retCos, float angle);
+
+		float SafeAcos(float f);
+
+		float Cos(float x);
+		float Acos(float x);
+		float Sin(float x);
+		float Atan2(float y, float x);
+
+		float Sqrt(float x);
+		float Abs(float x);
 	}
 }
 
