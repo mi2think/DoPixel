@@ -13,7 +13,8 @@
 using namespace dopixel;
 using namespace dopixel::math;
 
-#define INVALID_UNIFORM 0xffffffff
+#define INVALID_UNIFORM		0xffffffff
+#define INVALID_OGL_VALUE	0xffffffff
 
 class App
 {
@@ -75,6 +76,7 @@ class Texture
 {
 public:
 	Texture(GLenum textureTarget, const CString& fileName);
+	~Texture();
 
 	bool Load();
 
@@ -88,6 +90,189 @@ private:
 	GLenum textureTarget_;
 	GLuint textureObj_;
 };
+
+struct aiScene;
+struct aiMesh;
+class Mesh
+{
+public:
+	struct Vertex
+	{
+		Vector3f pos;
+		Vector2f tex;
+		Vector3f normal;
+
+		Vertex() {}
+		Vertex(const Vector3f& _pos, const Vector2f& _tex, const Vector3f& _normal)
+			: pos(_pos)
+			, tex(_tex)
+			, normal(_normal)
+		{}
+	};
+
+	Mesh();
+	~Mesh();
+
+	bool LoadMesh(const CString& fileName);
+	
+	void Render();
+private:
+	bool InitFromScene(const aiScene* scene, const CString& fileName);
+	void InitMesh(unsigned int index, const aiMesh* mesh);
+	bool InitMaterials(const aiScene* scene, const CString& fileName);
+	void Clear();
+
+#define  INVALID_MATERIAL 0xffffffff
+
+	struct MeshEntry 
+	{
+		MeshEntry();
+		~MeshEntry();
+		
+		void Init(const std::vector<Vertex>& vertices, const std::vector<unsigned int> indices);
+		GLuint VB_;
+		GLuint IB_;
+		unsigned int numIndices_;
+		unsigned int materialIndex_;
+	};
+
+	std::vector<MeshEntry> entries_;
+	std::vector<Texture*> textures_;
+};
+
+namespace basiclighting
+{
+	struct BaseLight
+	{
+		Vector3f color_;
+		float ambientIntensity_;
+		float diffuseIntensity_;
+
+		BaseLight()
+			: color_(0, 0, 0)
+			, ambientIntensity_(0)
+			, diffuseIntensity_(0)
+		{}
+	};
+
+	struct DirectionalLight : public BaseLight
+	{
+		Vector3f direction_;
+
+		DirectionalLight()
+			: direction_(0, 0, 0)
+		{}
+	};
+
+	struct PointLight : public BaseLight
+	{
+		struct Attenuation
+		{
+			float kc;
+			float kl;
+			float kq;
+			Attenuation()
+				: kc(1)
+				, kl(0)
+				, kq(0)
+			{}
+		};
+
+		Vector3f position_;
+		Attenuation attenuation_;
+
+		PointLight()
+			: position_(0, 0, 0)
+		{}
+	};
+
+	struct SpotLight : public PointLight
+	{
+		Vector3f direction_;
+		float theta_;
+		float phi_;
+		float pf_;
+
+		SpotLight()
+			: direction_(0, 0, 0)
+			, theta_(0)
+			, phi_(0)
+			, pf_(1)
+		{}
+	};
+
+	class BasicLightingTechnique : public Technique
+	{
+	public:
+		static const unsigned int MAX_POINT_LIGHTS = 2;
+		static const unsigned int MAX_SPOT_LIGHTS = 2;
+
+		BasicLightingTechnique() {}
+
+		virtual bool Init() override;
+
+		void SetWVP(const Matrix44f& WVP);
+		void SetWorldMatrix(const Matrix44f& worldMatrix);
+		void SetTextureUnit(unsigned int textureUnit);
+		void SetEyeWorldPos(const Vector3f& eyeWorldPos);
+		void SetSpecularIntensity(float specularIntensity);
+		void SetSpecularPower(float power);
+		void SetDirectionalLight(const DirectionalLight& light);
+		void SetPointLights(unsigned int numLights, const PointLight* pLights);
+		void SetSpotLights(unsigned int numLights, const SpotLight* pLights);
+	private:
+		GLuint WVPLocation_;
+		GLuint worldMatrixLocation_;
+		GLuint samplerLocation_;
+		GLuint eyeWorldPosLocation_;
+		GLuint specularIntensityLocation_;
+		GLuint specularPowerLocation_;
+
+		GLuint numPointLightsLocation_;
+		GLuint numSpotLightsLocation_;
+
+		struct
+		{
+			GLuint color;
+			GLuint ambientIntensity;
+			GLuint diffuseIntensity;
+			GLuint direction;
+		} directionalLight_;
+
+		struct
+		{
+			GLuint color;
+			GLuint ambientIntensity;
+			GLuint diffuseIntensity;
+			GLuint position;
+			struct
+			{
+				GLuint kc;
+				GLuint kl;
+				GLuint kq;
+			} atten;
+		} pointLightsLocation_[MAX_POINT_LIGHTS];
+
+		struct
+		{
+			GLuint color;
+			GLuint ambientIntensity;
+			GLuint diffuseIntensity;
+			GLuint position;
+			struct
+			{
+				GLuint kc;
+				GLuint kl;
+				GLuint kq;
+			} atten;
+
+			GLuint direction;
+			GLuint cosThetaOver2;
+			GLuint cosPhiOver2;
+			GLuint pf;
+		} spotLightsLocation_[MAX_SPOT_LIGHTS];
+	};
+}
 
 // FPS camera 
 class Camera

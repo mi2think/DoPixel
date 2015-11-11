@@ -3,6 +3,10 @@
 #include "DpFileStream.h"
 #include "stb/stb_image.h"
 
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+
 #include <GL/freeglut.h> // for key define
 
 #pragma comment(lib, "DpLib.lib")
@@ -195,7 +199,14 @@ Texture::Texture(GLenum textureTarget, const CString& fileName)
 	, height_(0)
 	, data_(nullptr)
 {
-	free(data_);
+}
+
+Texture::~Texture()
+{
+	if (data_)
+	{
+		free(data_);
+	}
 }
 
 bool Texture::Load()
@@ -214,16 +225,18 @@ bool Texture::Load()
 
 		int comp = 0;
 		data_ = stbi_load_from_memory(fileData, size, &width_, &height_, &comp, 4);
+		if (data_ != nullptr)
+		{
+			glGenTextures(1, &textureObj_);
+			glBindTexture(textureTarget_, textureObj_);
+			glTexImage2D(textureTarget_, 0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, data_);
+			glTexParameterf(textureTarget_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameterf(textureTarget_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glBindTexture(textureTarget_, 0);
 
-		glGenTextures(1, &textureObj_);
-		glBindTexture(textureTarget_, textureObj_);
-		glTexImage2D(textureTarget_, 0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, data_);
-		glTexParameterf(textureTarget_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameterf(textureTarget_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glBindTexture(textureTarget_, 0);
-
-		stbi_set_flip_vertically_on_load(false);
-		return true;
+			stbi_set_flip_vertically_on_load(false);
+			return true;
+		}
 	}
 	return false;
 }
@@ -232,6 +245,413 @@ void Texture::Bind(GLenum textureUnit)
 {
 	glActiveTexture(textureUnit);
 	glBindTexture(textureTarget_, textureObj_);
+}
+
+//////////////////////////////////////////////////////////////////////////
+Mesh::MeshEntry::MeshEntry()
+{
+	VB_ = INVALID_OGL_VALUE;
+	IB_ = INVALID_OGL_VALUE;
+	numIndices_ = 0;
+	materialIndex_ = INVALID_MATERIAL;
+}
+
+Mesh::MeshEntry::~MeshEntry()
+{
+	if (VB_ != INVALID_OGL_VALUE)
+	{
+		glDeleteBuffers(1, &VB_);
+	}
+	if (IB_ != INVALID_OGL_VALUE)
+	{
+		glDeleteBuffers(1, &IB_);
+	}
+}
+
+void Mesh::MeshEntry::Init(const std::vector<Vertex>& vertices, const std::vector<unsigned int> indices)
+{
+	numIndices_ = indices.size();
+
+	glGenBuffers(1, &VB_);
+	glBindBuffer(GL_ARRAY_BUFFER, VB_);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &IB_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB_);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * numIndices_, &indices[0], GL_STATIC_DRAW);
+}
+
+Mesh::Mesh()
+{
+}
+
+Mesh::~Mesh()
+{
+	Clear();
+}
+
+void Mesh::Clear()
+{
+	for (auto texture : textures_)
+	{
+		delete texture;
+	}
+	textures_.clear();
+	entries_.clear();
+}
+
+bool Mesh::LoadMesh(const CString& fileName)
+{
+	Clear();
+
+	bool ret = false;
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(fileName.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+	if (scene)
+	{
+		ret = InitFromScene(scene, fileName);
+	}
+	else
+	{
+		fprintf(stderr, "error parsing '%s' : '%s'", fileName.c_str(), importer.GetErrorString());
+	}
+	return ret;
+}
+
+bool Mesh::InitFromScene(const aiScene* scene, const CString& fileName)
+{
+	entries_.resize(scene->mNumMeshes);
+	textures_.resize(scene->mNumMaterials);
+
+	for (unsigned int i = 0; i < entries_.size(); ++i)
+	{
+		const aiMesh* mesh = scene->mMeshes[i];
+		InitMesh(i, mesh);
+	}
+
+	return InitMaterials(scene, fileName);
+}
+
+void Mesh::InitMesh(unsigned int index, const aiMesh* mesh)
+{
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+
+	const aiVector3D zero(0.0f, 0.0f, 0.0f);
+	// vertices
+	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+	{
+		const aiVector3D* pos = &(mesh->mVertices[i]);
+		const aiVector3D* normal = &(mesh->mNormals[i]);
+		const aiVector3D* texCoord = mesh->HasTextureCoords(0) ? &(mesh->mTextureCoords[0][i]) : &zero;
+
+		Vertex v(Vector3f(pos->x, pos->y, pos->z), Vector2f(texCoord->x, texCoord->y), Vector3f(normal->x, normal->y, normal->z));
+		vertices.push_back(v);
+	}
+	// indices
+	for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
+	{
+		const aiFace& face = mesh->mFaces[i];
+		ASSERT(face.mNumIndices == 3);
+		indices.push_back(face.mIndices[0]);
+		indices.push_back(face.mIndices[1]);
+		indices.push_back(face.mIndices[2]);
+	}
+
+	entries_[index].materialIndex_ = mesh->mMaterialIndex;
+	entries_[index].Init(vertices, indices);
+}
+
+bool Mesh::InitMaterials(const aiScene* scene, const CString& fileName)
+{
+	auto slashIndex = fileName.find_last_of("/");
+	CString dir;
+	if (slashIndex == CString::npos)
+		dir = ".";
+	else if (slashIndex == 0)
+		dir = "/";
+	else
+		dir = fileName.substr(0, slashIndex);
+
+	bool ret = true;
+	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
+	{
+		const aiMaterial* material = scene->mMaterials[i];
+		textures_[i] = nullptr;
+
+		if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+		{
+			aiString path;
+			if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path, nullptr, nullptr, nullptr, nullptr, nullptr) == AI_SUCCESS)
+			{
+				CString fullPath = dir + "/" + path.data;
+				textures_[i] = new Texture(GL_TEXTURE_2D, fullPath.c_str());
+				if (!textures_[i]->Load())
+				{
+					fprintf(stderr, "error loading texture '%s'\n", fullPath.c_str());
+					delete textures_[i];
+					textures_[i] = nullptr;
+					ret = false;
+				}
+				else
+				{
+					fprintf(stdout, "loaded texture '%s'\n", fullPath.c_str());
+				}
+			}
+		}
+
+		// loading a white texture in case model does not include its own texture
+		if (!textures_[i])
+		{
+			textures_[i] = new Texture(GL_TEXTURE_2D, "../Resource/white.png");
+			ret = textures_[i]->Load();
+		}
+	}
+
+	return ret;
+}
+
+void Mesh::Render()
+{
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+
+	for (unsigned int i = 0; i < entries_.size(); ++i)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, entries_[i].VB_);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, entries_[i].IB_);
+
+		const unsigned int materialIndex = entries_[i].materialIndex_;
+		if (materialIndex < textures_.size() && textures_[materialIndex] != nullptr)
+		{
+			textures_[materialIndex]->Bind(GL_TEXTURE0);
+		}
+
+		glDrawElements(GL_TRIANGLES, entries_[i].numIndices_, GL_UNSIGNED_INT, 0);
+	}
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+}
+
+//////////////////////////////////////////////////////////////////////////
+namespace basiclighting
+{
+	bool BasicLightingTechnique::Init()
+	{
+		if (!Technique::Init())
+			return false;
+
+		if (!AddShaderFromFile(GL_VERTEX_SHADER, "../DpOpenGLDemo/basic_lighting.vs"))
+			return false;
+
+		if (!AddShaderFromFile(GL_FRAGMENT_SHADER, "../DpOpenGLDemo/basic_lighting.ps"))
+			return false;
+
+		if (!Finalize())
+			return false;
+
+		WVPLocation_ = GetUniformLocation("gWVP");
+		worldMatrixLocation_ = GetUniformLocation("gWorld");
+		samplerLocation_ = GetUniformLocation("gSampler");
+		eyeWorldPosLocation_ = GetUniformLocation("gEyeWorldPos");
+		specularIntensityLocation_ = GetUniformLocation("gSpecularIntensity");
+		specularPowerLocation_ = GetUniformLocation("gSpecularPower");
+		numPointLightsLocation_ = GetUniformLocation("gNumPointLights");
+		numSpotLightsLocation_ = GetUniformLocation("gNumSpotLights");
+
+		directionalLight_.color = GetUniformLocation("gDirectionalLight.base.color");
+		directionalLight_.ambientIntensity = GetUniformLocation("gDirectionalLight.base.ambientIntensity");
+		directionalLight_.diffuseIntensity = GetUniformLocation("gDirectionalLight.base.diffuseIntensity");
+		directionalLight_.direction = GetUniformLocation("gDirectionalLight.direction");
+
+		for (unsigned int i = 0; i < MAX_POINT_LIGHTS; ++i)
+		{
+			auto& light = pointLightsLocation_[i];
+
+			const char* p = dopixel::str_format("gPointLights[%d].base.color", i);
+			light.color = GetUniformLocation(p);
+
+			p = dopixel::str_format("gPointLights[%d].base.ambientIntensity", i);
+			light.ambientIntensity = GetUniformLocation(p);
+
+			p = dopixel::str_format("gPointLights[%d].base.diffuseIntensity", i);
+			light.diffuseIntensity = GetUniformLocation(p);
+
+			p = dopixel::str_format("gPointLights[%d].position", i);
+			light.position = GetUniformLocation(p);
+
+			p = dopixel::str_format("gPointLights[%d].atten.kc", i);
+			light.atten.kc = GetUniformLocation(p);
+
+			p = dopixel::str_format("gPointLights[%d].atten.kl", i);
+			light.atten.kl = GetUniformLocation(p);
+
+			p = dopixel::str_format("gPointLights[%d].atten.kq", i);
+			light.atten.kq = GetUniformLocation(p);
+
+			if (light.color == INVALID_UNIFORM || light.ambientIntensity == INVALID_UNIFORM ||
+				light.diffuseIntensity == INVALID_UNIFORM || light.position == INVALID_UNIFORM ||
+				light.position == INVALID_UNIFORM || light.atten.kc == INVALID_UNIFORM ||
+				light.atten.kl == INVALID_UNIFORM || light.atten.kq == INVALID_UNIFORM)
+				return false;
+		}
+
+		for (unsigned int i = 0; i < MAX_SPOT_LIGHTS; ++i)
+		{
+			auto& light = spotLightsLocation_[i];
+
+			const char* p = dopixel::str_format("gSpotLights[%d].pl.base.color", i);
+			light.color = GetUniformLocation(p);
+
+			p = dopixel::str_format("gSpotLights[%d].pl.base.ambientIntensity", i);
+			light.ambientIntensity = GetUniformLocation(p);
+
+			p = dopixel::str_format("gSpotLights[%d].pl.base.diffuseIntensity", i);
+			light.diffuseIntensity = GetUniformLocation(p);
+
+			p = dopixel::str_format("gSpotLights[%d].pl.position", i);
+			light.position = GetUniformLocation(p);
+
+			p = dopixel::str_format("gSpotLights[%d].pl.atten.kc", i);
+			light.atten.kc = GetUniformLocation(p);
+
+			p = dopixel::str_format("gSpotLights[%d].pl.atten.kl", i);
+			light.atten.kl = GetUniformLocation(p);
+
+			p = dopixel::str_format("gSpotLights[%d].pl.atten.kq", i);
+			light.atten.kq = GetUniformLocation(p);
+
+			p = dopixel::str_format("gSpotLights[%d].direction", i);
+			light.direction = GetUniformLocation(p);
+
+			p = dopixel::str_format("gSpotLights[%d].cosThetaOver2", i);
+			light.cosThetaOver2 = GetUniformLocation(p);
+
+			p = dopixel::str_format("gSpotLights[%d].cosPhiOver2", i);
+			light.cosPhiOver2 = GetUniformLocation(p);
+
+			p = dopixel::str_format("gSpotLights[%d].pf", i);
+			light.pf = GetUniformLocation(p);
+
+			if (light.color == INVALID_UNIFORM || light.ambientIntensity == INVALID_UNIFORM ||
+				light.diffuseIntensity == INVALID_UNIFORM || light.position == INVALID_UNIFORM ||
+				light.position == INVALID_UNIFORM || light.atten.kc == INVALID_UNIFORM ||
+				light.atten.kl == INVALID_UNIFORM || light.atten.kq == INVALID_UNIFORM ||
+				light.direction == INVALID_UNIFORM || light.cosThetaOver2 == INVALID_UNIFORM ||
+				light.cosPhiOver2 == INVALID_UNIFORM || light.pf == INVALID_UNIFORM)
+				return false;
+		}
+
+
+		if (directionalLight_.ambientIntensity == INVALID_UNIFORM ||
+			directionalLight_.diffuseIntensity == INVALID_UNIFORM ||
+			directionalLight_.color == INVALID_UNIFORM ||
+			directionalLight_.direction == INVALID_UNIFORM ||
+			WVPLocation_ == INVALID_UNIFORM ||
+			worldMatrixLocation_ == INVALID_UNIFORM ||
+			samplerLocation_ == INVALID_UNIFORM ||
+			eyeWorldPosLocation_ == INVALID_UNIFORM ||
+			specularIntensityLocation_ == INVALID_UNIFORM ||
+			specularPowerLocation_ == INVALID_UNIFORM ||
+			numPointLightsLocation_ == INVALID_UNIFORM ||
+			numSpotLightsLocation_ == INVALID_UNIFORM)
+			return false;
+
+		return true;
+	}
+
+	void BasicLightingTechnique::SetWVP(const Matrix44f& WVP)
+	{
+		glUniformMatrix4fv(WVPLocation_, 1, GL_TRUE, &(WVP.m[0][0]));
+	}
+
+	void BasicLightingTechnique::SetWorldMatrix(const Matrix44f& worldMatrix)
+	{
+		glUniformMatrix4fv(worldMatrixLocation_, 1, GL_TRUE, &(worldMatrix.m[0][0]));
+	}
+
+	void BasicLightingTechnique::SetTextureUnit(unsigned int textureUnit)
+	{
+		glUniform1i(samplerLocation_, textureUnit);
+	}
+
+	void BasicLightingTechnique::SetEyeWorldPos(const Vector3f& eyeWorldPos)
+	{
+		glUniform3f(eyeWorldPosLocation_, eyeWorldPos.x, eyeWorldPos.y, eyeWorldPos.z);
+	}
+
+	void BasicLightingTechnique::SetSpecularIntensity(float specularIntensity)
+	{
+		glUniform1f(specularIntensityLocation_, specularIntensity);
+	}
+
+	void BasicLightingTechnique::SetSpecularPower(float specularPower)
+	{
+		glUniform1f(specularPowerLocation_, specularPower);
+	}
+
+	void BasicLightingTechnique::SetDirectionalLight(const DirectionalLight& light)
+	{
+		glUniform3f(directionalLight_.color, light.color_.x, light.color_.y, light.color_.z);
+		glUniform1f(directionalLight_.ambientIntensity, light.ambientIntensity_);
+		glUniform1f(directionalLight_.diffuseIntensity, light.diffuseIntensity_);
+		Vector3f dir = light.direction_;
+		dir.Normalize();
+		glUniform3f(directionalLight_.direction, dir.x, dir.y, dir.z);
+	}
+
+	void BasicLightingTechnique::SetPointLights(unsigned int numLights, const PointLight* pLights)
+	{
+		glUniform1i(numPointLightsLocation_, numLights);
+		for (unsigned int i = 0; i < numLights; ++i)
+		{
+			const auto& loc = pointLightsLocation_[i];
+			const auto& light = pLights[i];
+
+			glUniform1f(loc.ambientIntensity, light.ambientIntensity_);
+			glUniform1f(loc.diffuseIntensity, light.diffuseIntensity_);
+			glUniform3f(loc.color, light.color_.x, light.color_.y, light.color_.z);
+			glUniform3f(loc.position, light.position_.x, light.position_.y, light.position_.z);
+			glUniform1f(loc.atten.kc, light.attenuation_.kc);
+			glUniform1f(loc.atten.kl, light.attenuation_.kl);
+			glUniform1f(loc.atten.kq, light.attenuation_.kq);
+		}
+	}
+
+	void BasicLightingTechnique::SetSpotLights(unsigned int numLights, const SpotLight* pLights)
+	{
+		glUniform1i(numSpotLightsLocation_, numLights);
+		for (unsigned int i = 0; i < numLights; ++i)
+		{
+			const auto& loc = spotLightsLocation_[i];
+			const auto& light = pLights[i];
+
+			glUniform1f(loc.ambientIntensity, light.ambientIntensity_);
+			glUniform1f(loc.diffuseIntensity, light.diffuseIntensity_);
+			glUniform3f(loc.color, light.color_.x, light.color_.y, light.color_.z);
+			glUniform3f(loc.position, light.position_.x, light.position_.y, light.position_.z);
+			glUniform1f(loc.atten.kc, light.attenuation_.kc);
+			glUniform1f(loc.atten.kl, light.attenuation_.kl);
+			glUniform1f(loc.atten.kq, light.attenuation_.kq);
+
+			Vector3f dir = light.direction_;
+			dir.Normalize();
+			glUniform3f(loc.direction, dir.x, dir.y, dir.z);
+
+			glUniform1f(loc.cosThetaOver2, cos(light.theta_ / 2.0f));
+			glUniform1f(loc.cosPhiOver2, cos(light.phi_ / 2.0f));
+
+			glUniform1f(loc.pf, light.pf_);
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
