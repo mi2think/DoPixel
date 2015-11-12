@@ -6,7 +6,7 @@
 	file base:	DpConsole
 	file ext:	cpp
 	author:		mi2think@gmail.com
-	
+
 	purpose:	Console
 *********************************************************************/
 
@@ -15,29 +15,26 @@
 
 namespace dopixel
 {
-	namespace Console
+	void SetConsoleColor(ConsoleColor color)
 	{
-		void SetConsoleColor (ConsoleColor color)
+		HANDLE hWnd = GetStdHandle(STD_OUTPUT_HANDLE);
+		switch (color)
 		{
-			HANDLE hWnd = GetStdHandle(STD_OUTPUT_HANDLE);
-			switch(color)
-			{
-			default:
-			case COLOR_WHITE:
-				SetConsoleTextAttribute(hWnd, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-				break;
-			case COLOR_RED:
-				SetConsoleTextAttribute(hWnd, FOREGROUND_RED | FOREGROUND_INTENSITY);
-				break;
-			case COLOR_GREEN:
-				SetConsoleTextAttribute(hWnd, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-				break;
-			case COLOR_BLUE:
-				SetConsoleTextAttribute(hWnd, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-				break;
-			}
+		default:
+		case COLOR_WHITE:
+			SetConsoleTextAttribute(hWnd, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			break;
+		case COLOR_RED:
+			SetConsoleTextAttribute(hWnd, FOREGROUND_RED | FOREGROUND_INTENSITY);
+			break;
+		case COLOR_GREEN:
+			SetConsoleTextAttribute(hWnd, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			break;
+		case COLOR_BLUE:
+			SetConsoleTextAttribute(hWnd, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			break;
 		}
-
-		OStreamHelper os_cout;
 	}
+
+	OStreamHelper os_cout;
 }

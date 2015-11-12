@@ -15,7 +15,7 @@
 
 #include "DpConsole.h"
 #include <vector>
-using namespace dopixel::Console;
+using namespace dopixel;
 
 namespace dopixel
 {

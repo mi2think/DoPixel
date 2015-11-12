@@ -17,7 +17,6 @@
 #define PRINT_REGEX_MATCH_INFO
 #ifdef PRINT_REGEX_MATCH_INFO
 #include "DpConsole.h"
-using namespace dopixel::Console;
 #endif
 
 namespace dopixel
