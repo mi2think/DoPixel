@@ -6,7 +6,7 @@
 	file base:	DpEnums
 	file ext:	h
 	author:		mi2think@gmail.com
-	
+
 	purpose:	Enums def
 *********************************************************************/
 #ifndef __DP_ENUMS__
@@ -14,55 +14,52 @@
 
 namespace dopixel
 {
-	namespace core
+	enum FillMode
 	{
-		enum FillMode
-		{
-			Fill_Wireframe,
-			Fill_Solid,
-		};
+		Fill_Wireframe,
+		Fill_Solid,
+	};
 
-		enum ShadeMode
-		{
-			Shade_Flat,
-			Shade_Gouraud,
-			Shade_Phong,
-		};
+	enum ShadeMode
+	{
+		Shade_Flat,
+		Shade_Gouraud,
+		Shade_Phong,
+	};
 
-		enum CMPFunc
-		{
-			CMP_Never,
-			CMP_Less,
-			CMP_Equal,
-			CMP_LessEqual,
-			CMP_Greater,
-			CMP_NotEqual,
-			CMP_GreaterEqual,
-			CMP_Always,
-		};
+	enum CMPFunc
+	{
+		CMP_Never,
+		CMP_Less,
+		CMP_Equal,
+		CMP_LessEqual,
+		CMP_Greater,
+		CMP_NotEqual,
+		CMP_GreaterEqual,
+		CMP_Always,
+	};
 
-		enum Boolen
-		{
-			False,
-			True,
-		};
+	enum Boolen
+	{
+		False,
+		True,
+	};
 
-		enum ZEnable
-		{
-			ZEnable_False,
-			ZEnable_Z,
-			ZEnable_INVZ,
-		};
+	enum ZEnable
+	{
+		ZEnable_False,
+		ZEnable_Z,
+		ZEnable_INVZ,
+	};
 
-		enum RenderState
-		{
-			RS_FillMode,
-			RS_ShadeMode,
-			RS_ZEnable,
-			RS_ZFUNC,
-			RS_ZWriteEnable,
-		};
-	}
+	enum RenderState
+	{
+		RS_FillMode,
+		RS_ShadeMode,
+		RS_ZEnable,
+		RS_ZFUNC,
+		RS_ZWriteEnable,
+	};
 }
 
 #endif

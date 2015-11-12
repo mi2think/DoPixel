@@ -11,8 +11,8 @@
 *********************************************************************/
 #include "DpVector3.h"
 #include "DpUnitTest.h"
+using namespace dopixel;
 using namespace dopixel::math;
-using namespace dopixel::dptest;
 
 DPTEST(Vector3)
 {

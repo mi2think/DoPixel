@@ -14,9 +14,7 @@ purpose:	Direct3D device
 #define __DP_D3DDEVICE__
 
 #include "DpGeometry.h"
-#include "DpNoCopy.h"
 #include "DpColor.h"
-#include "DpCore.h"
 
 #include <d3d9.h>
 #include <d3dx9core.h>

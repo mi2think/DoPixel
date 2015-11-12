@@ -13,13 +13,10 @@
 #ifndef __DP_MATRIX44__
 #define __DP_MATRIX44__
 
-#include "DpCore.h"
+#include "DoPixel.h"
 #include "DpMath.h"
 #include "DpVector3.h"
 #include "DpVector4.h"
-#include <vector>
-#include <algorithm>
-#include <cassert>
 
 namespace dopixel
 {
@@ -216,7 +213,7 @@ namespace dopixel
 					{
 						if (i != j)
 						{
-							core::Swap(m[i][j], m[j][i]);
+							swap_t(m[i][j], m[j][i]);
 						}
 					}
 				}
@@ -235,7 +232,7 @@ namespace dopixel
 		template <typename T>
 		inline Matrix44<T>& MatrixTranspose(Matrix44<T>& n, const Matrix44<T>& _m)
 		{
-			assert(&n != &_m);
+			ASSERT(&n != &_m);
 
 			for (int i = 0; i < Matrix44<T>::R; ++i)
 			{
@@ -419,7 +416,7 @@ namespace dopixel
 		template <typename T>
 		inline Matrix44<T>& MatrixRotationAxis(Matrix44<T>& n, const Vector4<T>& v, float angle)
 		{
-			assert(v.IsNormalized());
+			ASSERT(v.IsNormalized());
 
 			float s = 0.0f;
 			float c = 0.0f;

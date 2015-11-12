@@ -6,7 +6,7 @@
 	file base:	DpUnitTest
 	file ext:	h
 	author:		mi2think@gmail.com
-	
+
 	purpose:	Unit Test
 *********************************************************************/
 
@@ -19,73 +19,71 @@ using namespace dopixel::Console;
 
 namespace dopixel
 {
-	namespace dptest
-	{	
-		class TestCase
+	class TestCase
+	{
+	public:
+		TestCase(const char* _testCaseName) : nPassed(0), nFailed(0), testCaseName(_testCaseName) {}
+
+		virtual void Run() = 0;
+
+		int nPassed;
+		int nFailed;
+		const char* testCaseName;
+	};
+
+	class UnitTest
+	{
+	public:
+		static UnitTest* GetInstance() { static UnitTest unitTest; return &unitTest; }
+
+		UnitTest() : nFailed(0), nPassed(0), currTestCase(NULL) {}
+
+		~UnitTest()
 		{
-		public:
-			TestCase(const char* _testCaseName) : nPassed(0), nFailed(0), testCaseName(_testCaseName) {}
+			for (auto e : testCaseVec)
+			{
+				delete e;
+			}
+		}
 
-			virtual void Run() = 0;
-
-			int nPassed;
-			int nFailed;
-			const char* testCaseName;
-		};
-
-		class UnitTest
+		TestCase* RegisterTestCase(TestCase* testCase)
 		{
-		public:
-			static UnitTest* GetInstance() { static UnitTest unitTest; return &unitTest; }
+			testCaseVec.push_back(testCase);
+			return testCase;
+		}
 
-			UnitTest() : nFailed(0), nPassed(0), currTestCase(NULL) {}
-
-			~UnitTest()
+		void Run()
+		{
+			for (auto e : testCaseVec)
 			{
-				for (auto e : testCaseVec)
-				{
-					delete e;
-				}
+				currTestCase = e;
+				e->Run();
+
+				nPassed += e->nPassed;
+				nFailed += e->nFailed;
+
+				os_cout << White << ">>>>>>>> " << currTestCase->testCaseName << endl;
+				os_cout << "*************************************" << endl;
 			}
 
-			TestCase* RegisterTestCase(TestCase* testCase)
-			{
-				testCaseVec.push_back(testCase);
-				return testCase;
-			}
+			os_cout << White << "Run Tests:" << nPassed + nFailed << endl;
+			os_cout << Green << "Passed:" << nPassed << endl;
+			if (nFailed > 0)
+				os_cout << Red;
+			os_cout << "Failed:" << nFailed << endl;
+		}
 
-			void Run()
-			{
-				for (auto e : testCaseVec)
-				{
-					currTestCase = e;
-					e->Run();
-
-					nPassed += e->nPassed;
-					nFailed += e->nFailed;
-					
-					os_cout << White << ">>>>>>>> "<< currTestCase->testCaseName << endl;
-					os_cout << "*************************************" << endl;
-				}
-
-				os_cout << White << "Run Tests:" << nPassed + nFailed << endl;
-				os_cout << Green << "Passed:" << nPassed << endl;
-				if (nFailed > 0)
-					os_cout << Red;
-				os_cout << "Failed:" << nFailed << endl;
-			}
-
-			static void MarkCurrentTestCase(bool b)
-			{
-				TestCase* currTestCase = UnitTest::GetInstance()->currTestCase;
-				b ? ++currTestCase->nPassed : ++currTestCase->nFailed;
-			}
-			TestCase* currTestCase;
-		protected:
-			int nPassed;
-			int nFailed;
-			std::vector<TestCase*> testCaseVec;
-		};
+		static void MarkCurrentTestCase(bool b)
+		{
+			TestCase* currTestCase = UnitTest::GetInstance()->currTestCase;
+			b ? ++currTestCase->nPassed : ++currTestCase->nFailed;
+		}
+		TestCase* currTestCase;
+	protected:
+		int nPassed;
+		int nFailed;
+		std::vector<TestCase*> testCaseVec;
+	};
 
 #define TESTCASE_NAME(testCaseName) testCaseName##TEST
 
@@ -102,7 +100,7 @@ namespace dopixel
 			::testCase = UnitTest::GetInstance()->RegisterTestCase(new TESTCASE_NAME(testCaseName)(#testCaseName));\
 		void TESTCASE_NAME(testCaseName)::Run()
 
-		// compare helper
+	// compare helper
 
 #define DPTEST_CMP_FUNC(op_name, op) CmpHelper##op_name
 
@@ -139,13 +137,13 @@ namespace dopixel
 		}
 
 		// Compare functions
-		DPTEST_CMP_HELPER(EQ, ==)
-		DPTEST_CMP_HELPER(NE, !=)
+		DPTEST_CMP_HELPER(EQ, == )
+		DPTEST_CMP_HELPER(NE, != )
 		DPTEST_CMP_HELPER(LT, <)
-		DPTEST_CMP_HELPER(LE, <=)
+		DPTEST_CMP_HELPER(LE, <= )
 		DPTEST_CMP_HELPER(GT, >)
-		DPTEST_CMP_HELPER(GE, >=)
-			// ==
+		DPTEST_CMP_HELPER(GE, >= )
+		// ==
 #define EXPECT_EQ(a, b) { DPTEST_CMP_FUNC(EQ, ==)(a, b); }
 			// !=
 #define EXPECT_NE(a, b) { DPTEST_CMP_FUNC(NE, !=)(a, b); }
@@ -161,7 +159,6 @@ namespace dopixel
 #define EXPECT_TRUE(cond)  DPTEST_TEST_BOOL(cond, #cond, true)
 
 #define EXPECT_FALSE(cond) DPTEST_TEST_BOOL(!(cond), #cond, true)
-	}
 }
 
 #endif

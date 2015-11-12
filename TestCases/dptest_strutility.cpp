@@ -7,108 +7,106 @@
 	file ext:	cpp
 	author:		mi2think@gmail.com
 	
-	purpose:	Test StrUtility
+	purpose:	Test 
 *********************************************************************/
-#include "DpStrUtility.h"
+#include "DoPixel.h"
 #include "DpUnitTest.h"
-using namespace dopixel::dptest;
-using namespace dopixel::core;
+using namespace dopixel;
 
-DPTEST(StrUtility)
+DPTEST(STRUTLIS)
 {
 	const char* str = "afefrgrefdsgh123adghDRHSA33333....";
 	char sz[256];
 	
-	// StrUtility::StrStrip
-	StrUtility::StrStrip(sz, str, "ef");
+	// str_strip
+	str_strip(sz, str, "ef");
 	EXPECT_TRUE(strcmp(sz, "afrgrdsgh123adghDRHSA33333....") == 0);
 
-	StrUtility::StrStrip(sz, str, "AB");
+	str_strip(sz, str, "AB");
 	EXPECT_TRUE(strcmp(sz, str) == 0);
 
-	StrUtility::StrStrip(sz, str, "a");
+	str_strip(sz, str, "a");
 	EXPECT_TRUE(strcmp(sz, "fefrgrefdsgh123dghDRHSA33333....") == 0);
 
-	StrUtility::StrStrip(sz, str, ".");
+	str_strip(sz, str, ".");
 	EXPECT_TRUE(strcmp(sz, "afefrgrefdsgh123adghDRHSA33333") == 0);
 
-	StrUtility::StrStrip(sz, str, "....");
+	str_strip(sz, str, "....");
 	EXPECT_TRUE(strcmp(sz, "afefrgrefdsgh123adghDRHSA33333") == 0);
 
-	StrUtility::StrStrip(sz, str, "afefrgrefdsgh123adghDRHSA33333....");
+	str_strip(sz, str, "afefrgrefdsgh123adghDRHSA33333....");
 	EXPECT_TRUE(strcmp(sz, "") == 0);
 
 	std::string str2 = "adfsaklfjegkjsdlfla-33r5w";
 	std::string out;
 	
-	StrUtility::StrStrip(out, str2, "lf");
+	str_strip(out, str2, "lf");
 	EXPECT_TRUE(out == std::string("adfsakjegkjsdla-33r5w"));
 
-	StrUtility::StrStrip(out, str2, "akg");
+	str_strip(out, str2, "akg");
 	EXPECT_TRUE(out == std::string("adfsaklfjegkjsdlfla-33r5w"));
 
-	StrUtility::StrStrip(out, str2, "adfs");
+	str_strip(out, str2, "adfs");
 	EXPECT_TRUE(out == std::string("aklfjegkjsdlfla-33r5w"));
 
-	StrUtility::StrStrip(out, str2, "w");
+	str_strip(out, str2, "w");
 	EXPECT_TRUE(out == std::string("adfsaklfjegkjsdlfla-33r5"));
 
-	// StrUtility::StrReplace
+	// str_replace
 	std::string str3 = "sakg;la'gkjdajfdalagkjadkla;qpdjg";
-	StrUtility::StrReplace(out, str3, "la", "XY");
+	str_replace(out, str3, "la", "XY");
 	EXPECT_TRUE(out == "sakg;XY'gkjdajfdaXYgkjadkXY;qpdjg");
 
-	StrUtility::StrReplace(out, str3, "s", "SSS");
+	str_replace(out, str3, "s", "SSS");
 	EXPECT_TRUE(out == "SSSakg;la'gkjdajfdalagkjadkla;qpdjg");
 
-	StrUtility::StrReplace(out, str3, "g", "GGG");
+	str_replace(out, str3, "g", "GGG");
 	EXPECT_TRUE(out == "sakGGG;la'GGGkjdajfdalaGGGkjadkla;qpdjGGG");
 
-	StrUtility::StrReplace(out, str3, "gold", "Money");
+	str_replace(out, str3, "gold", "Money");
 	EXPECT_TRUE(out == "sakg;la'gkjdajfdalagkjadkla;qpdjg");
 
-	StrUtility::StrReplace(out, str3, "sakg;la'gkjdajfdalagkjadkla;qpdjg", "Hello World!");
+	str_replace(out, str3, "sakg;la'gkjdajfdalagkjadkla;qpdjg", "Hello World!");
 	EXPECT_TRUE(out == "Hello World!");
 
-	StrUtility::StrReplace(out, str3, "sakg;la'gkjdajfdalagkjadkla;qpdjg", "");
+	str_replace(out, str3, "sakg;la'gkjdajfdalagkjadkla;qpdjg", "");
 	EXPECT_TRUE(out == "");
 
-	// StrUtility::StrTrimLeft
+	// str_trim left
 	std::string str4 = "\t   akg music & k3003";
-	StrUtility::StrTrimLeft(str4);
+	str_trim(str4, TRIM_LEFT);
 	EXPECT_TRUE(str4 == "akg music & k3003");
 
-	// StrUtility::StrTrimRight
+	// str_trim right
 	std::string str5 = "akg music & k3003\t\t\t  \t";
-	StrUtility::StrTrimRight(str5);
+	str_trim(str5, TRIM_RIGHT);
 	EXPECT_TRUE(str5 == "akg music & k3003");
 
-	float f;
-	bool b = StrUtility::ToFloat(f, "0.2345f");
+	bool b = str_is_valid_float("0.2345f");
 	EXPECT_TRUE(b);
 
-	// StrUtility::StrSplit
+	// str_split
 	std::string str6 = "LookAtOffset:(0,0,0);LookFromOffset:(0,0,0);CameraType:1";
-	std::vector<std::string> vec;
-	StrUtility::StrSplit(vec, str6, ';');
+	vector<string> vec;
+	str_split(vec, str6, ';');
 	EXPECT_TRUE(vec.size() == 3);
 	EXPECT_TRUE(vec[1] == "LookFromOffset:(0,0,0)");
 
-	// StrUtility::StrStripAnychar
+	// str_strip_anychar
 	const char* str7 = "add...a<1,2> <2,3> <3,4>";
-	StrUtility::StrStripAnychar(sz, str7, "<>.");
+	str_strip_anychar(sz, str7, "<>.");
 	EXPECT_TRUE(strcmp(sz, "adda1,2 2,3 3,4") == 0);
 
 	const char* str8 = "..<a>add...a<1,2> <2,3> <3,4>";
-	StrUtility::StrStripAnychar(sz, str8, "<ad>.");
+	str_strip_anychar(sz, str8, "<ad>.");
 	EXPECT_TRUE(strcmp(sz, "1,2 2,3 3,4") == 0);
 
 	std::string str9 = str8;
-	StrUtility::StrStripAnychar(out, str9, "<ad>.");
+	str_strip_anychar(out, str9, "<ad>.");
 	EXPECT_TRUE(out == "1,2 2,3 3,4");
 
-	// StrUtility::StrReplaceAnychar
-	std::string str10 = "<11,43> <0,9> <12,44>";
-	StrUtility::StrReplaceAnychar(out, str10, "<,>", " ");
+	// str_replace_anychar
+	string str10 = "<11,43> <0,9> <12,44>";
+	str_replace_anychar(out, str10, "<,>", " ");
 	EXPECT_TRUE(out == " 11 43   0 9   12 44 ");
 }

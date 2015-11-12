@@ -6,7 +6,7 @@
 	file base:	DpCamera
 	file ext:	h
 	author:		mi2think@gmail.com
-	
+
 	purpose:	Camera
 *********************************************************************/
 #ifndef __DP_CAMERA__
@@ -21,74 +21,71 @@ using namespace dopixel::math;
 
 namespace dopixel
 {
-	namespace core
+	class Camera
 	{
-		class Camera
-		{
-		public:
-			// Camera model
-			enum { MODEL_EULER, MODEL_UVN, MODEL_UVNSimple, };
-			// Euler rotate seq
-			enum { ROTATE_SEQ_XYZ, ROTATE_SEQ_XZY, ROTATE_SEQ_YXZ, ROTATE_SEQ_YZX, ROTATE_SEQ_ZXY, ROTATE_SEQ_ZYX };
+	public:
+		// Camera model
+		enum { MODEL_EULER, MODEL_UVN, MODEL_UVNSimple, };
+		// Euler rotate seq
+		enum { ROTATE_SEQ_XYZ, ROTATE_SEQ_XZY, ROTATE_SEQ_YXZ, ROTATE_SEQ_YZX, ROTATE_SEQ_ZXY, ROTATE_SEQ_ZYX };
 
-			Camera() {}
+		Camera() {}
 
-			void InitCamera(int attr, const Vector4f& pos, const Vector4f& dir, const Vector4f& target, float nearClipZ, float farClipZ,
-				float fov, float viewPlaneWidth, float viewPlaneHeight);
+		void InitCamera(int attr, const Vector4f& pos, const Vector4f& dir, const Vector4f& target, float nearClipZ, float farClipZ,
+			float fov, float viewPlaneWidth, float viewPlaneHeight);
 
-			void BuildCameraMatrixEuler(int rotateSeq = ROTATE_SEQ_ZYX);
+		void BuildCameraMatrixEuler(int rotateSeq = ROTATE_SEQ_ZYX);
 
-			void BuildCameraMatrixUVN(int uvnType);
+		void BuildCameraMatrixUVN(int uvnType);
 
-			// Build matrix
-			void BuildCameraToPerspective(Matrix44f& m) const;
+		// Build matrix
+		void BuildCameraToPerspective(Matrix44f& m) const;
 
-			void BuildPerspectiveToScreen(Matrix44f& m) const;
+		void BuildPerspectiveToScreen(Matrix44f& m) const;
 
-			void BuildCamerToScreen(Matrix44f& m) const;
-		public:
-			int state;
-			int attr;
+		void BuildCamerToScreen(Matrix44f& m) const;
+	public:
+		int state;
+		int attr;
 
-			Vector4f pos;	// pos in world
-			
-			Vector4f dir;	// Eular angle or UVN's look at
+		Vector4f pos;	// pos in world
 
-			Vector4f u;
-			Vector4f v;
-			Vector4f n;		//UVN's dir
+		Vector4f dir;	// Eular angle or UVN's look at
 
-			Vector4f target;//UVN's target pos
+		Vector4f u;
+		Vector4f v;
+		Vector4f n;		//UVN's dir
 
-			float viewDist;
+		Vector4f target;//UVN's target pos
 
-			float fov;		//visual field
+		float viewDist;
 
-			// 3D clip plane, if fov isn't 90, it must be common plane
-			float nearClipZ;
-			float farClipZ;
+		float fov;		//visual field
 
-			Plane3D rightClipPlane;
-			Plane3D leftClipPlane;
-			Plane3D topClipPlane;
-			Plane3D bottomClipPlane;
+		// 3D clip plane, if fov isn't 90, it must be common plane
+		float nearClipZ;
+		float farClipZ;
 
-			// view plane's width and height
-			float viewPlaneWidth;
-			float viewPlaneHeight;
+		Plane3D rightClipPlane;
+		Plane3D leftClipPlane;
+		Plane3D topClipPlane;
+		Plane3D bottomClipPlane;
 
-			// viewport, image will be rendered to the surface
-			float viewportWidth;
-			float viewportHeight;
-			Vector2f viewportCenterPos;
+		// view plane's width and height
+		float viewPlaneWidth;
+		float viewPlaneHeight;
 
-			float aspectRatio;
-			
-			Matrix44f matrixCamera;
-			Matrix44f matrixPerspective;
-			Matrix44f matrixScreen;
-		};
-	}
+		// viewport, image will be rendered to the surface
+		float viewportWidth;
+		float viewportHeight;
+		Vector2f viewportCenterPos;
+
+		float aspectRatio;
+
+		Matrix44f matrixCamera;
+		Matrix44f matrixPerspective;
+		Matrix44f matrixScreen;
+	};
 }
 
 

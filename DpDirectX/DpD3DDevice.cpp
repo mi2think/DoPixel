@@ -155,11 +155,12 @@ namespace dopixel
 			ZeroMemory(&d3dpp, sizeof(d3dpp));
 			d3dpp.Windowed = bWindow ? TRUE : FALSE;
 			d3dpp.hDeviceWindow = hwnd;
-			d3dpp.BackBufferFormat = displayMode.Format;
+			//d3dpp.BackBufferFormat = displayMode.Format;
+			d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;
 			d3dpp.EnableAutoDepthStencil = TRUE;
 			d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
-			//d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
-			//d3dpp.MultiSampleQuality = 0;
+			d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
+			d3dpp.MultiSampleQuality = 0;
 			if (bWindow)
 			{
 				d3dpp.BackBufferCount = 2;

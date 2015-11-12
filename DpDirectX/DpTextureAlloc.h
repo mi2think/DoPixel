@@ -12,8 +12,6 @@
 #ifndef __DP_TEXTURE_ALLOC__
 #define __DP_TEXTURE_ALLOC__
 
-#include "DpNoCopy.h"
-
 #include <d3d9.h>
 
 #include <string>

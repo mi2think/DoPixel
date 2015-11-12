@@ -75,14 +75,14 @@ private:
 class Texture
 {
 public:
-	Texture(GLenum textureTarget, const CString& fileName);
+	Texture(GLenum textureTarget, const string& fileName);
 	~Texture();
 
 	bool Load();
 
 	void Bind(GLenum textureUnit);
 private:
-	CString fileName_;
+	string fileName_;
 	int width_;
 	int height_;
 	unsigned char* data_;
@@ -113,13 +113,13 @@ public:
 	Mesh();
 	~Mesh();
 
-	bool LoadMesh(const CString& fileName);
+	bool LoadMesh(const string& fileName);
 	
 	void Render();
 private:
-	bool InitFromScene(const aiScene* scene, const CString& fileName);
+	bool InitFromScene(const aiScene* scene, const string& fileName);
 	void InitMesh(unsigned int index, const aiMesh* mesh);
-	bool InitMaterials(const aiScene* scene, const CString& fileName);
+	bool InitMaterials(const aiScene* scene, const string& fileName);
 	void Clear();
 
 #define  INVALID_MATERIAL 0xffffffff

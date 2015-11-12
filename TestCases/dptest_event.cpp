@@ -13,9 +13,6 @@
 #include "DpEvent.h"
 
 using namespace dopixel;
-using namespace dopixel::dptest;
-using namespace dopixel::core;
-
 
 extern const char s1[] = "UserEvent";
 extern const char s2[] = "MyEvent2";
@@ -55,7 +52,7 @@ DPTEST(Event)
 			EXPECT_TRUE(myEvent != nullptr);
 			EXPECT_EQ(myEvent->GetX(), 1);
 			EXPECT_EQ(myEvent->GetY(), 2);
-			EXPECT_EQ(myEvent->ToCString(), s1);
+			EXPECT_EQ(myEvent->ToString(), s1);
 		};
 		MyEvent1 myEvent1(1, 2);
 		OnMyEvent1(myEvent1);

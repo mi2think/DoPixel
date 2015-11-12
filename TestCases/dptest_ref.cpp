@@ -12,8 +12,7 @@
 #include "DpUnitTest.h"
 #include "DpRef.h"
 
-using namespace dopixel::dptest;
-using namespace dopixel::core;
+using namespace dopixel;
 
 class Base
 {

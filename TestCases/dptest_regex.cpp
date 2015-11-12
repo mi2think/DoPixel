@@ -13,7 +13,7 @@
 #include <regex>
 #include <string>
 
-using namespace dopixel::dptest;
+using namespace dopixel;
 using namespace std;
 
 void test_special_char()

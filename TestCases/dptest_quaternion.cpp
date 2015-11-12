@@ -12,7 +12,7 @@
 #include "DpQuaternion.h"
 #include "DpVector3.h"
 #include "DpUnitTest.h"
-using namespace dopixel::dptest;
+using namespace dopixel;
 using namespace dopixel::math;
 
 Vector3f RotateVector(const Vector3f& v, const Vector3f& axis, float angle)

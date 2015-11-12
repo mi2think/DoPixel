@@ -36,9 +36,6 @@
     <ClInclude Include="DpObject.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
-    <ClInclude Include="DpScopeGuard.h">
-      <Filter>DpCore</Filter>
-    </ClInclude>
     <ClInclude Include="DpColor.h">
       <Filter>DpCore</Filter>
     </ClInclude>
@@ -54,17 +51,11 @@
     <ClInclude Include="DpLight.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
-    <ClInclude Include="DpNoCopy.h">
-      <Filter>DpCore</Filter>
-    </ClInclude>
     <ClInclude Include="DpFileStream.h">
       <Filter>DpLoadRes</Filter>
     </ClInclude>
     <ClInclude Include="DpTga.h">
       <Filter>DpLoadRes</Filter>
-    </ClInclude>
-    <ClInclude Include="DpCore.h">
-      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpTimer.h">
       <Filter>DpCore</Filter>
@@ -74,9 +65,6 @@
     </ClInclude>
     <ClInclude Include="DpFileParser.h">
       <Filter>DpLoadRes</Filter>
-    </ClInclude>
-    <ClInclude Include="DpStrUtility.h">
-      <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpLoadModel.h">
       <Filter>DpLoadRes</Filter>
@@ -198,9 +186,6 @@
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpColor.cpp">
-      <Filter>DpCore</Filter>
-    </ClCompile>
-    <ClCompile Include="DpStrUtility.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
     <ClCompile Include="DpLoadModel.cpp">

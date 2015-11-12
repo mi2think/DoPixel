@@ -3,10 +3,10 @@
 	created:	4:7:2014   0:07
 	filename: 	F:\SkyDrive\3D\DpLib\DpLib\DpDevice.h
 	file path:	F:\SkyDrive\3D\DpLib\DpLib
-	file base:	DpDevice 
+	file base:	DpDevice
 	file ext:	h
 	author:		mi2think@gmail.com
-	
+
 	purpose:	Device, For Rasterization
 *********************************************************************/
 
@@ -20,91 +20,88 @@ using namespace dopixel::math;
 
 namespace dopixel
 {
-	namespace core
+	// 32-bit z buffer
+	struct ZBuffer
 	{
-		// 32-bit z buffer
-		struct ZBuffer 
-		{
-			float* buffer;
-			int width;
-			int height;
-			int attr;
+		float* buffer;
+		int width;
+		int height;
+		int attr;
 
-			ZBuffer() : buffer(nullptr), width(0), height(0), attr(0) {}
-			void Create(int width, int height);
-			void Clear(float value);
-			void Delete();
-		};
+		ZBuffer() : buffer(nullptr), width(0), height(0), attr(0) {}
+		void Create(int width, int height);
+		void Clear(float value);
+		void Delete();
+	};
 
-		class Color;
-		class Texture;
+	class Color;
+	class Texture;
 
-		// render content
-		class Device
-		{
-		public:
-			Device();
-			~Device();
-			
-			void Create(int width, int height);
+	// render content
+	class Device
+	{
+	public:
+		Device();
+		~Device();
 
-			void Init(unsigned char* buffer, int pitch) { frameBuffer = buffer; this->pitch = pitch; }
+		void Create(int width, int height);
 
-			void BeginScene();
+		void Init(unsigned char* buffer, int pitch) { frameBuffer = buffer; this->pitch = pitch; }
 
-			void EndScene();
+		void BeginScene();
 
-			void WritePixel(int x, int y, const Color& color) const { unsigned char* p = frameBuffer + (x + y * pitch) * bitsPerPixel; *((unsigned int*)p) = color.value; }
-			
-			RectI SetClipRect(const RectI& rect) { RectI rc = clipRect; clipRect = rect; return rc; }
+		void EndScene();
 
-			void SetRenderState(RenderState rs, int value);
+		void WritePixel(int x, int y, const Color& color) const { unsigned char* p = frameBuffer + (x + y * pitch) * bitsPerPixel; *((unsigned int*)p) = color.value; }
 
-			void SetTexture(Texture* texture) { this->texture = texture; }
+		RectI SetClipRect(const RectI& rect) { RectI rc = clipRect; clipRect = rect; return rc; }
 
-			// Clip line, using Cohen-Sutherland, return true if clipRect contain 
-			bool ClipLine(Point& pc0, Point& pc1, const Point& p0, const Point& p1) const;
+		void SetRenderState(RenderState rs, int value);
 
-			// Draw a Line, using DDA
-			void DrawLineDDA(const Point& p0, const Point& p1, const Color& color);
-			
-			// Draw a Line, using Bresenham, has better performance
-			void DrawLine(const Point& p0, const Point& p1, const Color& color);
+		void SetTexture(Texture* texture) { this->texture = texture; }
 
-			// Draw a triangle with now render state
-			void DrawTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-		private:
-			void draw_wireframe_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-			void draw_flat_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-			void draw_gouraud_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-			void draw_textured_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		// Clip line, using Cohen-Sutherland, return true if clipRect contain 
+		bool ClipLine(Point& pc0, Point& pc1, const Point& p0, const Point& p1) const;
 
-			void draw_flat_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-			void draw_gouraud_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-			void draw_textured_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		// Draw a Line, using DDA
+		void DrawLineDDA(const Point& p0, const Point& p1, const Color& color);
 
-			void draw_flat_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-			void draw_gouraud_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-			void draw_textured_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-		private:
-			int width;
-			int height;
+		// Draw a Line, using Bresenham, has better performance
+		void DrawLine(const Point& p0, const Point& p1, const Color& color);
 
-			unsigned char* frameBuffer;
-			int pitch;
-			int bitsPerPixel;
-			RectI clipRect;
-			
-			int fillMode;
-			int shadeMode;
-			int zEnable;
-			int zFunc;
-			int zWriteEnable;
-			Texture* texture;
+		// Draw a triangle with now render state
+		void DrawTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+	private:
+		void draw_wireframe_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void draw_flat_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void draw_gouraud_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void draw_textured_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
 
-			ZBuffer zbuffer;
-		};
-	}
+		void draw_flat_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void draw_gouraud_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void draw_textured_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+
+		void draw_flat_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void draw_gouraud_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void draw_textured_inv_zb_triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+	private:
+		int width;
+		int height;
+
+		unsigned char* frameBuffer;
+		int pitch;
+		int bitsPerPixel;
+		RectI clipRect;
+
+		int fillMode;
+		int shadeMode;
+		int zEnable;
+		int zFunc;
+		int zWriteEnable;
+		Texture* texture;
+
+		ZBuffer zbuffer;
+	};
 }
 
 #endif

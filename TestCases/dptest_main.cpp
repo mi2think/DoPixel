@@ -12,7 +12,7 @@
 #include "DpUnitTest.h"
 #include <cstdlib>
 
-using namespace dopixel::dptest;
+using namespace dopixel;
 
 
 int main()

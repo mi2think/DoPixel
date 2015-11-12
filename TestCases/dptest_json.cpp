@@ -12,8 +12,7 @@
 #include "DpUnitTest.h"
 #include "DpJson.h"
 
-using namespace dopixel::dptest;
-using namespace dopixel::core;
+using namespace dopixel;
 
 void simple_dpjson_serialize()
 {

@@ -6,7 +6,7 @@
 	file base:	DpTga
 	file ext:	h
 	author:		mi2think@gmail.com
-	
+
 	purpose:	Load tga file
 *********************************************************************/
 
@@ -18,57 +18,54 @@
 
 namespace dopixel
 {
-	namespace core
-	{
 #pragma pack(1)
-		struct TgaHeader
-		{
-			unsigned char IDLength;
-			unsigned char ColormapType;
-			unsigned char ImageType;
-			unsigned char ColormapSpecification[5];
-			unsigned short XOrigin;
-			unsigned short YOrigin;
-			unsigned short ImageWidth;
-			unsigned short ImageHeight;
-			unsigned char PixelDepth;
-			unsigned char ImageDescriptor;
-		};
+	struct TgaHeader
+	{
+		unsigned char IDLength;
+		unsigned char ColormapType;
+		unsigned char ImageType;
+		unsigned char ColormapSpecification[5];
+		unsigned short XOrigin;
+		unsigned short YOrigin;
+		unsigned short ImageWidth;
+		unsigned short ImageHeight;
+		unsigned char PixelDepth;
+		unsigned char ImageDescriptor;
+	};
 #pragma pack()
 
-		class Tga
+	class Tga
+	{
+	public:
+		Tga() : m_image(nullptr) {}
+		Tga(const char* fileName) { Load(fileName); }
+		~Tga() { Clear(); }
+
+		void Clear();
+
+		bool Load(const char* fileName);
+
+		Color GetColor(const math::Point& pos) const;
+
+		int GetWidth() const { return m_tgaHeader.ImageWidth; }
+
+		int GetHeight() const { return m_tgaHeader.ImageHeight; }
+
+		const unsigned char* GetImage() const { return m_image; }
+	private:
+		void LoadImage(unsigned char* fileData);
+
+		void LoadImageBySTBI(unsigned char* fileData, int len);
+
+		TgaHeader	m_tgaHeader;
+
+		// Image data
+		union
 		{
-		public:
-			Tga() : m_image(nullptr) {}
-			Tga(const char* fileName) { Load(fileName); }
-			~Tga() { Clear(); }
-
-			void Clear();
-
-			bool Load(const char* fileName);
-
-			Color GetColor(const math::Point& pos) const;
-
-			int GetWidth() const { return m_tgaHeader.ImageWidth; }
-
-			int GetHeight() const { return m_tgaHeader.ImageHeight; }
-
-			const unsigned char* GetImage() const { return m_image; }
-		private:
-			void LoadImage(unsigned char* fileData);
-
-			void LoadImageBySTBI(unsigned char* fileData, int len);
-
-			TgaHeader	m_tgaHeader;
-
-			// Image data
-			union
-			{
-				unsigned char*	m_image;
-				Color*	m_color;
-			};
+			unsigned char*	m_image;
+			Color*	m_color;
 		};
-	}
+	};
 }
 
 

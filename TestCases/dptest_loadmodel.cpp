@@ -14,9 +14,7 @@
 #include "DpLoadModel.h"
 #include "DpFileStream.h"
 #include "DpObject.h"
-using namespace dopixel::dptest;
-using namespace dopixel::core;
-
+using namespace dopixel;
 
 void LoadPLG()
 {

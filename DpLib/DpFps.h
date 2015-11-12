@@ -6,7 +6,7 @@
 	file base:	DpFps
 	file ext:	h
 	author:		mi2think@gmail.com
-	
+
 	purpose:	Fps
 *********************************************************************/
 
@@ -15,35 +15,31 @@
 
 namespace dopixel
 {
-	namespace core
+	class Fps
 	{
-		class Fps
+	public:
+		Fps() : frameCount(0), time(0), fps(0) {}
+
+		unsigned int GetFrameCount() const { return frameCount; }
+		float GetFps() const { return fps; }
+
+		void Run(float fElapsedTime)
 		{
-		public:
-			Fps() : frameCount(0), time(0), fps(0) {}
+			++frameCount;
+			time += fElapsedTime;
 
-			unsigned int GetFrameCount() const { return frameCount; }
-			float GetFps() const { return fps; }
-
-			void Run(float fElapsedTime)
+			if (time >= 1.0f)
 			{
-				++frameCount;
-				time += fElapsedTime;
-
-				if (time >= 1.0f)
-				{
-					fps = frameCount / time;
-					frameCount = 0;
-					time = 0.0f;
-				}
+				fps = frameCount / time;
+				frameCount = 0;
+				time = 0.0f;
 			}
-		private:
-			unsigned int frameCount;
-			float time;
-			float fps;
-		};
-	}
+		}
+	private:
+		unsigned int frameCount;
+		float time;
+		float fps;
+	};
 }
-
 
 #endif

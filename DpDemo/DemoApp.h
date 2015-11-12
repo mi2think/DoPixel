@@ -4,7 +4,6 @@
 #include "DpKeyEvent.h"
 #include "DpMouseEvent.h"
 #include "DpInputState.h"
-#include "DpNoCopy.h"
 #include "DpDevice.h"
 #include "DpColor.h"
 #include "DpCamera.h"

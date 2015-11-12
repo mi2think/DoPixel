@@ -6,7 +6,7 @@
 	file base:	DpInputState
 	file ext:	h
 	author:		mi2think@gmail.com
-	
+
 	purpose:	Input State
 *********************************************************************/
 #ifndef __DP_KEY_STATE__
@@ -17,26 +17,21 @@
 
 namespace dopixel
 {
-	namespace core
+	class InputState
 	{
-		class InputState
-		{
-		public:
-			// Key State
-			static bool GetKeyState(int key);
-			static void SetKeyState(int key, bool pressed);
-			static void OnKeyPress(const KeyPressEvent& event);
-			static void OnKeyRelease(const KeyReleaseEvent& event);
+	public:
+		// Key State
+		static bool GetKeyState(int key);
+		static void SetKeyState(int key, bool pressed);
+		static void OnKeyPress(const KeyPressEvent& event);
+		static void OnKeyRelease(const KeyReleaseEvent& event);
 
-			// Mouse State
-			static bool GetMouseState(MouseButtonType buttonType);
-			static void SetMouseState(MouseButtonType buttonType, bool pressed);
-			static void OnMousePress(const MousePressEvent& event);
-			static void OnMouseRelease(const MouseReleaseEvent& event);
-		};
-
-
-	}
+		// Mouse State
+		static bool GetMouseState(MouseButtonType buttonType);
+		static void SetMouseState(MouseButtonType buttonType, bool pressed);
+		static void OnMousePress(const MousePressEvent& event);
+		static void OnMouseRelease(const MouseReleaseEvent& event);
+	};
 }
 
 #endif

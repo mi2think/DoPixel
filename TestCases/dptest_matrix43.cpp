@@ -14,8 +14,8 @@
 #include "DpUnitTest.h"
 #include "DpVector3.h"
 #include "DpQuaternion.h"
+using namespace dopixel;
 using namespace dopixel::math;
-using namespace dopixel::dptest;
 
 DPTEST(Matrix43)
 {

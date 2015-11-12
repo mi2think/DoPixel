@@ -192,7 +192,7 @@ GLint Technique::GetProgramParam(GLint param)
 }
 //////////////////////////////////////////////////////////////////////////
 
-Texture::Texture(GLenum textureTarget, const CString& fileName)
+Texture::Texture(GLenum textureTarget, const string& fileName)
 	: textureTarget_(textureTarget)
 	, fileName_(fileName)
 	, width_(0)
@@ -300,7 +300,7 @@ void Mesh::Clear()
 	entries_.clear();
 }
 
-bool Mesh::LoadMesh(const CString& fileName)
+bool Mesh::LoadMesh(const string& fileName)
 {
 	Clear();
 
@@ -318,7 +318,7 @@ bool Mesh::LoadMesh(const CString& fileName)
 	return ret;
 }
 
-bool Mesh::InitFromScene(const aiScene* scene, const CString& fileName)
+bool Mesh::InitFromScene(const aiScene* scene, const string& fileName)
 {
 	entries_.resize(scene->mNumMeshes);
 	textures_.resize(scene->mNumMaterials);
@@ -362,11 +362,11 @@ void Mesh::InitMesh(unsigned int index, const aiMesh* mesh)
 	entries_[index].Init(vertices, indices);
 }
 
-bool Mesh::InitMaterials(const aiScene* scene, const CString& fileName)
+bool Mesh::InitMaterials(const aiScene* scene, const string& fileName)
 {
 	auto slashIndex = fileName.find_last_of("/");
-	CString dir;
-	if (slashIndex == CString::npos)
+	string dir;
+	if (slashIndex == string::npos)
 		dir = ".";
 	else if (slashIndex == 0)
 		dir = "/";
@@ -384,7 +384,7 @@ bool Mesh::InitMaterials(const aiScene* scene, const CString& fileName)
 			aiString path;
 			if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path, nullptr, nullptr, nullptr, nullptr, nullptr) == AI_SUCCESS)
 			{
-				CString fullPath = dir + "/" + path.data;
+				string fullPath = dir + "/" + path.data;
 				textures_[i] = new Texture(GL_TEXTURE_2D, fullPath.c_str());
 				if (!textures_[i]->Load())
 				{

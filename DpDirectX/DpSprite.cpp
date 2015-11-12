@@ -2,7 +2,6 @@
 #include "DpD3DDevice.h"
 #include "DpTextureAlloc.h"
 #include "DpTga.h"
-#include "DpCore.h"
 
 #include <d3dx9.h>
 

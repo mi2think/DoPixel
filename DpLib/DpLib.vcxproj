@@ -94,7 +94,6 @@
     <ClInclude Include="DpCamera.h" />
     <ClInclude Include="DpColor.h" />
     <ClInclude Include="DpConsole.h" />
-    <ClInclude Include="DpCore.h" />
     <ClInclude Include="DpDevice.h" />
     <ClInclude Include="DpEnums.h" />
     <ClInclude Include="DpEvent.h" />
@@ -113,12 +112,9 @@
     <ClInclude Include="DpMatrix43.h" />
     <ClInclude Include="DpMatrix44.h" />
     <ClInclude Include="DpMouseEvent.h" />
-    <ClInclude Include="DpNoCopy.h" />
     <ClInclude Include="DpObject.h" />
     <ClInclude Include="DpQuaternion.h" />
     <ClInclude Include="DpRef.h" />
-    <ClInclude Include="DpScopeGuard.h" />
-    <ClInclude Include="DpStrUtility.h" />
     <ClInclude Include="DpTga.h" />
     <ClInclude Include="DpTimer.h" />
     <ClInclude Include="DpTriangle.h" />
@@ -146,7 +142,6 @@
     <ClCompile Include="DpMath.cpp" />
     <ClCompile Include="DpObject.cpp" />
     <ClCompile Include="DpQuaternion.cpp" />
-    <ClCompile Include="DpStrUtility.cpp" />
     <ClCompile Include="DpTga.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

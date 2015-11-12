@@ -12,7 +12,6 @@
 
 #include "DpTextureAlloc.h"
 #include "DpD3DDevice.h"
-#include "DpCore.h"
 #include "DpFileStream.h"
 
 #include <d3dx9.h>

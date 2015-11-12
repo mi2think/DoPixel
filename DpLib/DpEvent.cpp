@@ -6,49 +6,46 @@
 	file base:	DpEvent
 	file ext:	cpp
 	author:		mi2think@gmail.com
-	
+
 	purpose:	Event
 *********************************************************************/
 #include "DpEvent.h"
 
 namespace dopixel
 {
-	namespace core
+	const char _BaseEventName[] = "";
+
+	void EventBroadcaster::RegisterEventListener(IEventListener* listener)
 	{
-		const char _BaseEventName[] = "";
+		if (listener == nullptr)
+			return;
 
-		void EventBroadcaster::RegisterEventListener(IEventListener* listener)
+		auto it = std::find(listeners_.begin(), listeners_.end(), listener);
+		if (it == listeners_.end())
 		{
-			if (listener == nullptr)
-				return;
-
-			auto it = std::find(listeners_.begin(), listeners_.end(), listener);
-			if (it == listeners_.end())
-			{
-				listeners_.push_back(listener);
-			}
+			listeners_.push_back(listener);
 		}
+	}
 
-		void EventBroadcaster::UnregisterEventListener(IEventListener* listener)
+	void EventBroadcaster::UnregisterEventListener(IEventListener* listener)
+	{
+		if (listener == nullptr)
+			return;
+
+		auto it = std::find(listeners_.begin(), listeners_.end(), listener);
+		if (it != listeners_.end())
 		{
-			if (listener == nullptr)
-				return;
-
-			auto it = std::find(listeners_.begin(), listeners_.end(), listener);
-			if (it != listeners_.end())
-			{
-				listeners_.erase(it);
-			}
+			listeners_.erase(it);
 		}
+	}
 
-		bool EventBroadcaster::PostEvent(const Event& event)
+	bool EventBroadcaster::PostEvent(const Event& event)
+	{
+		bool handled = false;
+		for (auto listener : listeners_)
 		{
-			bool handled = false;
-			for (auto listener : listeners_)
-			{
-				handled |= listener->OnEvent(event);
-			}
-			return handled;
+			handled |= listener->OnEvent(event);
 		}
+		return handled;
 	}
 }
