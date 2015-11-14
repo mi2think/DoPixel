@@ -36,6 +36,7 @@ namespace dopixel
 	typedef Ref<Camera> CameraRef;
 	typedef Ref<Event> EventRef;
 
+
 	// can not copy
 	class NoCopyable
 	{
@@ -65,6 +66,15 @@ namespace dopixel
 
 	#define ASSERT	assert
 	#define BIT(x)      (1<<(x))
+
+	#define DECLARE_ENUM(name) \
+		namespace name { \
+			enum Type {
+
+	#define END_DECLARE_ENUM() \
+				,Max \
+			}; \
+		}
 
 	// swap
 	template<typename T>

@@ -123,6 +123,8 @@
     <ClInclude Include="DpVector3.h" />
     <ClInclude Include="DpVector4.h" />
     <ClInclude Include="DpVertex.h" />
+    <ClInclude Include="DpVertexArray.h" />
+    <ClInclude Include="DpVertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\stb\stb_image.c" />
