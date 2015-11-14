@@ -14,6 +14,7 @@
 #define __DP_COLOR__
 
 #include "DpMath.h"
+#include "DpVector3.h"
 
 namespace dopixel
 {
@@ -36,7 +37,17 @@ namespace dopixel
 		};
 		Color() {}
 		Color(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 255) : r(_r), g(_g), b(_b), a(_a) {}
-		Color(unsigned int v) : value(v) {}
+		Color(unsigned int val) : value(val) {}
+		Color(const math::Vector3f& v)
+		{
+			int _r = (int)(v.x * 255);
+			int _g = (int)(v.y * 255);
+			int _b = (int)(v.z * 255);
+			r = (_r > 255 ? 255 : _r);
+			g = (_g > 255 ? 255 : _g);
+			b = (_b > 255 ? 255 : _b);
+			a = 255;
+		}
 
 		void Set(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 255)
 		{

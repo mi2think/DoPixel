@@ -59,8 +59,8 @@ namespace dopixel
 			{
 				if (positions_) { vertexCount_ = positions_->GetVertexCount(); return; }
 				if (normals_)   { vertexCount_ = normals_->GetVertexCount(); return; }
-				if (colors_)	{ vertexCount_ = positions_->GetVertexCount(); return; }
-				if (texCoords_) { vertexCount_ = positions_->GetVertexCount(); return; }
+				if (colors_)	{ vertexCount_ = colors_->GetVertexCount(); return; }
+				if (texCoords_) { vertexCount_ = texCoords_->GetVertexCount(); return; }
 				vertexCount_ = 0;
 			}
 
