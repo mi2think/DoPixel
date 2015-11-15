@@ -101,6 +101,7 @@
     <ClInclude Include="DpFileStream.h" />
     <ClInclude Include="DpFps.h" />
     <ClInclude Include="DpGeometry.h" />
+    <ClInclude Include="DpIndexBuffer.h" />
     <ClInclude Include="DpJson.h" />
     <ClInclude Include="DpKeyEvent.h" />
     <ClInclude Include="DpInputState.h" />

@@ -156,9 +156,6 @@
     <ClInclude Include="DpEvent.h">
       <Filter>DpCore</Filter>
     </ClInclude>
-    <ClInclude Include="DoPixel.h">
-      <Filter>DpCore</Filter>
-    </ClInclude>
     <ClInclude Include="DpQuaternion.h">
       <Filter>DpMath</Filter>
     </ClInclude>
@@ -178,6 +175,12 @@
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
     <ClInclude Include="DpVertexArray.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="DpIndexBuffer.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="DoPixel.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
   </ItemGroup>
@@ -227,14 +230,14 @@
     <ClCompile Include="DpQuaternion.cpp">
       <Filter>DpMath</Filter>
     </ClCompile>
-    <ClCompile Include="DoPixel.cpp">
-      <Filter>DpCore</Filter>
-    </ClCompile>
     <ClCompile Include="DpInputState.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
     <ClCompile Include="DpMath.cpp">
       <Filter>DpMath</Filter>
+    </ClCompile>
+    <ClCompile Include="DoPixel.cpp">
+      <Filter>Dp3DEngine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

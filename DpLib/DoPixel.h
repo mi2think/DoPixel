@@ -25,17 +25,51 @@
 
 namespace dopixel
 {
+	// macros
+#define SAFE_DELETE(p)		do { if (p != nullptr) { delete p; p = nullptr; } } while(0)
+#define SAFE_DELETEARRAY(p) do { if (p != nullptr) { delete[] p; p = nullptr; } } while(0)
+#define SAFE_RELEASE(p)		do { if (p != nullptr) { p->Release(); p = nullptr; } } while(0)
+
+#define ASSERT	assert
+#define BIT(x)      (1<<(x))
+
+#define DECLARE_ENUM(name) \
+		namespace name { \
+			enum Type {
+
+#define END_DECLARE_ENUM() \
+				,Max \
+			}; \
+		}
+
+	// enum types
+	DECLARE_ENUM(VertexType)
+		Position = BIT(0),
+		Normal = BIT(1),
+		Color = BIT(2),
+		TexCoord = BIT(3)
+	END_DECLARE_ENUM()
+
+	DECLARE_ENUM(PrimitiveType)
+		Points,
+		Lines,
+		Triangles
+	END_DECLARE_ENUM()
+
 	using string = std::string;
 	using wstring = std::wstring;
 	using std::vector;
 	using std::map;
 
+	class VertexBuffer;
+	class IndexBuffer;
 	class Camera;
 	class Event;
 
+	typedef Ref<VertexBuffer> VertexBufferRef;
+	typedef Ref<IndexBuffer> IndexBufferRef;
 	typedef Ref<Camera> CameraRef;
 	typedef Ref<Event> EventRef;
-
 
 	// can not copy
 	class NoCopyable
@@ -58,23 +92,6 @@ namespace dopixel
 	#define SCOPEGUARD_NAMELINE_CAT(name, line) name##line
 	#define SCOPEGUARD_NAMELINE(name, line) SCOPEGUARD_NAMELINE_CAT(name, line)
 	#define ON_SCOPE_EXIT(func) ScopeGuard SCOPEGUARD_NAMELINE(EXIT, __LINE__)(func)
-
-	// macros
-	#define SAFE_DELETE(p)		do { if (p != nullptr) { delete p; p = nullptr; } } while(0)
-	#define SAFE_DELETEARRAY(p) do { if (p != nullptr) { delete[] p; p = nullptr; } } while(0)
-	#define SAFE_RELEASE(p)		do { if (p != nullptr) { p->Release(); p = nullptr; } } while(0)
-
-	#define ASSERT	assert
-	#define BIT(x)      (1<<(x))
-
-	#define DECLARE_ENUM(name) \
-		namespace name { \
-			enum Type {
-
-	#define END_DECLARE_ENUM() \
-				,Max \
-			}; \
-		}
 
 	// swap
 	template<typename T>
