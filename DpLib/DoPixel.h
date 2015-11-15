@@ -64,6 +64,14 @@ namespace dopixel
 		Triangles
 	END_DECLARE_ENUM()
 
+	DECLARE_ENUM(ShadeMode)
+		WireFrame,
+		Constant,
+		Flat,
+		Gouraud,
+		Phong
+	END_DECLARE_ENUM()
+
 	using string = std::string;
 	using wstring = std::wstring;
 	using std::vector;
@@ -71,6 +79,7 @@ namespace dopixel
 
 	class VertexBuffer;
 	class IndexBuffer;
+	class Image;
 	class Texture;
 	class Material;
 	class Camera;
@@ -79,6 +88,8 @@ namespace dopixel
 	typedef Ref<VertexBuffer> VertexBufferRef;
 	typedef Ref<IndexBuffer> IndexBufferRef;
 	typedef Ref<Image> ImageRef;
+	typedef Ref<Texture> TextureRef;
+	typedef Ref<Material> MaterialRef;
 	typedef Ref<Camera> CameraRef;
 	typedef Ref<Event> EventRef;
 
