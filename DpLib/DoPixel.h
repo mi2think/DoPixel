@@ -43,6 +43,14 @@ namespace dopixel
 		}
 
 	// enum types
+	DECLARE_ENUM(ImageFormat)
+		Unknown,
+		RGB,
+		RGBA,
+		ARGB,
+		FLOAT4
+	END_DECLARE_ENUM()
+
 	DECLARE_ENUM(VertexType)
 		Position = BIT(0),
 		Normal = BIT(1),
@@ -63,11 +71,14 @@ namespace dopixel
 
 	class VertexBuffer;
 	class IndexBuffer;
+	class Texture;
+	class Material;
 	class Camera;
 	class Event;
 
 	typedef Ref<VertexBuffer> VertexBufferRef;
 	typedef Ref<IndexBuffer> IndexBufferRef;
+	typedef Ref<Image> ImageRef;
 	typedef Ref<Camera> CameraRef;
 	typedef Ref<Event> EventRef;
 

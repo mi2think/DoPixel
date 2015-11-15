@@ -101,6 +101,7 @@
     <ClInclude Include="DpFileStream.h" />
     <ClInclude Include="DpFps.h" />
     <ClInclude Include="DpGeometry.h" />
+    <ClInclude Include="DpImage.h" />
     <ClInclude Include="DpIndexBuffer.h" />
     <ClInclude Include="DpJson.h" />
     <ClInclude Include="DpKeyEvent.h" />
@@ -138,6 +139,7 @@
     <ClCompile Include="DpEvent.cpp" />
     <ClCompile Include="DpFileParser.cpp" />
     <ClCompile Include="DpFileStream.cpp" />
+    <ClCompile Include="DpImage.cpp" />
     <ClCompile Include="DpJson.cpp" />
     <ClCompile Include="DpInputState.cpp" />
     <ClCompile Include="DpLoadModel.cpp" />

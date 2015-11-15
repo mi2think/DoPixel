@@ -183,6 +183,9 @@
     <ClInclude Include="DoPixel.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
+    <ClInclude Include="DpImage.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">
@@ -237,6 +240,9 @@
       <Filter>DpMath</Filter>
     </ClCompile>
     <ClCompile Include="DoPixel.cpp">
+      <Filter>Dp3DEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="DpImage.cpp">
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
   </ItemGroup>
