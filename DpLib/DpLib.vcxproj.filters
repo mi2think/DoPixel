@@ -189,6 +189,9 @@
     <ClInclude Include="DpTexture.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
+    <ClInclude Include="DpMesh.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">
@@ -249,6 +252,9 @@
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpTexture.cpp">
+      <Filter>Dp3DEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="DpMesh.cpp">
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
   </ItemGroup>

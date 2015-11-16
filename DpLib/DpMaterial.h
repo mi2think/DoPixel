@@ -15,6 +15,7 @@
 
 #include "DoPixel.h"
 #include "DpVector3.h"
+#include "DpTexture.h"
 
 namespace dopixel
 {

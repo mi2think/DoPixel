@@ -113,6 +113,7 @@
     <ClInclude Include="DpMatrix33.h" />
     <ClInclude Include="DpMatrix43.h" />
     <ClInclude Include="DpMatrix44.h" />
+    <ClInclude Include="DpMesh.h" />
     <ClInclude Include="DpMouseEvent.h" />
     <ClInclude Include="DpObject.h" />
     <ClInclude Include="DpQuaternion.h" />
@@ -146,6 +147,7 @@
     <ClCompile Include="DpLoadModel.cpp" />
     <ClCompile Include="DpMaterial.cpp" />
     <ClCompile Include="DpMath.cpp" />
+    <ClCompile Include="DpMesh.cpp" />
     <ClCompile Include="DpObject.cpp" />
     <ClCompile Include="DpQuaternion.cpp" />
     <ClCompile Include="DpTexture.cpp" />

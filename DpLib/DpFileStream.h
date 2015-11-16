@@ -32,10 +32,10 @@ namespace dopixel
 		};
 
 		FileStream();
-		FileStream(const char* fileName, Mode _mode);
+		FileStream(const string& fileName, Mode _mode);
 		~FileStream();
 
-		bool Open(const char* fileName, Mode _mode);
+		bool Open(const string& fileName, Mode _mode);
 
 		void Close();
 

@@ -20,13 +20,6 @@ namespace dopixel
 		Fill_Solid,
 	};
 
-	enum ShadeMode
-	{
-		Shade_Flat,
-		Shade_Gouraud,
-		Shade_Phong,
-	};
-
 	enum CMPFunc
 	{
 		CMP_Never,

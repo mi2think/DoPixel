@@ -12,6 +12,8 @@
 #ifndef __DP_INDEX_BUFFER_H__
 #define __DP_INDEX_BUFFER_H__
 
+#include "DoPixel.h"
+
 namespace dopixel
 {
 	class IndexBuffer

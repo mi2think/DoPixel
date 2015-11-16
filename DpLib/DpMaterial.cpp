@@ -11,7 +11,6 @@
 *********************************************************************/
 
 #include "DpMaterial.h"
-#include "DpTexture.h"
 
 namespace dopixel
 {

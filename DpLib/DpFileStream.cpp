@@ -20,7 +20,7 @@ namespace dopixel
 	{
 	}
 
-	FileStream::FileStream(const char* fileName, Mode _mode)
+	FileStream::FileStream(const string& fileName, Mode _mode)
 	{
 		Open(fileName, _mode);
 	}
@@ -30,7 +30,7 @@ namespace dopixel
 		Close();
 	}
 
-	bool FileStream::Open(const char* fileName, Mode _mode)
+	bool FileStream::Open(const string& fileName, Mode _mode)
 	{
 		mode = _mode;
 		const char* fmt = nullptr;
@@ -55,7 +55,7 @@ namespace dopixel
 			fmt = "r+b";
 			break;
 		}
-		int ret = fopen_s(&file, fileName, fmt);
+		int ret = fopen_s(&file, fileName.c_str(), fmt);
 		if (ret != 0)
 		{
 			// try ../Resource/ + fileName
