@@ -24,6 +24,7 @@ namespace dopixel
 		Image(const void* data, int length, ImageFormat::Type format);
 		~Image();
 
+		bool Valid() const { return data_ != nullptr; }
 		int GetWidth() const { return width_; }
 		int GetHeight() const { return height_; }
 		ImageFormat::Type GetFormat() const { return format_; }
@@ -34,7 +35,7 @@ namespace dopixel
 		void* GetData() { return data_; }
 		const void* GetData() const { return data_; }
 
-		static int GetBytesPerPixel(ImageFormat::Type format)
+		static int GetBytesPerPixel(ImageFormat::Type format);
 		static ImageRef FromFile(const string& path);
 	private:
 		int width_;

@@ -51,6 +51,19 @@ namespace dopixel
 		FLOAT4
 	END_DECLARE_ENUM()
 
+	DECLARE_ENUM(TextureFilter)
+		Nearest,
+		Linear,
+		Mipmap
+	END_DECLARE_ENUM()
+
+	DECLARE_ENUM(TextureWrap)
+		Reapeat,
+		Mirror,
+		ClampToEdge,
+		ClampToBorder
+	END_DECLARE_ENUM()
+
 	DECLARE_ENUM(VertexType)
 		Position = BIT(0),
 		Normal = BIT(1),
