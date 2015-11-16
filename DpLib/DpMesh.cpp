@@ -112,4 +112,37 @@ namespace dopixel
 		ASSERT(i < (int)submeshs_.size());
 		return submeshs_[i];
 	}
+
+	MeshCache::MeshCache()
+	{
+	}
+
+	MeshCache::~MeshCache()
+	{
+		Clear();
+	}
+
+	void MeshCache::Clear()
+	{
+		meshs_.clear();
+	}
+
+	MeshRef MeshCache::Find(const string& name) const
+	{
+		auto it = meshs_.find(name);
+		if (it != meshs_.end())
+			return it->second;
+		return MeshRef();
+	}
+
+	void MeshCache::Add(const MeshRef& mesh)
+	{
+		const auto& name = mesh->GetName();
+		ASSERT(!name.empty());	
+		MeshRef ref = Find(name);
+		if (!ref)
+		{
+			meshs_[name] = mesh;
+		}
+	}
 }

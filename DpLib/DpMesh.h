@@ -76,6 +76,20 @@ namespace dopixel
 		vector<SubMeshRef> submeshs_;
 		math::AABB aabb_;
 	};
+
+	// mesh cache
+	class MeshCache
+	{
+	public:
+		MeshCache();
+		~MeshCache();
+
+		void Clear();
+		MeshRef Find(const string& name) const;
+		void Add(const MeshRef& mesh);
+	private:
+		map<string, MeshRef> meshs_;
+	};
 }
 
 
