@@ -120,4 +120,37 @@ namespace dopixel
 		mipmaps_.clear();
 		mipmapCount_ = 0;
 	}
+
+	TextureCache::TextureCache()
+	{
+	}
+
+	TextureCache::~TextureCache()
+	{
+		Clear();
+	}
+
+	TextureRef TextureCache::Find(const string& name) const
+	{
+		ASSERT(!name.empty());
+		auto it = textures_.find(name);
+		if (it != textures_.end())
+			return it->second;
+		return TextureRef();
+	}
+
+	void TextureCache::Add(const TextureRef& texture)
+	{
+		const auto& name = texture->GetName();
+		TextureRef ref = Find(name);
+		if (!ref)
+		{
+			textures_[name] = ref;
+		}
+	}
+
+	void TextureCache::Clear()
+	{
+		textures_.clear();
+	}
 }

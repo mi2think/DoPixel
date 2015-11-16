@@ -26,6 +26,7 @@ namespace dopixel
 		Texture(const ImageRef& image);
 		~Texture();
 
+		const string& GetName() const { return name_; }
 		void Load(const string& path, bool mipmaps);
 		void Clear();
 
@@ -63,6 +64,20 @@ namespace dopixel
 		// wrap type
 		TextureWrap::Type wrapS_;
 		TextureWrap::Type wrapT_;
+	};
+
+	// texture cache
+	class TextureCache
+	{
+	public:
+		TextureCache();
+		~TextureCache();
+
+		void Clear();
+		TextureRef Find(const string& name) const;
+		void Add(const TextureRef& texture);
+	private:
+		map<string, TextureRef> textures_;
 	};
 }
 
