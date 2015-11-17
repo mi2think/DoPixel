@@ -15,8 +15,6 @@
 #include "DpMath.h"
 #include "DpVector3.h"
 
-#include <limits>
-
 namespace dopixel
 {
 	namespace math
@@ -41,7 +39,7 @@ namespace dopixel
 
 			Vector3f Center() const { return (max + min) / 2.0f; }
 
-			bool Valid() const { return min.x > max.x || min.y > max.y || min.z > max.z; }
+			bool Valid() const { return min.x <= max.x && min.y <= max.y && min.z <= max.z; }
 			void Reset()
 			{
 				min.x = min.y = min.z = FLT_MAX; 
@@ -62,13 +60,16 @@ namespace dopixel
 			}
 			AABB& Add(const AABB& aabb)
 			{
-				if (aabb.min.x < min.x) min.x = aabb.min.x;
-				if (aabb.min.y < min.y) min.y = aabb.min.y;
-				if (aabb.min.z < min.z) min.z = aabb.min.z;
+				if (&aabb != this)
+				{
+					if (aabb.min.x < min.x) min.x = aabb.min.x;
+					if (aabb.min.y < min.y) min.y = aabb.min.y;
+					if (aabb.min.z < min.z) min.z = aabb.min.z;
 
-				if (aabb.max.x > max.x) max.x = aabb.max.x;
-				if (aabb.max.y > max.y) max.y = aabb.max.y;
-				if (aabb.max.z > max.z) max.z = aabb.max.z;
+					if (aabb.max.x > max.x) max.x = aabb.max.x;
+					if (aabb.max.y > max.y) max.y = aabb.max.y;
+					if (aabb.max.z > max.z) max.z = aabb.max.z;
+				}
 
 				return *this;
 			}

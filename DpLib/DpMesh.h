@@ -81,12 +81,12 @@ namespace dopixel
 	class MeshCache
 	{
 	public:
+		static MeshCache& Instance() { static MeshCache cache; return cache; }
 		MeshCache();
 		~MeshCache();
 
 		void Clear();
-		MeshRef Find(const string& name) const;
-		void Add(const MeshRef& mesh);
+		MeshRef GetMesh(const string& path);
 	private:
 		map<string, MeshRef> meshs_;
 	};

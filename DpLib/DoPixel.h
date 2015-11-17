@@ -97,6 +97,7 @@ namespace dopixel
 	class Material;
 	class Mesh;
 	class SubMesh;
+	class SceneNode;
 	class Camera;
 	class Event;
 
@@ -107,6 +108,7 @@ namespace dopixel
 	typedef Ref<Material> MaterialRef;
 	typedef Ref<Mesh> MeshRef;
 	typedef Ref<SubMesh> SubMeshRef;
+	typedef Ref<SceneNode> SceneNodeRef;
 	typedef Ref<Camera> CameraRef;
 	typedef Ref<Event> EventRef;
 

@@ -127,22 +127,23 @@ namespace dopixel
 		meshs_.clear();
 	}
 
-	MeshRef MeshCache::Find(const string& name) const
+	MeshRef MeshCache::GetMesh(const string& path)
 	{
-		auto it = meshs_.find(name);
-		if (it != meshs_.end())
-			return it->second;
-		return MeshRef();
-	}
+		ASSERT(!path.empty());
 
-	void MeshCache::Add(const MeshRef& mesh)
-	{
-		const auto& name = mesh->GetName();
-		ASSERT(!name.empty());	
-		MeshRef ref = Find(name);
-		if (!ref)
+		if (path.empty())
+			return MeshRef();
+
+		auto it = meshs_.find(path);
+		if (it != meshs_.end())
 		{
-			meshs_[name] = mesh;
+			return it->second;
+		}
+		else
+		{
+			MeshRef mesh(new Mesh(path));
+			meshs_[path] = mesh;
+			return mesh;
 		}
 	}
 }

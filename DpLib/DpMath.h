@@ -12,6 +12,8 @@
 #ifndef __DP_MATH__
 #define __DP_MATH__
 
+#include <limits>
+
 namespace dopixel
 {
 	namespace math
