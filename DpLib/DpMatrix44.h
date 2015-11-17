@@ -211,6 +211,18 @@ namespace dopixel
 				m41 = m42 = m43 = 0;
 			}
 
+			void SetTranslation(const Vector3<T>& v)
+			{
+				m41 = v.x;
+				m42 = v.y;
+				m43 = v.z;
+			}
+
+			Vector3<T> GetTranslation() const
+			{
+				return Vector3<T>(m41, m42, m43);
+			}
+
 			// Transpose
 			void Transpose()
 			{

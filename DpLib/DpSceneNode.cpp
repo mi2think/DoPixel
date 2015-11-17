@@ -18,7 +18,12 @@ namespace dopixel
 		: name_(name)
 		, parent_(nullptr)
 		, visible_(true)
+		, position_(0.0f, 0.0f, 0.0f)
+		, rotation_(0.0f, 0.0f, 0.0f)
+		, scale_(1.0f, 1.0f, 1.0f)
 	{
+		relativeMatrix_.Identity();
+		worldMatrix_.Identity();
 	}
 
 	SceneNode::~SceneNode()
@@ -29,6 +34,33 @@ namespace dopixel
 	bool SceneNode::GetTrulyVisible() const
 	{
 		return visible_ && (parent_ != nullptr ? parent_->GetTrulyVisible() : true);
+	}
+
+	void SceneNode::Internal()
+	{
+		// relative matrix
+		relativeMatrix_.Identity();
+		MatrixRotationZYX(relativeMatrix_, angle2radian(rotation_.x), angle2radian(rotation_.y), angle2radian(rotation_.z));
+		relativeMatrix_.SetTranslation(position_);	
+		math::Matrix44f t;
+		MatrixScaling(t, scale_);
+		relativeMatrix_ *= t;
+
+		// world matrix
+		UpdateWorldMatrix();
+	}
+
+	void SceneNode::UpdateWorldMatrix()
+	{
+		if (parent_)
+			worldMatrix_ = parent_->GetWorldMatrix() * relativeMatrix_;
+		else
+			worldMatrix_ = relativeMatrix_;
+		// update children
+		for (auto& node : children_)
+		{
+			node->UpdateWorldMatrix();
+		}
 	}
 
 	void SceneNode::AddNode(const SceneNodeRef& node)

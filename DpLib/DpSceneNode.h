@@ -14,6 +14,8 @@
 
 #include "DoPixel.h"
 #include "DpAABB.h"
+#include "DpVector3.h"
+#include "DpMatrix44.h"
 
 namespace dopixel
 {
@@ -31,6 +33,18 @@ namespace dopixel
 		// visible only if parent is visible
 		bool GetTrulyVisible() const;
 
+		void SetPosition(const math::Vector3f& position) { position_ = position; Internal(); }
+		void SetRotation(const math::Vector3f& rotation) { rotation_ = rotation; Internal(); }
+		void SetScale(const math::Vector3f& scale) { scale_ = scale; Internal(); }
+		const math::Vector3f& GetPosotion() const { return position_; }
+		const math::Vector3f& GetRotation() const { return rotation_; }
+		const math::Vector3f& GetScale() const { return scale_; }
+
+		const math::Matrix44f GetRelativeMatrix() const { return relativeMatrix_; }
+		const math::Matrix44f& GetWorldMatrix() const { return worldMatrix_; }
+		math::Vector3f GetWorldPosition() const { return worldMatrix_.GetTranslation(); }
+		void UpdateWorldMatrix();
+
 		void AddNode(const SceneNodeRef& node);
 		void RemoveNode(const SceneNodeRef& node);
 		void RemoveAllNodes();
@@ -40,8 +54,17 @@ namespace dopixel
 
 		virtual MeshSceneNode* AsMeshNode() { return nullptr; }
 	private:
+		void Internal();
+
 		string name_;
 		bool visible_;
+		// relative to parent
+		math::Vector3f position_;
+		math::Vector3f rotation_;
+		math::Vector3f scale_;
+		math::Matrix44f relativeMatrix_;
+		// absolute!
+		math::Matrix44f worldMatrix_;
 
 		SceneNode* parent_;
 		vector<SceneNodeRef> children_;
