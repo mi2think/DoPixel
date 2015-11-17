@@ -431,11 +431,11 @@ namespace dopixel
 		// Rotate
 
 		template <typename T>
-		inline Matrix43<T>& MatrixRotationX(Matrix43<T>& n, float angle)
+		inline Matrix43<T>& MatrixRotationX(Matrix43<T>& n, float radian)
 		{
 			float s = 0.0f;
 			float c = 0.0f;
-			SinCos(s, c, angle);
+			SinCos(s, c, radian);
 
 			n.ZeroTranslation();
 
@@ -447,11 +447,11 @@ namespace dopixel
 		}
 
 		template <typename T>
-		inline Matrix43<T>& MatrixRotationY(Matrix43<T>& n, float angle)
+		inline Matrix43<T>& MatrixRotationY(Matrix43<T>& n, float radian)
 		{
 			float s = 0.0f;
 			float c = 0.0f;
-			SinCos(s, c, angle);
+			SinCos(s, c, radian);
 
 			n.ZeroTranslation();
 
@@ -463,11 +463,11 @@ namespace dopixel
 		}
 
 		template <typename T>
-		inline Matrix43<T>& MatrixRotationZ(Matrix43<T>& n, float angle)
+		inline Matrix43<T>& MatrixRotationZ(Matrix43<T>& n, float radian)
 		{
 			float s = 0.0f;
 			float c = 0.0f;
-			SinCos(s, c, angle);
+			SinCos(s, c, radian);
 
 			n.ZeroTranslation();
 
@@ -480,13 +480,13 @@ namespace dopixel
 
 		// Assume v through the origin, v must be normal Vector
 		template <typename T>
-		inline Matrix43<T>& MatrixRotationAxis(Matrix43<T>& n, const Vector3<T>& v, float angle)
+		inline Matrix43<T>& MatrixRotationAxis(Matrix43<T>& n, const Vector3<T>& v, float radian)
 		{
 			assert(v.IsNormalized());
 
 			float s = 0.0f;
 			float c = 0.0f;
-			SinCos(s, c, angle);
+			SinCos(s, c, radian);
 
 			// Common expr 
 			float a = 1.0f - c;

@@ -28,10 +28,10 @@ namespace dopixel
 			return min + rand() % (max - min + 1);
 		}
 
-		void SinCos(float& retSin, float& retCos, float angle)
+		void SinCos(float& retSin, float& retCos, float radian)
 		{
-			retSin = sinf(angle);
-			retCos = cosf(angle);
+			retSin = sinf(radian);
+			retCos = cosf(radian);
 		}
 
 		float SafeAcos(float f)

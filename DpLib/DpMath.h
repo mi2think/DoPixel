@@ -51,7 +51,7 @@ namespace dopixel
 
 		int RandRange(int min, int max);
 
-		void SinCos(float& retSin, float& retCos, float angle);
+		void SinCos(float& retSin, float& retCos, float radian);
 
 		float SafeAcos(float f);
 

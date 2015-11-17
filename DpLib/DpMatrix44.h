@@ -378,11 +378,11 @@ namespace dopixel
 		// Rotate
 
 		template <typename T>
-		inline Matrix44<T>& MatrixRotationX(Matrix44<T>& n, float angle)
+		inline Matrix44<T>& MatrixRotationX(Matrix44<T>& n, float radian)
 		{
 			float s = 0.0f;
 			float c = 0.0f;
-			SinCos(s, c, angle);
+			SinCos(s, c, radian);
 
 			n.m11 = 1.0f; n.m12 = 0.0f; n.m13 = 0.0f; n.m14 = 0.0f;
 			n.m21 = 0.0f; n.m22 = c;	n.m23 = s;	  n.m24 = 0.0f;
@@ -393,11 +393,11 @@ namespace dopixel
 		}
 
 		template <typename T>
-		inline Matrix44<T>& MatrixRotationY(Matrix44<T>& n, float angle)
+		inline Matrix44<T>& MatrixRotationY(Matrix44<T>& n, float radian)
 		{
 			float s = 0.0f;
 			float c = 0.0f;
-			SinCos(s, c, angle);
+			SinCos(s, c, radian);
 
 			n.m11 = c;    n.m12 = 0.0f; n.m13 = -s;   n.m14 = 0.0f;
 			n.m21 = 0.0f; n.m22 = 1.0f;	n.m23 = 0;	  n.m24 = 0.0f;
@@ -408,11 +408,11 @@ namespace dopixel
 		}
 
 		template <typename T>
-		inline Matrix44<T>& MatrixRotationZ(Matrix44<T>& n, float angle)
+		inline Matrix44<T>& MatrixRotationZ(Matrix44<T>& n, float radian)
 		{
 			float s = 0.0f;
 			float c = 0.0f;
-			SinCos(s, c, angle);
+			SinCos(s, c, radian);
 
 			n.m11 = c;    n.m12 = s;    n.m13 = 0.0f; n.m14 = 0.0f;
 			n.m21 = -s;   n.m22 = c;	n.m23 = 0.0f; n.m24 = 0.0f;
@@ -423,16 +423,16 @@ namespace dopixel
 		}
 
 		template <typename T>
-		inline Matrix44<T>& MatrixRotationXYZ(Matrix44<T>& m, float angleX, float angleY, float angleZ)
+		inline Matrix44<T>& MatrixRotationXYZ(Matrix44<T>& m, float radianX, float radianY, float radianZ)
 		{
 			Matrix44<T> mx;
-			MatrixRotationX(mx, angleX);
+			MatrixRotationX(mx, radianX);
 			
 			Matrix44<T> my;
-			MatrixRotationY(my, angleY);
+			MatrixRotationY(my, radianY);
 
 			Matrix44<T> mz;
-			MatrixRotationZ(mz, angleZ);
+			MatrixRotationZ(mz, radianZ);
 
 			Matrix44<T> n;
 			MatrixMultiply(n, mx, my);
@@ -441,16 +441,16 @@ namespace dopixel
 		}
 
 		template <typename T>
-		inline Matrix44<T>& MatrixRotationZYX(Matrix44<T>& m, float angleX, float angleY, float angleZ)
+		inline Matrix44<T>& MatrixRotationZYX(Matrix44<T>& m, float radianX, float radianY, float radianZ)
 		{
 			Matrix44<T> mx;
-			MatrixRotationX(mx, angleX);
+			MatrixRotationX(mx, radianX);
 
 			Matrix44<T> my;
-			MatrixRotationY(my, angleY);
+			MatrixRotationY(my, radianY);
 
 			Matrix44<T> mz;
-			MatrixRotationZ(mz, angleZ);
+			MatrixRotationZ(mz, radianZ);
 
 			Matrix44<T> n;
 			MatrixMultiply(n, mz, my);
@@ -460,13 +460,13 @@ namespace dopixel
 
 		// Assume v through the origin, v must be normal Vector
 		template <typename T>
-		inline Matrix44<T>& MatrixRotationAxis(Matrix44<T>& n, const Vector4<T>& v, float angle)
+		inline Matrix44<T>& MatrixRotationAxis(Matrix44<T>& n, const Vector4<T>& v, float radian)
 		{
 			ASSERT(v.IsNormalized());
 
 			float s = 0.0f;
 			float c = 0.0f;
-			SinCos(s, c, angle);
+			SinCos(s, c, radian);
 
 			// Common expr 
 			float a = 1.0f - c;

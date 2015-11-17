@@ -132,7 +132,7 @@ namespace dopixel
 			T dotp = DotProduct(a, b);
 			float lenA = a.Length();
 			float lenB = b.Length();
-			return acos(dotp / (lenA * lenB));
+			return float(acos(dotp / (lenA * lenB)) * 180 / M_PI);
 		}
 
 		template <typename OS, typename T>

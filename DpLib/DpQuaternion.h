@@ -105,7 +105,7 @@ namespace dopixel
 
 			void ToAxisAngle(Vector3f& v, float& angle) const
 			{
-				angle = SafeAcos(w) * 2.0f;
+				angle = float(SafeAcos(w) * 2.0f * 180 / M_PI);
 
 				// [w x y z] = [cos(angle / 2) sin(angle / 2)v]
 				// w = cos(angle / 2)  sin(angle /2)^2 + cos(angle /2)^2 = 1;
@@ -219,11 +219,11 @@ namespace dopixel
 		}
 
 		// v must be normal Vector
-		inline Quaternion QuaternionRotationAxis(const Vector3f& v, float angle)
+		inline Quaternion QuaternionRotationAxis(const Vector3f& v, float radian)
 		{
 			assert(Equal(v.LengthSQ(), 1.0f));
 
-			float thetaOver2 = angle * 0.5f;
+			float thetaOver2 = radian * 0.5f;
 			float sinThetaOver2 = Sin(thetaOver2);
 
 			Quaternion q;
@@ -234,9 +234,9 @@ namespace dopixel
 			return q;
 		}
 
-		inline Quaternion QuaternionRotationX(float angle)
+		inline Quaternion QuaternionRotationX(float radian)
 		{
-			float thetaOver2 = angle * 0.5f;
+			float thetaOver2 = radian * 0.5f;
 
 			Quaternion q;
 			q.w = Cos(thetaOver2);
@@ -246,9 +246,9 @@ namespace dopixel
 			return q;
 		}
 
-		inline Quaternion QuaternionRotationY(float angle)
+		inline Quaternion QuaternionRotationY(float radian)
 		{
-			float thetaOver2 = angle * 0.5f;
+			float thetaOver2 = radian * 0.5f;
 
 			Quaternion q;
 			q.w = Cos(thetaOver2);
@@ -258,9 +258,9 @@ namespace dopixel
 			return q;
 		}
 
-		inline Quaternion QuaternionRotationZ(float angle)
+		inline Quaternion QuaternionRotationZ(float radian)
 		{
-			float thetaOver2 = angle * 0.5f;
+			float thetaOver2 = radian * 0.5f;
 
 			Quaternion q;
 			q.w = Cos(thetaOver2);
@@ -276,11 +276,11 @@ namespace dopixel
 			return q * p;
 		}
 
-		inline Vector3f QuaternionRotateVector(const Vector3f& v, const Vector3f& axis, float angle)
+		inline Vector3f QuaternionRotateVector(const Vector3f& v, const Vector3f& axis, float radian)
 		{
 			Vector3f _v;
 
-			Quaternion q = QuaternionRotationAxis(axis, angle);
+			Quaternion q = QuaternionRotationAxis(axis, radian);
 			Quaternion qInverse = QuaternionInverse(q);
 			Quaternion p = q * v * qInverse;
 			_v.x = p.x;
