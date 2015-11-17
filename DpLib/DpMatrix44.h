@@ -17,6 +17,7 @@
 #include "DpMath.h"
 #include "DpVector3.h"
 #include "DpVector4.h"
+#include "DpMatrix33.h"
 
 namespace dopixel
 {
@@ -54,6 +55,12 @@ namespace dopixel
 			, m21(_m21), m22(_m22), m23(_m23), m24(_m24)
 			, m31(_m31), m32(_m32), m33(_m33), m34(_m34)
 			, m41(_m41), m42(_m42), m43(_m43), m44(_m44) {}
+
+			Matrix44& operator=(const Matrix44& _m)
+			{
+				memcpy(m, _m.m, sizeof(T) * N);
+				return *this;
+			}
 
 			bool operator==(const Matrix44& _m) const
 			{
@@ -204,7 +211,7 @@ namespace dopixel
 				m41 = m42 = m43 = 0;
 			}
 
-			//// Transpose
+			// Transpose
 			void Transpose()
 			{
 				for (int i = 0; i < R; ++i)
@@ -245,6 +252,70 @@ namespace dopixel
 			return n;
 		}
 
+		// algebraic cofactor
+		template <typename T>
+		inline Matrix44<T>& MatrixAlgebraicCofactor(Matrix44<T>& n, const Matrix44<T>& _m)
+		{
+			T t[16];
+			int index = 0;
+			bool negative = false;
+			for (int i = 0; i < Matrix44<T>::R; ++i)
+			{
+				for (int j = 0; j < Matrix44<T>::C; ++j)
+				{
+					T t2[9];
+					int index2 = 0;
+					for (int i2 = 0; i2 < Matrix44<T>::R; ++i2)
+					{
+						for (int j2 = 0; j2 < Matrix44<T>::C; ++j2)
+						{
+							if (i2 == i || j2 == j)
+								continue;
+							t2[index2++] = _m.m[i2][j2];
+						}
+					}
+					
+					t[index] = MatrixDeterminant(Matrix33<T>(t2));
+					if (negative)
+					{
+						t[index] = -t[index];
+					}
+					negative = !negative;
+					++index;
+				}
+				negative = !negative;
+			}
+			n = Matrix44<T>(t);
+			return n;
+		}
+
+		// standard adjugate
+		template <typename T>
+		inline Matrix44<T>& MatrixStandardAdjugate(Matrix44<T>& n, const Matrix44<T>& _m)
+		{
+			Matrix44<T> t;
+			MatrixAlgebraicCofactor(t, _m);
+			MatrixTranspose(n, t);
+			return n;
+		}
+
+		template <typename T>
+		inline float MatrixDeterminant(const Matrix44<T>& _m)
+		{
+			Matrix44<T> t;
+			MatrixAlgebraicCofactor(t, _m);
+			return _m.m11 * t.m11 + _m.m12 * t.m12 + _m.m13 * t.m13 + _m.m14 * t.m14;
+		}
+
+		template <typename T>
+		inline Matrix44<T>& MatrixInverse(Matrix44<T>& n, const Matrix44<T>& _m)
+		{
+			MatrixStandardAdjugate(n, _m);
+			float det = _m.m11 * n.m11 + _m.m12 * n.m21 + _m.m13 * n.m31 + _m.m14 * n.m41;
+			n /= det;
+			return n;
+		}
+
 		template <typename T>
 		inline Matrix44<T>& MatrixMultiply(Matrix44<T>& n, const Matrix44<T>& m1, const Matrix44<T>& m2)
 		{ 
@@ -269,31 +340,6 @@ namespace dopixel
 			n.m44 = m1.m41 * m2.m14 + m1.m42 * m2.m24 + m1.m43 * m2.m34 + m1.m44 * m2.m44;
 
 			return n;
-		}
-
-		template <typename T>
-		inline float MatrixDeterminant(const Matrix44<T>& _m)
-		{
-			// So much arithmetic, using double for improve the precision of result
-
-			double m31m42 = double(_m.m31) * _m.m42;
-			double m31m43 = double(_m.m31) * _m.m43;
-			double m31m44 = double(_m.m31) * _m.m44;
-			double m32m43 = double(_m.m32) * _m.m43;
-			double m32m44 = double(_m.m32) * _m.m44;
-			double m33m42 = double(_m.m33) * _m.m42;
-			double m33m44 = double(_m.m33) * _m.m44;
-			double m41m32 = double(_m.m41) * _m.m32;
-			double m41m33 = double(_m.m41) * _m.m33;
-			double m41m34 = double(_m.m41) * _m.m34;
-			double m42m34 = double(_m.m42) * _m.m34;
-			double m42m33 = double(_m.m42) * _m.m33;
-			double m43m34 = double(_m.m43) * _m.m34;
-
-			return float(_m.m11 * (_m.m22 * (m33m44 - m43m34) - _m.m23 * (m32m44 - m42m34) + _m.m24 * (m32m43 - m33m42))
-				 - _m.m12 * (_m.m21 * (m33m44 - m43m34) - _m.m23 * (m31m44 - m41m34) + _m.m24 * (m31m43 - m41m33))
-				 + _m.m13 * (_m.m21 * (m32m44 - m42m34) - _m.m22 * (m31m44 - m41m34) + _m.m24 * (m31m42 - m41m32))
-				 - _m.m14 * (_m.m21 * (m32m43 - m42m33) - _m.m22 * (m31m43 - m41m33) + _m.m23 * (m31m42 - m41m32)));
 		}
 
 		// Translation

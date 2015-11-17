@@ -216,6 +216,34 @@ namespace dopixel
 				 + _m.m13 * (_m.m21 * _m.m32 - _m.m22 * _m.m31);
 		}
 
+		// algebraic cofactor
+		template <typename T>
+		inline Matrix33<T>& MatrixAlgebraicCofactor(Matrix33<T>& n, const Matrix33<T>& _m)
+		{
+			n.m11 = +(_m.m22 * _m.m33 - _m.m32 * _m.m23);
+			n.m12 = -(_m.m21 * _m.m33 - _m.m31 * _m.m23);
+			n.m13 = +(_m.m21 * _m.m32 - _m.m31 * _m.m22);
+
+			n.m21 = -(_m.m12 * _m.m33 - _m.m32 * _m.m13);
+			n.m22 = +(_m.m11 * _m.m33 - _m.m31 * _m.m13);
+			n.m23 = -(_m.m11 * _m.m32 - _m.m31 * _m.m12);
+
+			n.m31 = +(_m.m12 * _m.m23 - _m.m22 * _m.m13);
+			n.m32 = -(_m.m11 * _m.m23 - _m.m21 * _m.m13);
+			n.m33 = +(_m.m11 * _m.m22 - _m.m21 * _m.m12);
+			return n;
+		}
+
+		// standard adjugate
+		template <typename T>
+		inline Matrix33<T>& MatrixStandardAdjugate(Matrix33<T>& n, const Matrix33<T>& _m)
+		{
+			Matrix33<T> t;
+			MatrixAlgebraicCofactor(t, _m);
+			MatrixTranspose(n, t);
+			return n;
+		}
+
 		template <typename T>
 		inline Matrix33<T>& MatrixInverse(Matrix33<T>& n, const Matrix33<T>& _m)
 		{
@@ -223,21 +251,7 @@ namespace dopixel
 
 			assert(abs(det) > EPSILON_E5);
 			
-			n.m11 = + (_m.m22 * _m.m33 - _m.m32 * _m.m23);
-			n.m12 = - (_m.m21 * _m.m33 - _m.m31 * _m.m23);
-			n.m13 = + (_m.m21 * _m.m32 - _m.m31 * _m.m22);
-
-			n.m21 = - (_m.m12 * _m.m33 - _m.m32 * _m.m13);
-			n.m22 = + (_m.m11 * _m.m33 - _m.m31 * _m.m13);
-			n.m23 = - (_m.m11 * _m.m32 - _m.m31 * _m.m12);
-
-			n.m31 = + (_m.m12 * _m.m23 - _m.m22 * _m.m13);
-			n.m32 = - (_m.m11 * _m.m23 - _m.m21 * _m.m13);
-			n.m33 = + (_m.m11 * _m.m22 - _m.m21 * _m.m12);
-
-			Matrix33<T> _n = n;;
-			MatrixTranspose(n, _n);
-
+			MatrixStandardAdjugate(n, _m);
 			n /= det;
 			return n;
 		}
