@@ -10,9 +10,6 @@
 	purpose:	Mesh
 *********************************************************************/
 #include "DpMesh.h"
-#include "DpVertexBuffer.h"
-#include "DpIndexBuffer.h"
-#include "DpMaterial.h"
 
 namespace dopixel
 {

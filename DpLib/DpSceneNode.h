@@ -20,6 +20,8 @@
 namespace dopixel
 {
 	class MeshSceneNode;
+	class CameraSceneNode;
+
 	class SceneNode
 	{
 	public:
@@ -33,14 +35,14 @@ namespace dopixel
 		// visible only if parent is visible
 		bool GetTrulyVisible() const;
 
-		void SetPosition(const math::Vector3f& position) { position_ = position; Internal(); }
-		void SetRotation(const math::Vector3f& rotation) { rotation_ = rotation; Internal(); }
-		void SetScale(const math::Vector3f& scale) { scale_ = scale; Internal(); }
+		// relative to parent
+		virtual void SetPosition(const math::Vector3f& position) { position_ = position; Internal(); }
+		virtual void SetRotation(const math::Vector3f& rotation) { rotation_ = rotation; Internal(); }
+		virtual void SetScale(const math::Vector3f& scale) { scale_ = scale; Internal(); }
 		const math::Vector3f& GetPosotion() const { return position_; }
 		const math::Vector3f& GetRotation() const { return rotation_; }
 		const math::Vector3f& GetScale() const { return scale_; }
 
-		const math::Matrix44f GetRelativeMatrix() const { return relativeMatrix_; }
 		const math::Matrix44f& GetWorldMatrix() const { return worldMatrix_; }
 		math::Vector3f GetWorldPosition() const { return worldMatrix_.GetTranslation(); }
 		void UpdateWorldMatrix();
@@ -49,12 +51,20 @@ namespace dopixel
 		void RemoveNode(const SceneNodeRef& node);
 		void RemoveAllNodes();
 		
+		void AddAnimator(const SceneNodeAnimatorRef& animator);
+		void RemoveAnimator(const SceneNodeAnimatorRef& animator);
+		void RemoveAllAnimators();
+
 		virtual void OnAddNode(const SceneNodeRef& node);
 		virtual void OnRemoveNode(const SceneNodeRef& node);
 
+		virtual void OnAnimate(const Timestep& timestep);
+		virtual bool OnEvent(const Event& event);
+
 		virtual MeshSceneNode* AsMeshNode() { return nullptr; }
-	private:
-		void Internal();
+		virtual CameraSceneNode* AsCameraNode() { return nullptr; }
+	protected:
+		virtual void Internal();
 
 		string name_;
 		bool visible_;
@@ -65,9 +75,11 @@ namespace dopixel
 		math::Matrix44f relativeMatrix_;
 		// absolute!
 		math::Matrix44f worldMatrix_;
-
+		// relations
 		SceneNode* parent_;
 		vector<SceneNodeRef> children_;
+		// animators
+		vector<SceneNodeAnimatorRef> animators_;
 	};
 
 	class MeshSceneNode : public SceneNode
@@ -82,6 +94,37 @@ namespace dopixel
 		virtual MeshSceneNode* AsMeshNode() { return this; }
 	private:
 		MeshRef mesh_;
+	};
+
+	class CameraSceneNode : public SceneNode
+	{
+	public:
+		CameraSceneNode(const string& name, const CameraRef& camera,
+			const math::Vector3f& position, const math::Vector3f& target);
+		~CameraSceneNode();
+
+		void SetTarget(const math::Vector3f& target);
+		void SetUp(const math::Vector3f& up);
+		const math::Vector3f& GetTarget() const;
+		const math::Vector3f& GetUp() const;
+
+		const math::Matrix44f& GetViewMatrix() const;
+		const math::Matrix44f& GetProjectionMatrix() const;
+		const CameraRef& GetCamera() const;
+
+		virtual void SetPosition(const math::Vector3f& position);
+		virtual void SetRotation(const math::Vector3f& rotation);
+
+		void UpdateViewMatrix();
+
+		virtual CameraSceneNode* AsCameraNode() { return this; }
+	private:
+		CameraRef camera_;
+		// note: SceneNode has position 
+		math::Vector3f target_;
+		math::Vector3f up_;
+		// view matrix
+		math::Matrix44f viewMatrix_;
 	};
 }
 

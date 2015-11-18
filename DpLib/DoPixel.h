@@ -98,6 +98,7 @@ namespace dopixel
 	class Mesh;
 	class SubMesh;
 	class SceneNode;
+	class SceneNodeAnimator;
 	class Camera;
 	class Event;
 
@@ -109,6 +110,7 @@ namespace dopixel
 	typedef Ref<Mesh> MeshRef;
 	typedef Ref<SubMesh> SubMeshRef;
 	typedef Ref<SceneNode> SceneNodeRef;
+	typedef Ref<SceneNodeAnimator> SceneNodeAnimatorRef;
 	typedef Ref<Camera> CameraRef;
 	typedef Ref<Event> EventRef;
 
@@ -133,6 +135,18 @@ namespace dopixel
 	#define SCOPEGUARD_NAMELINE_CAT(name, line) name##line
 	#define SCOPEGUARD_NAMELINE(name, line) SCOPEGUARD_NAMELINE_CAT(name, line)
 	#define ON_SCOPE_EXIT(func) ScopeGuard SCOPEGUARD_NAMELINE(EXIT, __LINE__)(func)
+
+	// time step
+	class Timestep
+	{
+	public:
+		explicit Timestep(int milliseconds) : milliseconds_(milliseconds) {}
+
+		int GetMilliseconds() const { return milliseconds_; }
+		float GetSeconds() const { return milliseconds_ * 0.001f; }
+	private:
+		int milliseconds_;
+	};
 
 	// swap
 	template<typename T>

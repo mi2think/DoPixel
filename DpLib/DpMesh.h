@@ -13,7 +13,9 @@
 #define __DP_MESH_H__
 
 #include "DoPixel.h"
-#include "DpVector3.h"
+#include "DpMaterial.h"
+#include "DpIndexBuffer.h"
+#include "DpVertexBuffer.h"
 #include "DpAABB.h"
 
 namespace dopixel
