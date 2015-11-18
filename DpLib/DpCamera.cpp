@@ -10,203 +10,86 @@
 	purpose:	Camera
 *********************************************************************/
 #include "DpCamera.h"
-#include <cassert>
 
 namespace dopixel
 {
-	void Camera::InitCamera(int attr, const Vector4f& pos, const Vector4f& dir, const Vector4f& target, float nearClipZ, float farClipZ, float fov,
-		float viewportWidth, float viewportHeight)
+	Camera::Camera()
+		: fovy_(0.0f)
+		, aspect_(0.0f)
+		, znear_(0.0f)
+		, zfar_(0.0f)
+		, matrixValid_(false)
 	{
-		this->attr = attr;
-		this->pos = pos;
-		this->dir = dir;
-
-		this->u = Vector4f(1, 0, 0, 1);	// +X
-		this->v = Vector4f(0, 1, 0, 1);	// +Y
-		this->n = Vector4f(0, 0, 1, 1);	// +Z
-
-		this->target = target;
-
-		this->nearClipZ = nearClipZ;
-		this->farClipZ = farClipZ;
-
-		this->fov = fov;
-
-		this->viewportWidth = viewportWidth;
-		this->viewportHeight = viewportHeight;
-		this->viewportCenterPos = Vector2f((viewportWidth - 1) / 2.0f, (viewportHeight - 1) / 2.0f);
-
-		this->aspectRatio = viewportWidth / viewportHeight;
-
-		// Set view plane 2 * (2 / ar)
-		this->viewPlaneWidth = 2.0f;
-		this->viewPlaneHeight = 2.0f / aspectRatio;
-
-		// d = (w / 2) / tan(thetah / 2)
-		this->viewDist = 0.5f * viewPlaneWidth / tan(angle2radian(fov / 2));
-
-		if (fov == 90.0f)
-		{
-			Vector3f pt(0, 0, 0);
-
-			this->rightClipPlane = Plane3D(pt, Vector3f(1, 0, -1));
-			this->leftClipPlane = Plane3D(pt, Vector3f(-1, 0, -1));
-			this->topClipPlane = Plane3D(pt, Vector3f(0, 1, -1));
-			this->bottomClipPlane = Plane3D(pt, Vector3f(0, -1, -1));
-		}
-		else
-		{
-			Vector3f pt(0, 0, 0);
-
-			this->rightClipPlane = Plane3D(pt, Vector3f(viewDist, 0, -viewPlaneWidth / 2));
-			this->leftClipPlane = Plane3D(pt, Vector3f(-viewDist, 0, -viewPlaneWidth / 2));
-			this->topClipPlane = Plane3D(pt, Vector3f(0, viewDist, -viewPlaneWidth / 2));
-			this->bottomClipPlane = Plane3D(pt, Vector3f(0, -viewDist, -viewPlaneWidth / 2));
-		}
 	}
 
-	void Camera::BuildCameraMatrixEuler(int rotateSeq)
+	float Camera::GetFovy() const
 	{
-		/* eg. For ROTATE_SEQ_YXZ
-		Mcam = Mt(-1) * My(-1) * Mx(-1) * Mz(-1)
-		for reduce the calc:
-		a. Mcam = (Mz * Mx * My * Mt)(-1)
-		b. Rotate matrix pass an -angle, and sinx = -sinx, cos-x = cosx
-		*/
-
-		attr = MODEL_EULER;
-
-		Matrix44f mTInver(1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			-pos.x, -pos.y, -pos.z, 1);
-
-		float thetaX = dir.x;
-		float thetaY = dir.y;
-		float thetaZ = dir.z;
-
-		float cosTheta = cos(thetaX);
-		float sinTheta = -sin(thetaX);
-		Matrix44f mRXInver(1, 0, 0, 0,
-			0, cosTheta, sinTheta, 0,
-			0, -sinTheta, cosTheta, 0,
-			0, 0, 0, 1);
-
-		cosTheta = cos(thetaY);
-		sinTheta = -sin(thetaY);
-		Matrix44f mRYInver(cosTheta, 0, -sinTheta, 0,
-			0, 1, 0, 0,
-			sinTheta, 0, cosTheta, 0,
-			0, 0, 0, 1);
-
-		cosTheta = cos(thetaZ);
-		sinTheta = -sin(thetaZ);
-		Matrix44f mRZInver(cosTheta, sinTheta, 0, 0,
-			-sinTheta, cosTheta, 0, 0,
-			0, 0, 1, 0,
-			0, 0, 0, 1);
-
-		Matrix44f mTemp, mRotate;
-		switch (rotateSeq)
-		{
-		case ROTATE_SEQ_XYZ:
-			MatrixMultiply(mTemp, mRXInver, mRYInver);
-			MatrixMultiply(mRotate, mTemp, mRZInver);
-			break;
-		case ROTATE_SEQ_XZY:
-			MatrixMultiply(mTemp, mRXInver, mRZInver);
-			MatrixMultiply(mRotate, mTemp, mRYInver);
-			break;
-		case ROTATE_SEQ_YXZ:
-			MatrixMultiply(mTemp, mRYInver, mRXInver);
-			MatrixMultiply(mRotate, mTemp, mRZInver);
-			break;
-		case ROTATE_SEQ_YZX:
-			MatrixMultiply(mTemp, mRYInver, mRZInver);
-			MatrixMultiply(mRotate, mTemp, mRXInver);
-			break;
-		case ROTATE_SEQ_ZXY:
-			MatrixMultiply(mTemp, mRZInver, mRXInver);
-			MatrixMultiply(mRotate, mTemp, mRYInver);
-			break;
-		case ROTATE_SEQ_ZYX:
-			MatrixMultiply(mTemp, mRZInver, mRYInver);
-			MatrixMultiply(mRotate, mTemp, mRXInver);
-			break;
-		}
-		MatrixMultiply(matrixCamera, mTInver, mRotate);
+		return fovy_;
 	}
 
-	void Camera::BuildCameraMatrixUVN(int uvnType)
+	float Camera::GetAspectRatio() const
 	{
-		assert(uvnType == MODEL_UVN || uvnType == MODEL_UVNSimple);
-		attr = uvnType;
+		return aspect_;
+	}
 
-		Matrix44f mTInver(1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			-pos.x, -pos.y, -pos.z, 1);
+	float Camera::GetNearClip() const
+	{
+		return znear_;
+	}
 
-		if (uvnType == MODEL_UVN)
+	float Camera::GetFarClip() const
+	{
+		return zfar_;
+	}
+
+	void Camera::SetFovy(float fovy)
+	{
+		fovy_ = fovy;
+		matrixValid_ = false;
+	}
+
+	void Camera::SetAspectRatio(float aspect)
+	{
+		aspect_ = aspect;
+		matrixValid_ = false;
+	}
+
+	void Camera::SetNearClip(float near)
+	{
+		znear_ = near;
+		matrixValid_ = false;
+	}
+
+	void Camera::SetFarClip(float far)
+	{
+		zfar_ = far;
+		matrixValid_ = false;
+	}
+
+	void Camera::SetPerspective(float fovy, float aspect, float near, float far)
+	{
+		fovy_ = fovy;
+		aspect_ = aspect;
+		znear_ = near;
+		zfar_ = far;
+		matrixValid_ = false;
+	}
+
+	const math::Matrix44f& Camera::GetProjectionMatrix() const
+	{
+		if (!matrixValid_)
 		{
-			float phi = dir.x;
-			float theta = dir.y;
+			float k = 1.0f / tan(angle2radian(fovy_ * 0.5f));
+			float zdist = zfar_ - znear_;
 
-			float sinPhi = sin(phi);
-			float cosPhi = cos(phi);
-			float sinTheta = sin(theta);
-			float cosTheta = cos(theta);
+			projectionMatrix_ = math::Matrix44f(k / aspect_, 0, 0, 0,
+				0, k, 0, 0,
+				0, 0, zfar_ / zdist, 1,
+				0, 0, -zfar_ * znear_ / zdist, 0);
 
-			target.x = -1 * sinPhi * sinTheta;
-			target.y = cosPhi;
-			target.z = sinPhi * cosTheta;
+			matrixValid_ = true;
 		}
 
-		n = target - pos;
-		v = Vector4f(0, 1, 0, 1);
-		u = CrossProduct(v, n);	// u = v x n
-		v = CrossProduct(n, u);	// v = n x u
-
-		u.Normalize();
-		v.Normalize();
-		n.Normalize();
-
-		Matrix44f mRInver(u.x, v.x, n.x, 0,
-			u.y, v.y, n.y, 0,
-			u.z, v.z, n.z, 0,
-			0, 0, 0, 1);
-
-		MatrixMultiply(matrixCamera, mTInver, mRInver);
-	}
-
-	void Camera::BuildCameraToPerspective(Matrix44f& m) const
-	{
-		float k = 1.0f / tan(angle2radian(fov * 0.5f));
-
-		m = Matrix44f(k / aspectRatio, 0, 0, 0,
-			0, k, 0, 0,
-			0, 0, 1, 1,
-			0, 0, 0, 0);
-	}
-
-	void Camera::BuildPerspectiveToScreen(Matrix44f& m) const
-	{
-		float halfOfWidth = viewportWidth * 0.5f;
-		float halfOfHeight = viewportHeight * 0.5f;
-
-		m = Matrix44f(halfOfWidth, 0, 0, 0,
-			0, -halfOfHeight, 0, 0,
-			0, 0, 1, 0,
-			halfOfWidth, halfOfHeight, 0, 1);
-	}
-
-	void Camera::BuildCamerToScreen(Matrix44f& m) const
-	{
-		Matrix44f m1;
-		BuildCameraToPerspective(m1);
-		Matrix44f m2;
-		BuildPerspectiveToScreen(m2);
-
-		MatrixMultiply(m, m1, m2);
+		return projectionMatrix_;
 	}
 }
