@@ -20,7 +20,9 @@ namespace dopixel
 	{
 	public:
 		virtual ~SceneNodeAnimator() {}
-		virtual void AnimateNode(SceneNode* node, const Timestep& timestep) = 0;
+		// return true if change position or rotation
+		// or scale of node, else false
+		virtual bool AnimateNode(SceneNode* node, const Timestep& timestep) = 0;
 		virtual bool OnEvent(const Event& event) { return false; }
 	};
 }

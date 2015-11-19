@@ -19,9 +19,15 @@
 
 namespace dopixel
 {
+	enum class SceneNodeType
+	{
+		Unknown,
+		MeshNode,
+		CameraNode
+	};
+
 	class MeshSceneNode;
 	class CameraSceneNode;
-
 	class SceneNode
 	{
 	public:
@@ -36,15 +42,15 @@ namespace dopixel
 		bool GetTrulyVisible() const;
 
 		// relative to parent
-		virtual void SetPosition(const math::Vector3f& position) { position_ = position; Internal(); }
-		virtual void SetRotation(const math::Vector3f& rotation) { rotation_ = rotation; Internal(); }
-		virtual void SetScale(const math::Vector3f& scale) { scale_ = scale; Internal(); }
-		const math::Vector3f& GetPosotion() const { return position_; }
-		const math::Vector3f& GetRotation() const { return rotation_; }
-		const math::Vector3f& GetScale() const { return scale_; }
+		virtual void SetPosition(const math::Vector3f& position);
+		virtual void SetRotation(const math::Vector3f& rotation);
+		virtual void SetScale(const math::Vector3f& scale);
+		const math::Vector3f& GetPosotion() const;
+		const math::Vector3f& GetRotation() const;
+		const math::Vector3f& GetScale() const;
 
-		const math::Matrix44f& GetWorldMatrix() const { return worldMatrix_; }
-		math::Vector3f GetWorldPosition() const { return worldMatrix_.GetTranslation(); }
+		const math::Matrix44f& GetWorldMatrix() const;
+		math::Vector3f GetWorldPosition() const;
 		void UpdateWorldMatrix();
 
 		void AddNode(const SceneNodeRef& node);
@@ -58,8 +64,10 @@ namespace dopixel
 		virtual void OnAddNode(const SceneNodeRef& node);
 		virtual void OnRemoveNode(const SceneNodeRef& node);
 
+		virtual void OnRegisterSceneNode(SceneManager* manager);
 		virtual void OnAnimate(const Timestep& timestep);
 		virtual bool OnEvent(const Event& event);
+		virtual void OnRender(const Renderer& renderer) = 0;
 
 		virtual MeshSceneNode* AsMeshNode() { return nullptr; }
 		virtual CameraSceneNode* AsCameraNode() { return nullptr; }
@@ -91,6 +99,8 @@ namespace dopixel
 		const math::AABB& GetBoundingBox() const;
 		const MeshRef& GetMesh() const { return mesh_; }
 
+		virtual void OnRegisterSceneNode(SceneManager* manager);
+		virtual void OnRender(Renderer& renderer);
 		virtual MeshSceneNode* AsMeshNode() { return this; }
 	private:
 		MeshRef mesh_;
@@ -117,6 +127,8 @@ namespace dopixel
 
 		void UpdateViewMatrix();
 
+		virtual void OnRegisterSceneNode(SceneManager* manager);
+		virtual void OnRender(Renderer& renderer);
 		virtual CameraSceneNode* AsCameraNode() { return this; }
 	private:
 		CameraRef camera_;

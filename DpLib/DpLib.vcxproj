@@ -118,6 +118,7 @@
     <ClInclude Include="DpObject.h" />
     <ClInclude Include="DpQuaternion.h" />
     <ClInclude Include="DpRef.h" />
+    <ClInclude Include="DpSceneManager.h" />
     <ClInclude Include="DpSceneNode.h" />
     <ClInclude Include="DpSceneNodeAnimator.h" />
     <ClInclude Include="DpTexture.h" />
@@ -152,6 +153,7 @@
     <ClCompile Include="DpMesh.cpp" />
     <ClCompile Include="DpObject.cpp" />
     <ClCompile Include="DpQuaternion.cpp" />
+    <ClCompile Include="DpSceneManager.cpp" />
     <ClCompile Include="DpSceneNode.cpp" />
     <ClCompile Include="DpSceneNodeAnimator.cpp" />
     <ClCompile Include="DpTexture.cpp" />

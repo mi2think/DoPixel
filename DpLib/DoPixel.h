@@ -99,8 +99,10 @@ namespace dopixel
 	class SubMesh;
 	class SceneNode;
 	class SceneNodeAnimator;
+	class SceneManager;
 	class Camera;
 	class Event;
+	class Renderer;
 
 	typedef Ref<VertexBuffer> VertexBufferRef;
 	typedef Ref<IndexBuffer> IndexBufferRef;

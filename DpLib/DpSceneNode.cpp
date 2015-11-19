@@ -13,6 +13,7 @@
 #include "DpSceneNodeAnimator.h"
 #include "DpCamera.h"
 #include "DpMesh.h"
+#include "DpSceneManager.h"
 
 namespace dopixel
 {
@@ -36,6 +37,39 @@ namespace dopixel
 	bool SceneNode::GetTrulyVisible() const
 	{
 		return visible_ && (parent_ != nullptr ? parent_->GetTrulyVisible() : true);
+	}
+
+	void SceneNode::SetPosition(const math::Vector3f& position)
+	{
+		position_ = position;
+		Internal();
+	}
+
+	void SceneNode::SetRotation(const math::Vector3f& rotation)
+	{ 
+		rotation_ = rotation;
+		Internal();
+	}
+
+	void SceneNode::SetScale(const math::Vector3f& scale)
+	{
+		scale_ = scale;
+		Internal();
+	}
+
+	const math::Vector3f& SceneNode::GetPosotion() const
+	{
+		return position_;
+	}
+
+	const math::Vector3f& SceneNode::GetRotation() const
+	{
+		return rotation_;
+	}
+
+	const math::Vector3f& SceneNode::GetScale() const
+	{
+		return scale_;
 	}
 
 	void SceneNode::Internal()
@@ -63,6 +97,16 @@ namespace dopixel
 		{
 			node->UpdateWorldMatrix();
 		}
+	}
+
+	const math::Matrix44f& SceneNode::GetWorldMatrix() const
+	{
+		return worldMatrix_;
+	}
+
+	math::Vector3f SceneNode::GetWorldPosition() const
+	{
+		return worldMatrix_.GetTranslation();
 	}
 
 	void SceneNode::AddNode(const SceneNodeRef& node)
@@ -133,13 +177,17 @@ namespace dopixel
 	{
 		if (visible_)
 		{
+			bool results = false;
 			for (auto& animator : animators_)
 			{
-				animator->AnimateNode(this, timestep);
+				results |= animator->AnimateNode(this, timestep);
 			}
 
 			// update world matrix
-			Internal();
+			if (results)
+			{
+				Internal();
+			}
 
 			// children may have animator
 			for (auto& node : children_)
@@ -159,6 +207,16 @@ namespace dopixel
 		return false;
 	}
 
+	void SceneNode::OnRegisterSceneNode(SceneManager* manager)
+	{
+		for (auto& node : children_)
+		{
+			node->OnRegisterSceneNode(manager);
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+
 	MeshSceneNode::MeshSceneNode(const string& name, const string& meshPath)
 		: SceneNode(name)
 	{
@@ -174,6 +232,30 @@ namespace dopixel
 		ASSERT(mesh_ != nullptr);
 		return mesh_->GetBoundingBox();
 	}
+
+	void MeshSceneNode::OnRegisterSceneNode(SceneManager* manager)
+	{
+		if (visible_)
+		{
+			manager->RegisterSceneNode(this, SceneNodeType::MeshNode);
+			SceneNode::OnRegisterSceneNode(manager);
+		}
+	}
+
+	void MeshSceneNode::OnRender(Renderer& renderer)
+	{
+		if (mesh_)
+		{
+			int submeshCount = mesh_->GetSubMeshCount();
+			for (int i = 0; i < submeshCount; ++i)
+			{
+				const auto& submesh = mesh_->GetSubMesh(i);
+				//TODO:
+				//render sub mesh
+			}
+		}
+	}
+	//////////////////////////////////////////////////////////////////////////
 
 	CameraSceneNode::CameraSceneNode(const string& name, const CameraRef& camera,
 		const math::Vector3f& position, const math::Vector3f& target)
@@ -192,8 +274,9 @@ namespace dopixel
 	void CameraSceneNode::SetTarget(const math::Vector3f& target)
 	{
 		target_ = target;
-		//TODO: we need also change rotation attr base on target.
 		UpdateViewMatrix();
+		// TODO:
+		// if we bind target and rotation, we need change rotation too.
 	}
 
 	void CameraSceneNode::SetUp(const math::Vector3f& up)
@@ -236,8 +319,9 @@ namespace dopixel
 	void CameraSceneNode::SetRotation(const math::Vector3f& rotation)
 	{
 		SceneNode::SetRotation(rotation);
-		//TODO: we need also change target base on rotation.
-		UpdateViewMatrix();
+		// TODO:
+		// if we bind target and rotation, we need change target 
+		// and then update view matrix too.
 	}
 
 	void CameraSceneNode::UpdateViewMatrix()
@@ -265,5 +349,18 @@ namespace dopixel
 		m[3][0] = 0.0f;  m[3][1] = 0.0f;  m[3][2] = 0.0f;  m[3][3] = 1.0f;
 
 		MatrixMultiply(viewMatrix_, translationTrans, rotateTrans);
+	}
+
+	void CameraSceneNode::OnRegisterSceneNode(SceneManager* manager)
+	{
+		if (visible_)
+		{
+			manager->RegisterSceneNode(this, SceneNodeType::CameraNode);
+			SceneNode::OnRegisterSceneNode(manager);
+		}
+	}
+
+	void CameraSceneNode::OnRender(Renderer& renderer)
+	{
 	}
 }
