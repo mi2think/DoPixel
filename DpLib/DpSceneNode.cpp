@@ -326,29 +326,29 @@ namespace dopixel
 
 	void CameraSceneNode::UpdateViewMatrix()
 	{
-		Matrix44f translationTrans;
+		math::Matrix44f translationTrans;
 		MaxtrixTranslation(translationTrans, -GetWorldPosition());
 
 		// n: target
-		Vector3f n = target_;
+		math::Vector3f n = target_;
 		n.Normalize();
 		// v: up
-		Vector3f v = up_;
+		math::Vector3f v = up_;
 		v.Normalize();
 		// u: right
 		// u = v x n
-		Vector3f u = CrossProduct(v, n);
+		math::Vector3f u = CrossProduct(v, n);
 		// v = n x u
 		v = CrossProduct(n, u);
 
-		Matrix44f rotateTrans;
+		math::Matrix44f rotateTrans;
 		auto& m = rotateTrans.m;
 		m[0][0] = u.x;   m[0][1] = v.x;   m[0][2] = n.x;   m[0][3] = 0.0f;
 		m[1][0] = u.y;   m[1][1] = v.y;   m[1][2] = n.y;   m[1][3] = 0.0f;
 		m[2][0] = u.z;   m[2][1] = v.z;   m[2][2] = n.z;   m[2][3] = 0.0f;
 		m[3][0] = 0.0f;  m[3][1] = 0.0f;  m[3][2] = 0.0f;  m[3][3] = 1.0f;
 
-		MatrixMultiply(viewMatrix_, translationTrans, rotateTrans);
+		math::MatrixMultiply(viewMatrix_, translationTrans, rotateTrans);
 	}
 
 	void CameraSceneNode::OnRegisterSceneNode(SceneManager* manager)

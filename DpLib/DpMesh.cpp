@@ -10,6 +10,9 @@
 	purpose:	Mesh
 *********************************************************************/
 #include "DpMesh.h"
+#include "DpMaterial.h"
+#include "DpIndexBuffer.h"
+#include "DpVertexBuffer.h"
 
 namespace dopixel
 {
@@ -17,6 +20,25 @@ namespace dopixel
 		: mesh_(mesh)
 		, visible_(true)
 	{
+	}
+
+	SubMesh::~SubMesh()
+	{
+	}
+
+	void SubMesh::SetMaterial(const MaterialRef& material)
+	{
+		material_ = material;
+	}
+
+	void SubMesh::SetIndexBuffer(const IndexBufferRef& indexBuffer)
+	{
+		indexBuffer_ = indexBuffer;
+	}
+
+	void SubMesh::SetVertexBuffer(const VertexBufferRef& vertexBuffer)
+	{
+		vertexBuffer_ = vertexBuffer;
 	}
 
 	void SubMesh::CalculateBoundingBox()

@@ -19,8 +19,6 @@
 
 namespace dopixel
 {
-	using namespace dopixel::math;
-
 	class Material
 	{
 	public:
@@ -35,24 +33,24 @@ namespace dopixel
 
 		const string& GetName() const { return name_; }
 
-		void SetAmbientColor(const Vector3f& color) { ambientColor_ = color; }
-		void SetDiffuseColor(const Vector3f& color) { diffuseColor_ = color; }
-		void SetEmissiveColor(const Vector3f& color) { emissiveColor_ = color; }
-		void SetSpecularColor(const Vector3f& color) { specularColor_ = color; }
+		void SetAmbientColor(const math::Vector3f& color) { ambientColor_ = color; }
+		void SetDiffuseColor(const math::Vector3f& color) { diffuseColor_ = color; }
+		void SetEmissiveColor(const math::Vector3f& color) { emissiveColor_ = color; }
+		void SetSpecularColor(const math::Vector3f& color) { specularColor_ = color; }
 
-		const Vector3f& GetAmbientColor() const { return ambientColor_; }
-		const Vector3f& GetDiffuseColor() const { return diffuseColor_; }
-		const Vector3f& GetEmissiveColor() const { return emissiveColor_; }
-		const Vector3f& GetSpecularColor() const { return specularColor_; }
+		const math::Vector3f& GetAmbientColor() const { return ambientColor_; }
+		const math::Vector3f& GetDiffuseColor() const { return diffuseColor_; }
+		const math::Vector3f& GetEmissiveColor() const { return emissiveColor_; }
+		const math::Vector3f& GetSpecularColor() const { return specularColor_; }
 
 		void SetTexture(TextureRef texture) { texture_ = texture; }
 		const TextureRef& GetTexture() const { return texture_; }
 	private:
 		string name_;
-		Vector3f ambientColor_;
-		Vector3f diffuseColor_;
-		Vector3f emissiveColor_;
-		Vector3f specularColor_;
+		math::Vector3f ambientColor_;
+		math::Vector3f diffuseColor_;
+		math::Vector3f emissiveColor_;
+		math::Vector3f specularColor_;
 		float shininess_;
 		TextureRef texture_;
 	};

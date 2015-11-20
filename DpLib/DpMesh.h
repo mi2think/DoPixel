@@ -13,18 +13,15 @@
 #define __DP_MESH_H__
 
 #include "DoPixel.h"
-#include "DpMaterial.h"
-#include "DpIndexBuffer.h"
-#include "DpVertexBuffer.h"
 #include "DpAABB.h"
 
 namespace dopixel
 {
-	class Mesh;
 	class SubMesh
 	{
 	public:
 		SubMesh(Mesh* mesh);
+		~SubMesh();
 
 		Mesh* GetMesh() const { return mesh_; }
 
@@ -38,9 +35,9 @@ namespace dopixel
 		const IndexBufferRef& GetIndexBuffer() const { return indexBuffer_; }
 		const VertexBufferRef& GetVertexBuffer() const { return vertexBuffer_; }
 
-		void SetMaterial(const MaterialRef& material) { material_ = material; }
-		void SetIndexBuffer(const IndexBufferRef& indexBuffer) { indexBuffer_ = indexBuffer; }
-		void SetVertexBuffer(const VertexBufferRef& vertexBuffer) { vertexBuffer_ = vertexBuffer; }
+		void SetMaterial(const MaterialRef& material);
+		void SetIndexBuffer(const IndexBufferRef& indexBuffer);
+		void SetVertexBuffer(const VertexBufferRef& vertexBuffer);
 	private:
 		// owning mesh
 		Mesh* mesh_;
