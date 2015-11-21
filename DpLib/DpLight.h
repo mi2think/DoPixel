@@ -86,6 +86,38 @@ namespace dopixel
 		mutable math::Vector3f eyeWorldPos_;
 		mutable const Material* material_;
 	};
+
+	class SpotLight : public Light
+	{
+	public:
+		SpotLight(
+			const math::Vector3f& lightWorldDir,
+			const math::Vector3f& lightWorldPos,
+			float theta,
+			float phi,
+			float pf,
+			const math::Vector3f& ambient,
+			const math::Vector3f& diffuse,
+			const math::Vector3f& specular,
+			const math::Vector3f& attenuation,
+			float range);
+		~SpotLight();
+
+		void BeginLighting(const math::Vector3f& eyeWorldPos, const MaterialRef& material) const;
+		math::Vector3f Illuminate(const math::Vector3f& pos, const math::Vector3f& normal) const;
+		math::Vector3f IlluminateWithSpecular(const math::Vector3f& pos, const math::Vector3f& normal) const;
+		void EndLighting() const;
+	private:
+		math::Vector3f lightWorldDir_;
+		math::Vector3f lightWorldPos_;
+		float theta_;	// penumbra angle
+		float phi_;		// umbra angle
+		float pf_;		// exponent
+		mutable float cosTheta_;
+		mutable float cosPhi_;
+		mutable math::Vector3f eyeWorldPos_;
+		mutable const Material* material_;
+	};
 }
 
 #endif
