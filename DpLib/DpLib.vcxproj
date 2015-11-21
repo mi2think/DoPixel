@@ -117,6 +117,7 @@
     <ClInclude Include="DpMouseEvent.h" />
     <ClInclude Include="DpObject.h" />
     <ClInclude Include="DpQuaternion.h" />
+    <ClInclude Include="DpRectangle.h" />
     <ClInclude Include="DpRef.h" />
     <ClInclude Include="DpSceneManager.h" />
     <ClInclude Include="DpSceneNode.h" />
@@ -144,9 +145,11 @@
     <ClCompile Include="DpEvent.cpp" />
     <ClCompile Include="DpFileParser.cpp" />
     <ClCompile Include="DpFileStream.cpp" />
+    <ClCompile Include="DpGeometry.cpp" />
     <ClCompile Include="DpImage.cpp" />
     <ClCompile Include="DpJson.cpp" />
     <ClCompile Include="DpInputState.cpp" />
+    <ClCompile Include="DpLight.cpp" />
     <ClCompile Include="DpLoadModel.cpp" />
     <ClCompile Include="DpMaterial.cpp" />
     <ClCompile Include="DpMath.cpp" />

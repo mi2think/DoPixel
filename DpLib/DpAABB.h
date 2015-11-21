@@ -14,6 +14,8 @@
 
 #include "DpMath.h"
 #include "DpVector3.h"
+#include "DpVector4.h"
+#include "DpMatrix44.h"
 
 namespace dopixel
 {
@@ -71,6 +73,37 @@ namespace dopixel
 					if (aabb.max.z > max.z) max.z = aabb.max.z;
 				}
 
+				return *this;
+			}
+
+			void GetCorners(vector<Vector3f>& vec) const
+			{
+				Vector3f size = Size();
+				Vector3f corners[8] = {
+					min, Vector3f(min + Vector3f(0, size.y, 0)),
+					Vector3f(min + Vector3f(size.x, size.y, 0)), Vector3f(min + Vector3f(size.x, 0, 0)),
+					Vector3f(min + Vector3f(0, 0, size.z)), Vector3f(min + Vector3f(0, size.y, size.z)),
+					max, Vector3f(min + Vector3f(size.x, 0, size.z))
+				};
+				return vec.assign(corners, corners + 8);
+			}
+
+			AABB& Transform(const Matrix44f& m)
+			{
+				vector<Vector3f> vec;
+				GetCorners(vec);
+				Reset();
+
+				vector<Vector4f> vec_t(vec.size());
+				for (int i = 0; i < (int)vec_t.size(); ++i)
+				{
+					vec_t[i] = Vector4f(vec[i].x, vec[i].y, vec[i].z, 1.0f);
+					vec_t[i] *= m;
+					ASSERT(Equal(vec_t[i].w, 1.0f));
+					vec_t[i] /= vec_t[i].w;
+
+					Add(Vector3f(vec_t[i].x, vec_t[i].y, vec_t[i].z));
+				}
 				return *this;
 			}
 

@@ -201,6 +201,9 @@
     <ClInclude Include="DpSceneNodeAnimator.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
+    <ClInclude Include="DpRectangle.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">
@@ -277,6 +280,9 @@
     </ClCompile>
     <ClCompile Include="DpLight.cpp">
       <Filter>Dp3DEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="DpGeometry.cpp">
+      <Filter>DpMath</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
