@@ -130,5 +130,15 @@ namespace dopixel
 				m[2][3] + m[2][1],
 				m[3][3] + m[3][1]);
 		}
+
+		bool Frustum::ContainsPoint(const Vector3f& pt) const
+		{
+			for (int i = 0; i < Frustum::PlaneMax; i++)
+			{
+				if (planes_[i].Distance(pt) < 0)
+					return false;
+			}
+			return true;
+		}
 	}
 }
