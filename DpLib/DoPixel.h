@@ -102,6 +102,7 @@ namespace dopixel
 	class SceneManager;
 	class Camera;
 	class Event;
+	class Light;
 	class Renderer;
 
 	typedef Ref<VertexBuffer> VertexBufferRef;
@@ -115,6 +116,7 @@ namespace dopixel
 	typedef Ref<SceneNodeAnimator> SceneNodeAnimatorRef;
 	typedef Ref<Camera> CameraRef;
 	typedef Ref<Event> EventRef;
+	typedef Ref<Light> LightRef;
 
 	// can not copy
 	class NoCopyable

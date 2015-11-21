@@ -13,6 +13,7 @@
 #include "DpSceneNodeAnimator.h"
 #include "DpCamera.h"
 #include "DpMesh.h"
+#include "DpLight.h"
 #include "DpSceneManager.h"
 
 namespace dopixel
@@ -221,16 +222,23 @@ namespace dopixel
 		: SceneNode(name)
 	{
 		mesh_ = MeshCache::Instance().GetMesh(meshPath);
+		ASSERT(mesh_ != nullptr);
+		aabb_ = mesh_->GetBoundingBox();
 	}
 
 	MeshSceneNode::~MeshSceneNode()
 	{
 	}
 
+	void MeshSceneNode::Internal()
+	{
+		SceneNode::Internal();
+		aabb_.Transform(GetWorldMatrix());
+	}
+
 	const math::AABB& MeshSceneNode::GetBoundingBox() const
 	{
-		ASSERT(mesh_ != nullptr);
-		return mesh_->GetBoundingBox();
+		return aabb_;
 	}
 
 	void MeshSceneNode::OnRegisterSceneNode(SceneManager* manager)
@@ -250,6 +258,10 @@ namespace dopixel
 			for (int i = 0; i < submeshCount; ++i)
 			{
 				const auto& submesh = mesh_->GetSubMesh(i);
+				if (submesh->GetVisible())
+				{
+
+				}
 				//TODO:
 				//render sub mesh
 			}
@@ -275,6 +287,7 @@ namespace dopixel
 	{
 		target_ = target;
 		UpdateViewMatrix();
+		UpdateViewFrustum();
 		// TODO:
 		// if we bind target and rotation, we need change rotation too.
 	}
@@ -283,6 +296,7 @@ namespace dopixel
 	{
 		up_ = up;
 		UpdateViewMatrix();
+		UpdateViewFrustum();
 	}
 
 	const math::Vector3f& CameraSceneNode::GetTarget() const
@@ -305,6 +319,11 @@ namespace dopixel
 		return camera_->GetProjectionMatrix();
 	}
 
+	const math::Frustum& CameraSceneNode::GetViewFrustum() const
+	{
+		return viewFrustum_;
+	}
+
 	const CameraRef& CameraSceneNode::GetCamera() const
 	{
 		return camera_;
@@ -314,6 +333,7 @@ namespace dopixel
 	{
 		SceneNode::SetPosition(position);
 		UpdateViewMatrix();
+		UpdateViewFrustum();
 	}
 
 	void CameraSceneNode::SetRotation(const math::Vector3f& rotation)
@@ -351,6 +371,13 @@ namespace dopixel
 		math::MatrixMultiply(viewMatrix_, translationTrans, rotateTrans);
 	}
 
+	void CameraSceneNode::UpdateViewFrustum()
+	{
+		math::Matrix44f viewProject;
+		math::MatrixMultiply(viewProject, viewMatrix_, GetProjectionMatrix());
+		viewFrustum_.ExtractFrustum(viewProject);
+	}
+
 	void CameraSceneNode::OnRegisterSceneNode(SceneManager* manager)
 	{
 		if (visible_)
@@ -361,6 +388,49 @@ namespace dopixel
 	}
 
 	void CameraSceneNode::OnRender(Renderer& renderer)
+	{
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	LightSceneNode::LightSceneNode(const string& name, const LightRef light)
+		: SceneNode(name)
+		, light_(light)
+		, open_(true)
+	{
+	}
+
+	LightSceneNode::~LightSceneNode()
+	{
+	}
+
+	const LightRef& LightSceneNode::GetLight() const
+	{
+		return light_;
+	}
+
+	void LightSceneNode::SetOpenLight(bool open)
+	{
+		open_ = open;
+	}
+
+	bool LightSceneNode::GetOpenLight() const
+	{
+		return open_;
+	}
+
+	void LightSceneNode::OnRegisterSceneNode(SceneManager* manager)
+	{
+		if (visible_)
+		{
+			if (open_)
+			{
+				manager->RegisterSceneNode(this, SceneNodeType::LightNode);
+			}
+			SceneNode::OnRegisterSceneNode(manager);
+		}
+	}
+
+	void LightSceneNode::OnRender(Renderer& renderer)
 	{
 	}
 }

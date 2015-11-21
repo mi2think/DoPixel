@@ -16,6 +16,7 @@
 #include "DpAABB.h"
 #include "DpVector3.h"
 #include "DpMatrix44.h"
+#include "DpGeometry.h"
 
 namespace dopixel
 {
@@ -23,11 +24,14 @@ namespace dopixel
 	{
 		Unknown,
 		MeshNode,
-		CameraNode
+		CameraNode,
+		LightNode
 	};
 
 	class MeshSceneNode;
 	class CameraSceneNode;
+	class LightSceneNode;
+
 	class SceneNode
 	{
 	public:
@@ -71,6 +75,7 @@ namespace dopixel
 
 		virtual MeshSceneNode* AsMeshNode() { return nullptr; }
 		virtual CameraSceneNode* AsCameraNode() { return nullptr; }
+		virtual LightSceneNode* AsLightNode() { return nullptr; }
 	protected:
 		virtual void Internal();
 
@@ -96,14 +101,18 @@ namespace dopixel
 		MeshSceneNode(const string& name, const string& meshPath);
 		~MeshSceneNode();
 
-		const math::AABB& GetBoundingBox() const;
 		const MeshRef& GetMesh() const { return mesh_; }
+		const math::AABB& GetBoundingBox() const;
 
 		virtual void OnRegisterSceneNode(SceneManager* manager);
 		virtual void OnRender(Renderer& renderer);
+
 		virtual MeshSceneNode* AsMeshNode() { return this; }
 	private:
+		virtual void Internal();
+
 		MeshRef mesh_;
+		math::AABB aabb_;
 	};
 
 	class CameraSceneNode : public SceneNode
@@ -120,15 +129,18 @@ namespace dopixel
 
 		const math::Matrix44f& GetViewMatrix() const;
 		const math::Matrix44f& GetProjectionMatrix() const;
+		const math::Frustum& GetViewFrustum() const;
 		const CameraRef& GetCamera() const;
 
 		virtual void SetPosition(const math::Vector3f& position);
 		virtual void SetRotation(const math::Vector3f& rotation);
 
 		void UpdateViewMatrix();
+		void UpdateViewFrustum();
 
 		virtual void OnRegisterSceneNode(SceneManager* manager);
 		virtual void OnRender(Renderer& renderer);
+
 		virtual CameraSceneNode* AsCameraNode() { return this; }
 	private:
 		CameraRef camera_;
@@ -137,6 +149,28 @@ namespace dopixel
 		math::Vector3f up_;
 		// view matrix
 		math::Matrix44f viewMatrix_;
+		// view frustum
+		math::Frustum viewFrustum_;
+	};
+
+	class LightSceneNode : public SceneNode
+	{
+	public:
+		LightSceneNode(const string& name, const LightRef light);
+		~LightSceneNode();
+
+		const LightRef& GetLight() const;
+
+		void SetOpenLight(bool open);
+		bool GetOpenLight() const;
+
+		virtual void OnRegisterSceneNode(SceneManager* manager);
+		virtual void OnRender(Renderer& renderer);
+
+		virtual LightSceneNode* AsLightNode() { return this; }
+	private:
+		LightRef light_;
+		bool open_;
 	};
 }
 
