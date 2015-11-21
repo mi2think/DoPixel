@@ -275,5 +275,8 @@
     <ClCompile Include="DpSceneNodeAnimator.cpp">
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
+    <ClCompile Include="DpLight.cpp">
+      <Filter>Dp3DEngine</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

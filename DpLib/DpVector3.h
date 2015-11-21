@@ -40,10 +40,12 @@ namespace dopixel
 			
 			Vector3 operator+(const Vector3& vec3) const { return Vector3(x + vec3.x, y + vec3.y, z + vec3.z); }
 			Vector3 operator-(const Vector3& vec3) const { return Vector3(x - vec3.x, y - vec3.y, z - vec3.z); }
+			Vector3 operator*(const Vector3& vec3) const { return Vector3(x * vec3.x, y * vec3.y, z * vec3.z); }
 
 			Vector3& operator+=(const Vector3& vec3) { x += vec3.x; y += vec3.y; z += vec3.z; return *this; }
 			Vector3& operator-=(const Vector3& vec3) { x -= vec3.x; y -= vec3.y; z -= vec3.z; return *this; }	
-			
+			Vector3& operator*=(const Vector3& vec3) { x *= vec3.x; y *= vec3.y; z *= vec3.z; return *this; }
+
 			template <typename U>
 			Vector3& operator*=(U k) { x *= k; y *= k; z *= k; return *this; }
 			

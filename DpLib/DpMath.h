@@ -18,17 +18,18 @@ namespace dopixel
 {
 	namespace math
 	{
-#define EPSILON_E5 (float)(1E-5)
-#define M_PI 3.14159265358979323846
-#define angle2radian(a) (float)((a) * M_PI / 180)
-#define radian2angle(r) (float)((r) * 180 / M_PI)
+		const float EPSILON_E5 = (float)(1E-5);
 
-#define MAX(a,b)    (((a) > (b)) ? (a) : (b))
-#define MIN(a,b)    (((a) < (b)) ? (a) : (b))
+		#define M_PI 3.14159265358979323846
+		#define angle2radian(a) (float)((a) * M_PI / 180)
+		#define radian2angle(r) (float)((r) * 180 / M_PI)
 
-// floating point comparison
-#define EPSILON_E3 (float)(1E-3)
-#define FCMP(a,b) ( (fabs(a-b) < EPSILON_E3) ? true : false)
+		#define MAX(a,b)    (((a) > (b)) ? (a) : (b))
+		#define MIN(a,b)    (((a) < (b)) ? (a) : (b))
+
+		// floating point comparison
+		#define EPSILON_E3 (float)(1E-3)
+		#define FCMP(a,b) ( (fabs(a-b) < EPSILON_E3) ? true : false)
 
 		template <typename T>
 		inline bool Equal(const T& a, const T& b)
