@@ -112,4 +112,96 @@ namespace dopixel
 		material_ = nullptr;
 		invLightWorldDir_.Zero();
 	}
+
+	PointLight::PointLight(
+		const math::Vector3f& lightWorldPos,
+		const math::Vector3f& ambient,
+		const math::Vector3f& diffuse,
+		const math::Vector3f& specular,
+		const math::Vector3f& attenuation,
+		float range)
+		: Light(ambient, diffuse, specular, attenuation, range)
+		, lightWorldPos_(lightWorldPos)
+	{
+	}
+
+	PointLight::~PointLight()
+	{
+	}
+
+	void PointLight::BeginLighting(const math::Vector3f& eyeWorldPos, const MaterialRef& material) const
+	{
+		eyeWorldPos_ = eyeWorldPos;
+		material_ = material.Get();
+	}
+
+	math::Vector3f PointLight::Illuminate(const math::Vector3f& pos, const math::Vector3f& normal) const
+	{
+		// attenuation
+		math::Vector3f lightWorldDir = pos - lightWorldPos_;
+		float distance = lightWorldDir.Length();
+		float atten = attenuation_.x + attenuation_.y * distance + attenuation_.z * distance * distance;
+		lightWorldDir.Normalize();
+
+		// ambient color
+		math::Vector3f color = material_->GetAmbientColor();
+		color *= ambient_;
+
+		float dp = DotProduct(-lightWorldDir, normal);
+		if (dp > math::EPSILON_E5)
+		{
+			// diffuse color
+			math::Vector3f diffuseColor = material_->GetDiffuseColor();
+			diffuseColor *= diffuse_;
+
+			color += diffuseColor * dp;
+		}
+
+		return color / atten;
+	}
+
+	math::Vector3f PointLight::IlluminateWithSpecular(const math::Vector3f& pos, const math::Vector3f& normal) const
+	{
+		// attenuation
+		math::Vector3f lightWorldDir = pos - lightWorldPos_;
+		float distance = lightWorldDir.Length();
+		float atten = attenuation_.x + attenuation_.y * distance + attenuation_.z * distance * distance;
+		lightWorldDir.Normalize();
+
+		// ambient color
+		math::Vector3f color = material_->GetAmbientColor();
+		color *= ambient_;
+
+		float dp = DotProduct(-lightWorldDir, normal);
+		if (dp > math::EPSILON_E5)
+		{
+			// diffuse color
+			math::Vector3f diffuseColor = material_->GetDiffuseColor();
+			diffuseColor *= diffuse_;
+
+			color += diffuseColor * dp;
+
+			// specular color
+			math::Vector3f vertexToEye = (eyeWorldPos_ - pos);
+			vertexToEye.Normalize();
+			math::Vector3f lightReflect = (lightWorldDir - 2 * normal * DotProduct(lightWorldDir, normal));
+			lightReflect.Normalize();
+			float k = DotProduct(vertexToEye, lightReflect);
+			if (k > math::EPSILON_E5)
+			{
+				k = pow(k, material_->GetShininess());
+				math::Vector3f specularColor = material_->GetSpecularColor();
+				specularColor *= specular_;
+
+				color += specularColor * k;
+			}
+		}
+
+		return color / atten;
+	}
+
+	void PointLight::EndLighting() const
+	{
+		material_ = nullptr;
+	}
 }
