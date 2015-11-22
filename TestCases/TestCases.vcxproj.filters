@@ -12,7 +12,6 @@
     <ClCompile Include="dptest_strutility.cpp" />
     <ClCompile Include="dptest_fileparser.cpp" />
     <ClCompile Include="dptest_regex.cpp" />
-    <ClCompile Include="dptest_loadmodel.cpp" />
     <ClCompile Include="dptest_ref.cpp" />
     <ClCompile Include="dptest_json.cpp" />
     <ClCompile Include="dptest_event.cpp" />

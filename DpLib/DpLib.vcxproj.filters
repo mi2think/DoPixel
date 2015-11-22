@@ -30,16 +30,10 @@
     <ClInclude Include="DpConsole.h">
       <Filter>DpCore</Filter>
     </ClInclude>
-    <ClInclude Include="DpObject.h">
-      <Filter>Dp3DEngine</Filter>
-    </ClInclude>
     <ClInclude Include="DpColor.h">
       <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpCamera.h">
-      <Filter>Dp3DEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="DpDevice.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
     <ClInclude Include="DpMaterial.h">
@@ -61,9 +55,6 @@
       <Filter>DpCore</Filter>
     </ClInclude>
     <ClInclude Include="DpFileParser.h">
-      <Filter>DpLoadRes</Filter>
-    </ClInclude>
-    <ClInclude Include="DpLoadModel.h">
       <Filter>DpLoadRes</Filter>
     </ClInclude>
     <ClInclude Include="DpRef.h">
@@ -119,12 +110,6 @@
     </ClInclude>
     <ClInclude Include="DpJson.h">
       <Filter>DpLoadRes</Filter>
-    </ClInclude>
-    <ClInclude Include="DpTriangle.h">
-      <Filter>Dp3DEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="DpEnums.h">
-      <Filter>Dp3DEngine</Filter>
     </ClInclude>
     <ClInclude Include="DpVertex.h">
       <Filter>Dp3DEngine</Filter>
@@ -209,17 +194,8 @@
     <ClCompile Include="DpConsole.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
-    <ClCompile Include="DpObject.cpp">
-      <Filter>Dp3DEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="DpDevice.cpp">
-      <Filter>Dp3DEngine</Filter>
-    </ClCompile>
     <ClCompile Include="DpColor.cpp">
       <Filter>DpCore</Filter>
-    </ClCompile>
-    <ClCompile Include="DpLoadModel.cpp">
-      <Filter>DpLoadRes</Filter>
     </ClCompile>
     <ClCompile Include="DpFileParser.cpp">
       <Filter>DpLoadRes</Filter>

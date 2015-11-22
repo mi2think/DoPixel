@@ -47,7 +47,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>false</TreatWarningAsError>
-      <DisableSpecificWarnings>4201;4127;4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -94,8 +95,6 @@
     <ClInclude Include="DpCamera.h" />
     <ClInclude Include="DpColor.h" />
     <ClInclude Include="DpConsole.h" />
-    <ClInclude Include="DpDevice.h" />
-    <ClInclude Include="DpEnums.h" />
     <ClInclude Include="DpEvent.h" />
     <ClInclude Include="DpFileParser.h" />
     <ClInclude Include="DpFileStream.h" />
@@ -108,24 +107,22 @@
     <ClInclude Include="DpInputState.h" />
     <ClInclude Include="DpLight.h" />
     <ClInclude Include="DpMaterial.h" />
-    <ClInclude Include="DpLoadModel.h" />
     <ClInclude Include="DpMath.h" />
     <ClInclude Include="DpMatrix33.h" />
     <ClInclude Include="DpMatrix43.h" />
     <ClInclude Include="DpMatrix44.h" />
     <ClInclude Include="DpMesh.h" />
     <ClInclude Include="DpMouseEvent.h" />
-    <ClInclude Include="DpObject.h" />
     <ClInclude Include="DpQuaternion.h" />
     <ClInclude Include="DpRectangle.h" />
     <ClInclude Include="DpRef.h" />
+    <ClInclude Include="DpRenderer.h" />
     <ClInclude Include="DpSceneManager.h" />
     <ClInclude Include="DpSceneNode.h" />
     <ClInclude Include="DpSceneNodeAnimator.h" />
     <ClInclude Include="DpTexture.h" />
     <ClInclude Include="DpTga.h" />
     <ClInclude Include="DpTimer.h" />
-    <ClInclude Include="DpTriangle.h" />
     <ClInclude Include="DpUnitTest.h" />
     <ClInclude Include="DpVector2.h" />
     <ClInclude Include="DpVector3.h" />
@@ -141,7 +138,6 @@
     <ClCompile Include="DpCamera.cpp" />
     <ClCompile Include="DpColor.cpp" />
     <ClCompile Include="DpConsole.cpp" />
-    <ClCompile Include="DpDevice.cpp" />
     <ClCompile Include="DpEvent.cpp" />
     <ClCompile Include="DpFileParser.cpp" />
     <ClCompile Include="DpFileStream.cpp" />
@@ -150,12 +146,11 @@
     <ClCompile Include="DpJson.cpp" />
     <ClCompile Include="DpInputState.cpp" />
     <ClCompile Include="DpLight.cpp" />
-    <ClCompile Include="DpLoadModel.cpp" />
     <ClCompile Include="DpMaterial.cpp" />
     <ClCompile Include="DpMath.cpp" />
     <ClCompile Include="DpMesh.cpp" />
-    <ClCompile Include="DpObject.cpp" />
     <ClCompile Include="DpQuaternion.cpp" />
+    <ClCompile Include="DpRenderer.cpp" />
     <ClCompile Include="DpSceneManager.cpp" />
     <ClCompile Include="DpSceneNode.cpp" />
     <ClCompile Include="DpSceneNodeAnimator.cpp" />
