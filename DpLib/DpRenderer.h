@@ -53,7 +53,7 @@ namespace dopixel
 
 		void RenderSubMesh(const SubMeshRef& submesh);
 	private:
-		void UpdateMatrix();
+		void UpdateTransform();
 
 		ShadeMode::Type shadeMode_;
 		CullMode::Type cullMode_;
@@ -77,13 +77,15 @@ namespace dopixel
 		math::Matrix44f matrixs_[Transform::Max];
 		// view frustum
 		math::Frustum viewFrustum_;
+		// eye world position
+		math::Vector3f eyeWorldPos_;
 
 		// internal state
-		bool matrixValid_;
+		bool transformValid_;
 		math::Matrix44f worldViewMatrix_;
 		math::Matrix44f worldViewProjMatrix_;
-		class Cache;
-		Cache* cache_;
+		class Impl;
+		Impl* impl_;
 	};
 }
 
