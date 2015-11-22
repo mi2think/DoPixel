@@ -47,7 +47,7 @@ DPTEST(Vector3)
 
 	float fAngle = VectorAngle(Vector3f(1.0f, 0.0f, 0.0f), Vector3f(1.0f, 0.0f, 1.0f));
 	os_cout << fAngle << endl;
-	EXPECT_TRUE(abs(fAngle - 45 * 3.1415926f / 180) < 1e-5);
+	EXPECT_TRUE(math::Equal(fAngle, 45));
 
 	Vector3f v9(1.0f, 0.5f, 0.0f);
 	Vector3f pj = Projection(v9, Vector3f(1.0f, 0.0f, 0.0f));
