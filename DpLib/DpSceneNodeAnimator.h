@@ -19,7 +19,8 @@ namespace dopixel
 	class SceneNodeAnimator
 	{
 	public:
-		virtual ~SceneNodeAnimator() {}
+		SceneNodeAnimator();
+		virtual ~SceneNodeAnimator();
 		// return true if change position or rotation
 		// or scale of node, else false
 		virtual bool AnimateNode(SceneNode* node, const Timestep& timestep) = 0;

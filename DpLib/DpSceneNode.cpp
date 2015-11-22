@@ -14,7 +14,9 @@
 #include "DpCamera.h"
 #include "DpMesh.h"
 #include "DpLight.h"
+#include "DpRenderer.h"
 #include "DpSceneManager.h"
+#include "DpSceneNodeAnimator.h"
 
 namespace dopixel
 {
@@ -174,7 +176,7 @@ namespace dopixel
 	{
 	}
 
-	void SceneNode::OnAnimate(const Timestep& timestep)
+	void SceneNode::OnUpdate(const Timestep& timestep)
 	{
 		if (visible_)
 		{
@@ -193,7 +195,7 @@ namespace dopixel
 			// children may have animator
 			for (auto& node : children_)
 			{
-				node->OnAnimate(timestep);
+				node->OnUpdate(timestep);
 			}
 		}
 	}
@@ -260,10 +262,9 @@ namespace dopixel
 				const auto& submesh = mesh_->GetSubMesh(i);
 				if (submesh->GetVisible())
 				{
-
+					renderer.SetTransform(Transform::World, GetWorldMatrix());
+					renderer.RenderSubMesh(submesh);
 				}
-				//TODO:
-				//render sub mesh
 			}
 		}
 	}

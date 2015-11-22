@@ -17,17 +17,16 @@
 
 namespace dopixel
 {
-	typedef VertexArray<float, 3> VertexArray3f;
-	typedef VertexArray<float, 2> VertexArray2f;
-
 	class VertexBuffer
 	{
 	public:
 		VertexBuffer()
-			: vertexType_(VertexType::Position)
+			: primitiveType_(PrimitiveType::Triangles)
+			, vertexType_(VertexType::Position)
 			, vertexCount_(0)
 		{}
 
+		int GetPrimitiveType() const { return primitiveType_; }
 		int GetVertexType() const { return vertexType_; }
 		int GetVertexCount() const { return vertexCount_; }
 
@@ -55,6 +54,8 @@ namespace dopixel
 			vertexCount_ = 0;
 		}
 
+		// primitive type
+		int primitiveType_;
 		unsigned int vertexType_;
 		unsigned int vertexCount_;
 

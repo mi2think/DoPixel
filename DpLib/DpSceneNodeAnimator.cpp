@@ -13,5 +13,11 @@
 
 namespace dopixel
 {
+	SceneNodeAnimator::SceneNodeAnimator()
+	{
+	}
 
+	SceneNodeAnimator::~SceneNodeAnimator()
+	{
+	}
 }

@@ -14,6 +14,7 @@
 
 #include "DoPixel.h"
 #include "DpAABB.h"
+#include "DpVertexArray.h"
 
 namespace dopixel
 {
@@ -34,10 +35,15 @@ namespace dopixel
 		const MaterialRef& GetMaterial() const { return material_; }
 		const IndexBufferRef& GetIndexBuffer() const { return indexBuffer_; }
 		const VertexBufferRef& GetVertexBuffer() const { return vertexBuffer_; }
+		const Ref<VertexArray3f>& GetTriangleNormals() const { return triangleNormals; }
 
 		void SetMaterial(const MaterialRef& material);
 		void SetIndexBuffer(const IndexBufferRef& indexBuffer);
 		void SetVertexBuffer(const VertexBufferRef& vertexBuffer);
+
+		void OnLoaded();
+		void GenVertexNormals();
+		void GenTriangleNormals();
 	private:
 		// owning mesh
 		Mesh* mesh_;
@@ -48,6 +54,8 @@ namespace dopixel
 		MaterialRef material_;
 		IndexBufferRef indexBuffer_;
 		VertexBufferRef vertexBuffer_;
+
+		Ref<VertexArray3f> triangleNormals;
 	};
 
 	class Mesh

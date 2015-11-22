@@ -67,6 +67,33 @@ namespace dopixel
 		}
 	}
 
+	void SubMesh::OnLoaded()
+	{
+		ASSERT(vertexBuffer_);
+
+		int vertexType = vertexBuffer_->GetVertexType();
+		if ((vertexType & VertexType::Position))
+		{
+			const auto& normals = vertexBuffer_->GetNormals();
+			if (!normals)
+			{
+				GenVertexNormals();
+			}
+		}
+	}
+
+	void SubMesh::GenVertexNormals()
+	{
+
+	}
+
+	void SubMesh::GenTriangleNormals()
+	{
+
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+
 	Mesh::Mesh(const VertexBufferRef& vertexBuffer)
 	{
 		SubMeshRef submesh(new SubMesh(this));
@@ -108,6 +135,12 @@ namespace dopixel
 	bool Mesh::Load(const string& path)
 	{
 		//TODO: load mesh from model file
+
+		// alloc vertex buffer, index buffer and material
+		// build submesh
+
+		// notify load finished
+
 		return true;
 	}
 

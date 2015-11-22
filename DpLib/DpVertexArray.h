@@ -12,13 +12,15 @@
 #ifndef __DP_VERTEX_ARRAY_H__
 #define __DP_VERTEX_ARRAY_H__
 
+#include "DoPixel.h"
+
 namespace dopixel
 {
 	template<typename T, unsigned int Count>
 	class VertexArray
 	{
 	public:
-		VertexArray(unsigned int vertexCount)
+		VertexArray(int vertexCount)
 			: vertexCount_(vertexCount)
 			, componentCount_(Count)
 			, dataStride_(sizeof(T) * Count)
@@ -26,8 +28,25 @@ namespace dopixel
 			, data_(new T[vertexCount * Count])
 		{}
 
-		~VertexArray() { delete[] data_; }
+		VertexArray()
+			: vertexCount_(0)
+			, componentCount_(Count)
+			, dataStride_(sizeof(T) * Count)
+			, componentStride_(sizeof(T))
+			, data_(nullptr)
+		{}
 
+		~VertexArray() { SAFE_DELETEARRAY(data_); }
+
+		void SetVertexCount(int vertexCount)
+		{
+			if (vertexCount_ < vertexCount)
+			{
+				SAFE_DELETEARRAY(data_);
+				data_ = new T[vertexCount];
+				vertexCount_ = vertexCount;
+			}
+		}
 		int GetVertexCount() const { return vertexCount_; }
 
 		int GetComponentCount() const { return componentCount_; }
@@ -64,6 +83,10 @@ namespace dopixel
 
 		T* data_;
 	};
+
+	typedef VertexArray<float, 4> VertexArray4f;
+	typedef VertexArray<float, 3> VertexArray3f;
+	typedef VertexArray<float, 2> VertexArray2f;
 }
 
 

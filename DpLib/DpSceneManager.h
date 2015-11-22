@@ -29,10 +29,14 @@ namespace dopixel
 
 		bool OnEvent(const Event& event);
 		void OnUpdate(const Timestep& timestep);
+		void OnPrepare(Renderer& renderer);
 		void OnRender(Renderer& renderer);
 
 		bool IsCulled(SceneNode* node);
 		void RegisterSceneNode(SceneNode* node, SceneNodeType nodeType);
+
+		void SetActiveCamera(SceneNode* cameraNode);
+		SceneNode* GetActiveCamera() const;
 	private:
 		// root nodes
 		vector<SceneNodeRef> rootNodes_;
@@ -40,6 +44,9 @@ namespace dopixel
 		// nodes category, include children
 		vector<SceneNode*> meshNodes_;
 		vector<SceneNode*> cameraNodes_;
+		vector<SceneNode*> lightNodes_;
+		// active camera node
+		SceneNode* activeCamerNode_;
 	};
 }
 

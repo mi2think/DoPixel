@@ -186,6 +186,9 @@
     <ClInclude Include="DpSceneNodeAnimator.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
+    <ClInclude Include="DpRenderer.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
     <ClInclude Include="DpRectangle.h">
       <Filter>DpMath</Filter>
     </ClInclude>
@@ -252,6 +255,9 @@
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpSceneNodeAnimator.cpp">
+      <Filter>Dp3DEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="DpRenderer.cpp">
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpLight.cpp">

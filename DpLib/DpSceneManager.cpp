@@ -10,10 +10,12 @@
 	purpose:	Scene Manager
 *********************************************************************/
 #include "DpSceneManager.h"
+#include "DpRenderer.h"
 
 namespace dopixel
 {
 	SceneManager::SceneManager()
+		: activeCamerNode_(nullptr)
 	{
 	}
 
@@ -32,19 +34,36 @@ namespace dopixel
 
 	void SceneManager::OnUpdate(const Timestep& timestep)
 	{
-		// animate
+		// update
 		for (auto& node : rootNodes_)
 		{
-			node->OnAnimate(timestep);
+			node->OnUpdate(timestep);
 		}
+	}
 
+	void SceneManager::OnPrepare(Renderer& renderer)
+	{
 		// update nodes category
 		meshNodes_.clear();
 		cameraNodes_.clear();
+		lightNodes_.clear();
 		for (auto& node : rootNodes_)
 		{
 			node->OnRegisterSceneNode(this);
 		}
+
+		// default camera if no active camera
+		if (! activeCamerNode_ && !cameraNodes_.empty())
+		{
+			activeCamerNode_ = cameraNodes_[0];
+		}
+		ASSERT(activeCamerNode_);
+
+		// set transform
+		auto cameraNode = activeCamerNode_->AsCameraNode();
+		ASSERT(cameraNode);
+		renderer.SetTransform(Transform::View, cameraNode->GetViewMatrix());
+		renderer.SetTransform(Transform::Projection, cameraNode->GetProjectionMatrix());
 	}
 
 	void SceneManager::OnRender(Renderer& renderer)
@@ -53,6 +72,12 @@ namespace dopixel
 		for (auto& cameraNode : cameraNodes_)
 		{
 			cameraNode->OnRender(renderer);
+		}
+
+		// light nodes
+		for (auto& lightNode : lightNodes_)
+		{
+			lightNode->OnRender(renderer);
 		}
 
 		// mesh nodes
@@ -100,9 +125,25 @@ namespace dopixel
 		case SceneNodeType::CameraNode:
 			if (!IsCulled(node))
 			{
-				meshNodes_.push_back(node);
+				cameraNodes_.push_back(node);
+			}
+			break;
+		case SceneNodeType::LightNode:
+			if (!IsCulled(node))
+			{
+				lightNodes_.push_back(node);
 			}
 			break;
 		}
+	}
+
+	void SceneManager::SetActiveCamera(SceneNode* cameraNode)
+	{
+		activeCamerNode_ = cameraNode;
+	}
+
+	SceneNode* SceneManager::GetActiveCamera() const
+	{
+		return activeCamerNode_;
 	}
 }

@@ -69,7 +69,7 @@ namespace dopixel
 		virtual void OnRemoveNode(const SceneNodeRef& node);
 
 		virtual void OnRegisterSceneNode(SceneManager* manager);
-		virtual void OnAnimate(const Timestep& timestep);
+		virtual void OnUpdate(const Timestep& timestep);
 		virtual bool OnEvent(const Event& event);
 		virtual void OnRender(const Renderer& renderer) = 0;
 
