@@ -23,12 +23,14 @@ namespace dopixel
 			, componentCount_(Count)
 			, dataStride_(sizeof(T) * Count)
 			, componentStride_(sizeof(T))
-			, data_(new T[vertexCount])
+			, data_(new T[vertexCount * Count])
 		{}
 
 		~VertexArray() { delete[] data_; }
 
 		int GetVertexCount() const { return vertexCount_; }
+
+		int GetComponentCount() const { return componentCount_; }
 
 		int GetComponentStride() const { return componentStride_; }
 
@@ -41,6 +43,14 @@ namespace dopixel
 		U* DataAs(int index = 0)
 		{
 			return reinterpret_cast<U*>(data_ + index * componentCount_);
+		}
+
+		VertexArray* Clone() const
+		{
+			VertexArray* vertexArray = new VertexArray(vertexCount_);
+			T* data = vertexArray->GetData();
+			memcpy(data, data_, dataStride_ * vertexCount_);
+			return vertexArray;
 		}
 	private:
 		// vertex count in array
