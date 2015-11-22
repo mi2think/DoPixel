@@ -85,6 +85,33 @@ namespace dopixel
 		Phong
 	END_DECLARE_ENUM()
 
+	DECLARE_ENUM(CullMode)
+		None,
+		Front,
+		Back
+	END_DECLARE_ENUM()
+
+	DECLARE_ENUM(ZBuffer)
+		None,
+		ZBuff,
+		INVZBuff
+	END_DECLARE_ENUM()
+
+	DECLARE_ENUM(Condition)
+		LessThan,
+		LessThanEqual,
+		Equal,
+		NotEqual,
+		GreaterThanEqual,
+		GreaterThan
+	END_DECLARE_ENUM()
+
+	DECLARE_ENUM(Transform)
+		World,
+		View,
+		Projection
+	END_DECLARE_ENUM()
+
 	using string = std::string;
 	using wstring = std::wstring;
 	using std::vector;
@@ -114,6 +141,7 @@ namespace dopixel
 	typedef Ref<SubMesh> SubMeshRef;
 	typedef Ref<SceneNode> SceneNodeRef;
 	typedef Ref<SceneNodeAnimator> SceneNodeAnimatorRef;
+	typedef Ref<SceneManager> SceneManagerRef;
 	typedef Ref<Camera> CameraRef;
 	typedef Ref<Event> EventRef;
 	typedef Ref<Light> LightRef;
