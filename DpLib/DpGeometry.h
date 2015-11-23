@@ -45,6 +45,11 @@ namespace dopixel
 
 			// nearest point in plane
 			Vector3f NearestPoint(const Vector3f& p) const;
+
+			void Normalize();
+
+			// m: inverse transpose of the matrix we want to transpose
+			void Transform(const Matrix44f& m);
 		};
 
 		struct Frustum

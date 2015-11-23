@@ -10,6 +10,7 @@
 	purpose:	Geometry
 *********************************************************************/
 #include "DpGeometry.h"
+#include "DpVector4.h"
 
 namespace dopixel
 {
@@ -47,9 +48,7 @@ namespace dopixel
 			n_.y = b;
 			n_.z = c;
 			d_ = d;
-			float len = n_.Length();
-			n_.Normalize();
-			d_ /= len;
+			Normalize();
 		}
 
 		float Plane::Distance(const Vector3f& p) const
@@ -64,6 +63,27 @@ namespace dopixel
 			// such: q = p + (-kn), and k = Distance(p)
 			return p - Distance(p) * n_;
 		}
+
+		void Plane::Normalize()
+		{
+			float len = n_.Length();
+			float f = 1.0f / len;
+			n_ *= f;
+			d_ *= f; // we also need divide d by len
+		}
+
+		void Plane::Transform(const Matrix44f& m)
+		{
+			// just do it! see formula in page 102
+			math::Vector4f v(n_.x, n_.y, n_.z, d_);
+			v *= m;
+			n_.x = v.x;
+			n_.y = v.y;
+			n_.z = v.z;
+			d_ = v.w;
+		}
+
+		//////////////////////////////////////////////////////////////////////////
 
 		Frustum::Frustum()
 		{
