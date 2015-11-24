@@ -37,18 +37,33 @@ namespace dopixel
 		}
 
 		Plane::Plane(const Vector3f& n, const Vector3f& p)
+			: n_(n)
 		{
-			ASSERT(n.IsNormalized());
+			ASSERT(n_.IsNormalized());
 			d_ = -DotProduct(n_, p);
 		}
 
 		Plane::Plane(float a, float b, float c, float d)
+			: n_(a, b, c)
+			, d_(d)
 		{
-			n_.x = a;
-			n_.y = b;
-			n_.z = c;
-			d_ = d;
 			Normalize();
+		}
+
+		Plane::Plane(const Plane& plane)
+			: n_(plane.n_)
+			, d_(plane.d_)
+		{
+		}
+
+		Plane& Plane::operator =(const Plane& plane)
+		{
+			if (this != &plane)
+			{
+				n_ = plane.n_;
+				d_ = plane.d_;
+			}
+			return *this;
 		}
 
 		float Plane::Distance(const Vector3f& p) const

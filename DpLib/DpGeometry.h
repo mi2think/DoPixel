@@ -36,6 +36,8 @@ namespace dopixel
 			Plane(const Vector3f& p0, const Vector3f& p1, const Vector3f& p2);
 			Plane(const Vector3f& n, const Vector3f& p);
 			Plane(float a, float b, float c, float d);
+			Plane(const Plane& plane);
+			Plane& operator=(const Plane& plane);
 
 			// signed distance:
 			// =0: p lies in plane

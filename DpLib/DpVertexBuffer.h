@@ -29,6 +29,22 @@ namespace dopixel
 		int GetPrimitiveType() const { return primitiveType_; }
 		int GetVertexType() const { return vertexType_; }
 		int GetVertexCount() const { return vertexCount_; }
+		int GetPrimitiveCount() const
+		{
+			switch (primitiveType_)
+			{
+			case PrimitiveType::Triangles:
+				return vertexCount_ / 3;
+				break;
+			case PrimitiveType::Lines:
+				return vertexCount_ / 2;
+				break;
+			default:
+			case PrimitiveType::Points:
+				return vertexCount_;
+				break;
+			}
+		}
 
 		void SetPositions(Ref<VertexArray3f> positions) { positions_ = positions; Internal(VertexType::Position); }
 		void SetNormals(Ref<VertexArray3f> normals) { normals_ = normals; Internal(VertexType::Normal); }

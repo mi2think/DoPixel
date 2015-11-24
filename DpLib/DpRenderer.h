@@ -15,7 +15,6 @@
 #include "DoPixel.h"
 #include "DpMatrix44.h"
 #include "DpGeometry.h"
-#include "DpVertexArray.h"
 
 namespace dopixel
 {
@@ -42,6 +41,9 @@ namespace dopixel
 		void SetFrameBuffer(unsigned char* frameBuf, int width, int height, int pitch);
 		void BeginScene();
 		void EndScene();
+
+		void AddClipPlane(const math::Plane& plane);
+		void ClearClipPlane();
 
 		void DrawPrimitive(const VertexBufferRef& vertexBuffer);
 		void DrawPrimitive(const VertexBufferRef& vertexBuffer, const MaterialRef& material);
@@ -72,13 +74,14 @@ namespace dopixel
 		MaterialRef material_;
 		VertexBufferRef vertexBuffer_;
 		IndexBufferRef indexBuffer_;
-		Ref<VertexArray3f> triangleNormals_;
 
 		math::Matrix44f matrixs_[Transform::Max];
 		// view frustum
 		math::Frustum viewFrustum_;
 		// eye world position
 		math::Vector3f eyeWorldPos_;
+		// clip plane
+		vector<math::Plane> clipPlanes_;
 
 		// internal state
 		bool transformValid_;

@@ -36,7 +36,7 @@ namespace dopixel
 		void RegisterSceneNode(SceneNode* node, SceneNodeType nodeType);
 
 		void SetActiveCamera(SceneNode* cameraNode);
-		SceneNode* GetActiveCamera() const;
+		CameraSceneNode* GetActiveCamera() const;
 	private:
 		// root nodes
 		vector<SceneNodeRef> rootNodes_;

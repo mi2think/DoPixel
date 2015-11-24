@@ -142,8 +142,8 @@ namespace dopixel
 		activeCamerNode_ = cameraNode;
 	}
 
-	SceneNode* SceneManager::GetActiveCamera() const
+	CameraSceneNode* SceneManager::GetActiveCamera() const
 	{
-		return activeCamerNode_;
+		return activeCamerNode_->AsCameraNode();
 	}
 }
