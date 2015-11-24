@@ -13,6 +13,7 @@
 #ifndef __DP_GEOMETRY__
 #define __DP_GEOMETRY__
 
+#include "DoPixel.h"
 #include "DpVector2.h"
 #include "DpVector3.h"
 #include "DpMatrix44.h"
@@ -21,6 +22,30 @@ namespace dopixel
 {
 	namespace math
 	{
+		struct LineSeg
+		{
+			Vector3f v1_;	// begin
+			Vector3f v2_;	// end
+
+			LineSeg(const Vector3f& v1, const Vector3f& v2)
+				: v1_(v1)
+				, v2_(v2)
+			{
+			}
+		};
+
+		struct Ray
+		{
+			Vector3f pt_;
+			Vector3f dir_;
+			Ray(const Vector3f& pt, const Vector3f& dir)
+				: pt_(pt)
+				, dir_(dir)
+			{
+				ASSERT(dir_.IsNormalized());
+			}
+		};
+
 		// for a plane, a collection of p, which n.(p - p0) = 0
 		// n.p - n.p0 = 0
 		// we know: x * n.x + y * n.y + z * n.z + d = 0
@@ -75,7 +100,11 @@ namespace dopixel
 			const Plane& GetPlane(PlaneID index) const;
 			bool ContainsPoint(const Vector3f& pt) const;
 			void ExtractFrustum(const Matrix44f& viewProj);
+		
 		};
+
+		bool Intersect(const Plane& plane, const Ray& ray, float& t);
+		bool Intersect(const Plane& plane, const LineSeg& line, float& t);
 	}
 }
 

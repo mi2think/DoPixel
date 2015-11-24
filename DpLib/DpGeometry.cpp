@@ -175,5 +175,42 @@ namespace dopixel
 			}
 			return true;
 		}
+
+		//////////////////////////////////////////////////////////////////////////
+
+		bool Intersect(const Plane& plane, const Ray& ray, float& t)
+		{
+			//see formula in page 99
+			float dp = DotProduct(plane.n_, ray.dir_);
+			if (Equal(dp, 0.0f))
+			{
+				// ray is parallel to plane
+				// may the ray lies in the plane if DotProduct(plane.n_, ray.pt_) + plane.d_ == 0
+				// we treat this as not intersect yet.
+				return false;
+			}
+
+			float k = DotProduct(plane.n_, ray.pt_);
+			float t0 = -(k + plane.d_) / dp;
+			if (t0 < 0)
+				return false;
+			t = t0;
+			return true;
+		}
+
+		bool Intersect(const Plane& plane, const LineSeg& line, float& t)
+		{
+			Vector3f dir = line.v2_ - line.v1_;
+			dir.Normalize();
+
+			Ray ray(line.v1_, dir);
+			float t0;
+			if (Intersect(plane, ray, t0) && t0 <= 1.0f)
+			{
+				t = t0;
+				return true;
+			}
+			return false;
+		}
 	}
 }
