@@ -15,6 +15,7 @@
 #include "DoPixel.h"
 #include "DpMatrix44.h"
 #include "DpGeometry.h"
+#include "DpVertexArray.h"
 
 namespace dopixel
 {
@@ -74,6 +75,7 @@ namespace dopixel
 		MaterialRef material_;
 		VertexBufferRef vertexBuffer_;
 		IndexBufferRef indexBuffer_;
+		Ref<VertexArray3f> triangleNormalsBuf_;
 
 		math::Matrix44f matrixs_[Transform::Max];
 		// view frustum

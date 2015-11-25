@@ -24,6 +24,20 @@ namespace dopixel
 			, primitiveCount_(0)
 			, indices_(indicesCount)
 		{}
+		// copy data
+		IndexBuffer(const IndexBuffer& indexBuffer)
+			: primitiveType_(indexBuffer.primitiveType_)
+			, primitiveCount_(indexBuffer.primitiveCount_)
+			, indices_(indexBuffer.indices_)
+		{
+		}
+		IndexBuffer& operator=(const IndexBuffer& indexBuffer)
+		{
+			primitiveType_ = indexBuffer.primitiveType_;
+			primitiveCount_ = indexBuffer.primitiveCount_;
+			indices_ = indexBuffer.indices_;
+			return *this;
+		}
 
 		int GetPrimitiveType() const { return primitiveType_; }
 		int GetPrimitiveCount() const { return primitiveCount_; }
@@ -32,6 +46,12 @@ namespace dopixel
 
 		unsigned int* GetData() { return &indices_[0]; }
 		const unsigned int* GetData() const { return &indices_[0]; }
+
+		void Resize(int indicesCount, int primitiveCount)
+		{
+			indices_.resize(indicesCount);
+			primitiveCount_ = primitiveCount;
+		}
 	private:
 		// primitive type
 		int primitiveType_;

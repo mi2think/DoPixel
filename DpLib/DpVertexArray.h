@@ -38,12 +38,17 @@ namespace dopixel
 
 		~VertexArray() { SAFE_DELETEARRAY(data_); }
 
-		void SetVertexCount(int vertexCount)
+		void SetVertexCount(int vertexCount, bool copy)
 		{
 			if (vertexCount_ < vertexCount)
 			{
-				SAFE_DELETEARRAY(data_);
+				T* old_data = data_;
 				data_ = new T[vertexCount];
+				if (copy)
+				{
+					memcpy(data_, old_data, dataStride_ * vertexCount_);
+				}
+				SAFE_DELETEARRAY(data_);
 				vertexCount_ = vertexCount;
 			}
 		}

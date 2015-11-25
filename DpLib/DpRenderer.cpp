@@ -15,7 +15,6 @@
 #include "DpMaterial.h"
 #include "DpVertexBuffer.h"
 #include "DpIndexBuffer.h"
-#include "DpVertexArray.h"
 
 namespace dopixel
 {
@@ -44,25 +43,19 @@ namespace dopixel
 		Ref<VertexArray3f>& Colors() { return colors_; }
 		Ref<VertexArray3f>& TriangleNormals() { return triangleNormals_; }
 
-#define ALLOC(ref, T, count) { \
+#define ALLOC(ref, T, count, copy) { \
 		if (!ref) \
 			ref = new T(count); \
 		else \
-			ref->SetVertexCount(count); \
+			ref->SetVertexCount(count, copy); \
 		return ref; \
 		}
 
-		Ref<VertexArray4f>& AllocPositions(int count) { ALLOC(positions_, VertexArray4f, count); }
-		Ref<VertexArray3f>& AllocNormals(int count) { ALLOC(normals_, VertexArray3f, count); }
-		Ref<VertexArray3f>& AllocColors(int count) { ALLOC(colors_, VertexArray3f, count); }
-		Ref<VertexArray3f>& AllocTriangleNormals(int count) { ALLOC(triangleNormals_, VertexArray3f, count); }
-
-		IndexBufferRef& IndexBuf() { return indexBuf_; }
-		void IndexBuf(const IndexBufferRef& indexBuf) { indexBuf_ = indexBuf; }
-		VertexBufferRef& VertexBuf() { return vertexBuf_; }
-		void VertexBuf(const VertexBufferRef& vertexBuf) { vertexBuf_ = vertexBuf; }
-		Ref<VertexArray3f>& TriangleNormalsBuf() { return triangleNormalsBuf_; }
-		void TriangleNormalsBuf(const Ref<VertexArray3f>& triangleNormalsBuf) { triangleNormalsBuf_ = triangleNormalsBuf; }
+		Ref<VertexArray4f>& AllocPositions(int count, bool copy = false) { ALLOC(positions_, VertexArray4f, count, copy); }
+		Ref<VertexArray3f>& AllocNormals(int count, bool copy = false) { ALLOC(normals_, VertexArray3f, count, copy); }
+		Ref<VertexArray3f>& AllocColors(int count, bool copy = false) { ALLOC(colors_, VertexArray3f, count, copy); }
+		Ref<VertexArray2f>& AllocTexCoords(int count, bool copy = false) { ALLOC(texCoords_, VertexArray2f, count, copy); }
+		Ref<VertexArray3f>& AllocTriangleNormals(int count, bool copy = false) { ALLOC(triangleNormals_, VertexArray3f, count, copy); }
 
 		int* VertexRefBuf() { return &vertexRefBuf_[0]; }
 		int* VertexCullBuf() { return &vertexCullBuf_[0]; }
@@ -71,19 +64,24 @@ namespace dopixel
 		int* VertexCullBuf(int count) { vertexCullBuf_.resize(count); return &vertexCullBuf_[0]; }
 		int* TriangleCullBuf(int count) { triangleCullBuff_.resize(count); return &triangleCullBuff_[0];}
 
-		void PrepareBuf(bool useVertexColor, bool useLighting, bool useCull);
+		void PrepareBuf(const VertexBufferRef& vertexBuf, const IndexBufferRef& indexBuf, const Ref<VertexArray3f>& triangleNormalsBuf, 
+			bool useVertexColor, bool useLighting, bool useTexture, bool useCull);
 		void ResetCounter(int vertexCount, int triangleCount);
-		void Transform(const math::Matrix44f& matrix);
+		void Transform(const math::Matrix44f& matrix, const math::Matrix44f& matrixINVT);
 		void GenTriangleNormals();
 		void GenVertexNormals();
 		void GenNormals();
 		void CullFace(const math::Vector3f& eyeWorldPos, CullMode::Type cullMode);
-		void CullByPlanes(const vector<math::Plane>& clipPlanes);
+		void CullPlanes(const vector<math::Plane>& clipPlanes);
+		void CutTriangle(int clipVertexCount, int i0, int i1, int i2);
 	private:
+		// cache buffer
 		Ref<VertexArray4f> positions_;
 		Ref<VertexArray3f> normals_;
 		Ref<VertexArray3f> colors_;
+		Ref<VertexArray2f> texCoords_;
 		Ref<VertexArray3f> triangleNormals_;
+		IndexBufferRef indexBuf_;
 
 		bool genVertexNormals_;
 		bool genTriangleNormals_;
@@ -91,11 +89,6 @@ namespace dopixel
 		int vertexCount_;
 		int primitiveCount_;
 		int primitiveType_;
-
-		// original buffer
-		IndexBufferRef indexBuf_;
-		VertexBufferRef vertexBuf_;
-		Ref<VertexArray3f> triangleNormalsBuf_;
 
 		// counter
 		vector<int> vertexRefBuf_;
@@ -112,15 +105,17 @@ namespace dopixel
 	{
 	}
 	
-	void Renderer::Impl::PrepareBuf(bool useVertexColor, bool useLighting, bool useCull)
+	void Renderer::Impl::PrepareBuf(const VertexBufferRef& vertexBuf, const IndexBufferRef& indexBuf, const Ref<VertexArray3f>& triangleNormalsBuf, 
+		bool useVertexColor, bool useLighting, bool useTexture, bool useCull)
 	{
-		ASSERT(vertexBuf_);
+		ASSERT(vertexBuf);
 
-		vertexCount_ = vertexBuf_->GetVertexCount();
-		primitiveCount_ = (indexBuf_ ? indexBuf_->GetPrimitiveCount() : vertexBuf_->GetPrimitiveCount());
+		indexBuf_ = Ref<IndexBuffer>(new IndexBuffer(*indexBuf));
+		vertexCount_ = vertexBuf->GetVertexCount();
+		primitiveCount_ = (indexBuf ? indexBuf->GetPrimitiveCount() : vertexBuf->GetPrimitiveCount());
 
 		// copy position to cache
-		math::Vector3f* raw_position = vertexBuf_->GetPositions()->DataAs<math::Vector3f>();
+		math::Vector3f* raw_position = vertexBuf->GetPositions()->DataAs<math::Vector3f>();
 		ASSERT(raw_position);
 		auto& positions = AllocPositions(vertexCount_);
 		math::Vector4f* position = positions->DataAs<math::Vector4f>();
@@ -135,7 +130,7 @@ namespace dopixel
 		{
 			auto& colors = AllocColors(vertexCount_);
 			math::Vector3f* color = colors->DataAs<math::Vector3f>();
-			const auto& raw_colors = vertexBuf_->GetColors();
+			const auto& raw_colors = vertexBuf->GetColors();
 			if (raw_colors)
 			{
 				memcpy(color, raw_colors->GetData(), vertexCount_ * sizeof(math::Vector3f));
@@ -156,7 +151,7 @@ namespace dopixel
 		if (useLighting)
 		{
 			auto& normals = AllocNormals(vertexCount_);
-			const auto& raw_normals_ref = vertexBuf_->GetNormals();
+			const auto& raw_normals_ref = vertexBuf->GetNormals();
 			genVertexNormals_ = !raw_normals_ref;
 			if (!genVertexNormals_)
 			{
@@ -170,15 +165,27 @@ namespace dopixel
 			}
 		}
 
+		// copy texture coords
+		if (useTexture)
+		{
+			auto& texCoords = AllocTexCoords(vertexCount_);
+			math::Vector2f* texCoord = texCoords->DataAs<math::Vector2f>();
+			const auto& raw_texCoords = vertexBuf->GetTexCoords();
+			if (raw_texCoords)
+			{
+				memcpy(texCoord, raw_texCoords->GetData(), vertexCount_ * sizeof(math::Vector2f));
+			}
+		}
+
 		// copy triangle normal to cache if have
 		genTriangleNormals_ = false;
 		if (useCull)
 		{
-			genTriangleNormals_ = !triangleNormals_;
-			if (triangleNormals_)
+			genTriangleNormals_ = !triangleNormalsBuf;
+			if (triangleNormalsBuf)
 			{
 				auto& triangleNormals = AllocTriangleNormals(primitiveCount_);
-				memcpy(triangleNormals->GetData(), triangleNormals_->GetData(), primitiveCount_ * sizeof(math::Vector3f));
+				memcpy(triangleNormals->GetData(), triangleNormalsBuf->GetData(), primitiveCount_ * sizeof(math::Vector3f));
 			}
 		}
 	}
@@ -350,7 +357,7 @@ namespace dopixel
 		}
 	}
 
-	void Renderer::Impl::Transform(const math::Matrix44f& matrix)
+	void Renderer::Impl::Transform(const math::Matrix44f& matrix, const math::Matrix44f& matrixINVT)
 	{
 		ASSERT(positions_);
 		const int vertexCount = positions_->GetVertexCount();
@@ -364,10 +371,6 @@ namespace dopixel
 
 		if (triangleNormals_ || normals_)
 		{
-			math::Matrix44f matrixINVT;
-			math::MatrixInverse(matrixINVT, matrix);
-			matrixINVT.Transpose();
-
 			if (triangleNormals_)
 			{
 				math::Vector3f* triangleNormals = triangleNormals_->DataAs<math::Vector3f>();
@@ -435,8 +438,6 @@ namespace dopixel
 
 		math::Vector4f* position = positions_->DataAs<math::Vector4f>();
 		math::Vector3f* normal = triangleNormals_->DataAs<math::Vector3f>();
-		int* vertexCullBuf = VertexCullBuf();
-		int* vertexRefBuf = VertexRefBuf();
 
 		if (indexBuf_)
 		{
@@ -453,17 +454,16 @@ namespace dopixel
 				float dp = math::DotProduct(vertexToEye, *(normal + j));
 				if (dp <= 0 && cullMode == CullMode::Back || dp >= 0 && cullMode == CullMode::Front)
 				{
-					vertexCullBuf[j] |= TriangleCull::Face;
-					--vertexRefBuf[index0];
-					--vertexRefBuf[index1];
-					--vertexRefBuf[index2];
+					triangleCullBuff_[j] |= TriangleCull::Face;
+					--vertexRefBuf_[index0];
+					--vertexRefBuf_[index1];
+					--vertexRefBuf_[index2];
 				}
 			}
 		}
 		else
 		{
-			const int vertexCount = positions_->GetVertexCount();
-			for (int i = 0, j = 0; i < vertexCount; i += 3, ++j)
+			for (int i = 0, j = 0; i < vertexCount_; i += 3, ++j)
 			{
 				auto index0 = i;
 				auto index1 = i + 1;
@@ -474,16 +474,16 @@ namespace dopixel
 				float dp = math::DotProduct(vertexToEye, *(normal + j));
 				if (dp <= 0 && cullMode == CullMode::Back || dp >= 0 && cullMode == CullMode::Front)
 				{
-					vertexCullBuf[j] |= TriangleCull::Face;
-					--vertexRefBuf[index0];
-					--vertexRefBuf[index1];
-					--vertexRefBuf[index2];
+					triangleCullBuff_[j] |= TriangleCull::Face;
+					--vertexRefBuf_[index0];
+					--vertexRefBuf_[index1];
+					--vertexRefBuf_[index2];
 				}
 			}
 		}
 	}
 
-	void Renderer::Impl::CullByPlanes(const vector<math::Plane>& clipPlanes)
+	void Renderer::Impl::CullPlanes(const vector<math::Plane>& clipPlanes)
 	{
 		math::Vector4f* position = positions_->DataAs<math::Vector4f>();
 
@@ -502,7 +502,79 @@ namespace dopixel
 				}
 			}
 
-			// TODO: deal with primitive
+			if (indexBuf_)
+			{
+				const unsigned int* indices = indexBuf_->GetData();
+				const int indexCount = indexBuf_->GetIndexCount();
+				for (int i = 0, j = 0; i < indexCount; i += 3, ++j)
+				{
+					if (triangleCullBuff_[j] != 0)
+						continue;
+
+					auto index0 = *(indices + i);
+					auto index1 = *(indices + i + 1);
+					auto index2 = *(indices + i + 2);
+
+					int clipVertexCount = 0;
+					if (vertexCullBuf_[index0] != 0) ++clipVertexCount;
+					if (vertexCullBuf_[index1] != 0) ++clipVertexCount;
+					if (vertexCullBuf_[index2] != 0) ++clipVertexCount;
+
+					if (clipVertexCount == 0)
+						continue;
+
+					triangleCullBuff_[j] |= TriangleCull::ClipPlane;
+					--vertexRefBuf_[index0];
+					--vertexRefBuf_[index1];
+					--vertexRefBuf_[index2];
+
+					if (clipVertexCount == 3)
+						continue;
+					// this triangle need cut to 1 or 2 triangles
+				}
+			}
+			else
+			{
+
+			}
+		}
+	}
+
+	void Renderer::Impl::CutTriangle(int clipVertexCount, int i0, int i1, int i2)
+	{
+		if (clipVertexCount == 1)
+		{
+			// for a e.g. triangle: i0-[i1]-i2, which "[i1]" means i1 has been cut
+			// we will generate 2 vertex as i3, i4 by interpolate between i1 with rest vertex.
+
+			// how generate 2 vertex?
+			// interpolate between i1 and i0 generate i3, then get triangle 1: i0-i3-i2
+			// interpolate between i1 and i2 generate i4, then get triangle 2: i3-i4-i2
+
+			// but if other vertex has been cut, how we do it conveniently except enumerate
+			// we could swap it as follow:
+			// [i0]-i1-i2 -> i0-[i1]-i2
+			// i0-i1-[i2] -> i0-[i1]-i2
+
+			int triangle[3] = { i0, i1, i2 };
+
+			// [i0]-i1-i2
+			if (vertexCullBuf_[i0] != 0)
+			{
+				swap_t(triangle[i0], triangle[i1]);
+				swap_t(triangle[i0], triangle[i2]);
+			}
+			//i0-i1-[i2]
+			else if (vertexCullBuf_[i2] != 0)
+			{
+				swap_t(triangle[i0], triangle[i1]);
+				swap_t(triangle[i1], triangle[i2]);
+			}
+
+			// then we get i0-[i1]-i2
+
+			// resize buffer for add 2 vertex and 2 triangle, since we marked old vertex and triangle as clipped
+
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
@@ -652,9 +724,9 @@ namespace dopixel
 
 	void Renderer::RenderSubMesh(const SubMeshRef& submesh)
 	{
-		impl_->TriangleNormalsBuf(submesh->GetTriangleNormals());
+		triangleNormalsBuf_ = submesh->GetTriangleNormals();
 		DrawPrimitive(submesh->GetVertexBuffer(), submesh->GetIndexBuffer(), submesh->GetMaterial());
-		impl_->TriangleNormalsBuf(nullptr);
+		triangleNormalsBuf_ = nullptr;
 	}
 
 	void Renderer::DrawPrimitive(const VertexBufferRef& vertexBuffer)
@@ -682,8 +754,6 @@ namespace dopixel
 		auto cameraNode = sceneManager_->GetActiveCamera();
 		eyeWorldPos_ = cameraNode->GetWorldPosition();
 		viewFrustum_ = cameraNode->GetViewFrustum();
-		impl_->IndexBuf(indexBuffer_);
-		impl_->VertexBuf(vertexBuffer_);
 		impl_->SetPrimitiveType(vertexBuffer_->GetPrimitiveType());
 
 		const int  vertexCount = vertexBuffer_->GetVertexCount();
@@ -700,10 +770,13 @@ namespace dopixel
 		int* triangleCullBuf = impl_->TriangleCullBuf();
 
 		// prepare buffer
-		impl_->PrepareBuf(useVertexColor, useLighting, useCull);
+		impl_->PrepareBuf(vertexBuffer_, indexBuffer_, triangleNormalsBuf_, useVertexColor, useLighting, useTexture, useCull);
 
 		// transform vertex from model to world
-		impl_->Transform(matrixs_[Transform::World]);
+		math::Matrix44f matrixINVT;
+		math::MatrixInverse(matrixINVT, matrixs_[Transform::World]);
+		matrixINVT.Transpose();
+		impl_->Transform(matrixs_[Transform::World], matrixINVT);
 
 		// generate triangle normals for remove back face and vertex normals if need
 		impl_->GenNormals();
@@ -714,10 +787,10 @@ namespace dopixel
 			impl_->CullFace(eyeWorldPos_, cullMode_);
 		}
 
-		// clip by plane
+		// clip by plane, planes are in  world space yet, include near z plane.
 		vector<math::Plane> planes = clipPlanes_;
-		planes.push_back(viewFrustum_.GetPlane(math::Frustum::PlaneNear)); 	// add near z plane
-		impl_->CullByPlanes(planes);
+		planes.push_back(viewFrustum_.GetPlane(math::Frustum::PlaneNear));
+		impl_->CullPlanes(planes);
 
 		// transform vertex by WVP, only shared by at least one triangle
 
