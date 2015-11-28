@@ -31,19 +31,8 @@ namespace dopixel
 		int GetVertexCount() const { return vertexCount_; }
 		int GetPrimitiveCount() const
 		{
-			switch (primitiveType_)
-			{
-			case PrimitiveType::Triangles:
-				return vertexCount_ / 3;
-				break;
-			case PrimitiveType::Lines:
-				return vertexCount_ / 2;
-				break;
-			default:
-			case PrimitiveType::Points:
-				return vertexCount_;
-				break;
-			}
+			int num = GetVertexNumByPerPrimitive(primitiveType_);
+			return vertexCount_ / num;
 		}
 
 		void SetPositions(Ref<VertexArray3f> positions) { positions_ = positions; Internal(VertexType::Position); }

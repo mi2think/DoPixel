@@ -19,10 +19,10 @@ namespace dopixel
 	class IndexBuffer
 	{
 	public:
-		IndexBuffer(unsigned int type, unsigned int indicesCount)
-			: primitiveType_(type)
-			, primitiveCount_(0)
-			, indices_(indicesCount)
+		IndexBuffer(int primitiveType, int primitiveCount)
+			: primitiveType_(primitiveType_)
+			, primitiveCount_(primitiveCount)
+			, indices_(primitiveCount * GetVertexNumByPerPrimitive(primitiveType))
 		{}
 		// copy data
 		IndexBuffer(const IndexBuffer& indexBuffer)
@@ -47,10 +47,14 @@ namespace dopixel
 		unsigned int* GetData() { return &indices_[0]; }
 		const unsigned int* GetData() const { return &indices_[0]; }
 
-		void Resize(int indicesCount, int primitiveCount)
+		void Resize(int primitiveCount)
 		{
-			indices_.resize(indicesCount);
-			primitiveCount_ = primitiveCount;
+			if (primitiveCount != primitiveCount_)
+			{
+				primitiveCount_ = primitiveCount;
+				int indicesCount = primitiveCount * GetVertexNumByPerPrimitive(primitiveType_);
+				indices_.resize(indicesCount);
+			}
 		}
 	private:
 		// primitive type

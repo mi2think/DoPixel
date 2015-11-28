@@ -211,6 +211,28 @@ namespace dopixel
 	void str_replace_anychar(string& strDest, const string& strSrc, const string& anychar, const string& strReplace);
 	// string is valid float format
 	bool str_is_valid_float(const string& str);
+
+	// utils
+	inline int GetVertexNumByPerPrimitive(int primitive)
+	{
+		int num = 0;
+		switch (primitive)
+		{
+		case PrimitiveType::Triangles:
+			num = 3;
+			break;
+		case PrimitiveType::Lines:
+			num = 2;
+			break;
+		case PrimitiveType::Points:
+			num = 1;
+			break;
+		default:
+			ASSERT(0);
+			break;
+		}
+		return num;
+	}
 }
 
 #endif // !__DOPIXEL__
