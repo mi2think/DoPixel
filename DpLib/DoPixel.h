@@ -131,6 +131,7 @@ namespace dopixel
 	class Event;
 	class Light;
 	class Renderer;
+	class Rasterizer;
 
 	typedef Ref<VertexBuffer> VertexBufferRef;
 	typedef Ref<IndexBuffer> IndexBufferRef;
@@ -145,6 +146,7 @@ namespace dopixel
 	typedef Ref<Camera> CameraRef;
 	typedef Ref<Event> EventRef;
 	typedef Ref<Light> LightRef;
+	typedef Ref<Rasterizer> RasterizerRef;
 
 	// can not copy
 	class NoCopyable

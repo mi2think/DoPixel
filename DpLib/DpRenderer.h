@@ -70,6 +70,7 @@ namespace dopixel
 		int height_;
 		int pitch_;
 		vector<float> zbuf_;
+		RasterizerRef rasterizer_;
 
 		SceneManagerRef sceneManager_;
 		MaterialRef material_;
@@ -87,10 +88,11 @@ namespace dopixel
 
 		// internal state
 		bool transformValid_;
+		math::Matrix44f viewProjMatrix_;
 		math::Matrix44f worldViewMatrix_;
 		math::Matrix44f worldViewProjMatrix_;
 		class Impl;
-		Impl* impl_;
+		Ref<Impl> impl_;
 	};
 }
 

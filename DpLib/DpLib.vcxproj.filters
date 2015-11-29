@@ -192,6 +192,9 @@
     <ClInclude Include="DpRectangle.h">
       <Filter>DpMath</Filter>
     </ClInclude>
+    <ClInclude Include="DpRasterizer.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">
@@ -265,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="DpGeometry.cpp">
       <Filter>DpMath</Filter>
+    </ClCompile>
+    <ClCompile Include="DpRasterizer.cpp">
+      <Filter>Dp3DEngine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

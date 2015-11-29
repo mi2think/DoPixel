@@ -15,6 +15,7 @@
 #include "DpMaterial.h"
 #include "DpVertexBuffer.h"
 #include "DpIndexBuffer.h"
+#include "DpRasterizer.h"
 
 namespace dopixel
 {
@@ -76,7 +77,7 @@ namespace dopixel
 		void PrepareBuf(const VertexBufferRef& vertexBuf, const IndexBufferRef& indexBuf, const Ref<VertexArray3f>& triangleNormalsBuf, int usingStatus);
 		void AllocCounter(int vertexCount, int triangleCount);
 		void ResetCounter(int vertexCount, int triangleCount);
-		void Transform(const math::Matrix44f& matrix, const math::Matrix44f& matrixINVT);
+		void Transform(const math::Matrix44f& matrix, bool transNormal);
 		void GenTriangleNormals();
 		void GenVertexNormals();
 		void GenNormals();
@@ -84,6 +85,10 @@ namespace dopixel
 		void CullPlanes(const vector<math::Plane>& clipPlanes);
 		void CutTriangle(const math::Plane& plane, int clipVertexCount, int i0, int i1, int i2);
 		void Interpolate(int newIndex, int index0, int index1, float k);
+		void ToCVV();
+		void ToViewport(int viewportWidth, int viewportHeight);
+		void DrawPrimitives(RasterizerRef& rasterizer, ShadeMode::Type shadeMode);
+		void DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, int index0, int index1, int index2);
 	private:
 		// cache buffer
 		Ref<VertexArray4f> positions_;
@@ -391,24 +396,29 @@ namespace dopixel
 		}
 	}
 
-	void Renderer::Impl::Transform(const math::Matrix44f& matrix, const math::Matrix44f& matrixINVT)
+	void Renderer::Impl::Transform(const math::Matrix44f& matrix, bool transNormal)
 	{
 		ASSERT(positions_);
-		const int vertexCount = positions_->GetVertexCount();
 
 		math::Vector4f* position = positions_->DataAs<math::Vector4f>();
-		for (int i = 0; i < vertexCount; ++i)
+		for (int i = 0; i < vertexCount_; ++i)
 		{
+			if (vertexRefBuf_[i] == 0)
+				continue;
 			math::Vector4f& p = *(position + i);
 			p *= matrix;
 		}
 
-		if (triangleNormals_ || normals_)
+		if (transNormal && (triangleNormals_ || normals_))
 		{
+			math::Matrix44f matrixINVT;
+			math::MatrixInverse(matrixINVT, matrix);
+			matrixINVT.Transpose();
+
 			if (triangleNormals_)
 			{
 				math::Vector3f* triangleNormals = triangleNormals_->DataAs<math::Vector3f>();
-				for (int i = 0; i < vertexCount; ++i)
+				for (int i = 0; i < vertexCount_; ++i)
 				{
 					math::Vector3f& n = *(triangleNormals + i);
 					// normal do not need translate
@@ -421,7 +431,7 @@ namespace dopixel
 			if (normals_)
 			{
 				math::Vector3f* normals = normals_->DataAs<math::Vector3f>();
-				for (int i = 0; i < vertexCount; ++i)
+				for (int i = 0; i < vertexCount_; ++i)
 				{
 					math::Vector3f& n = *(normals + i);
 					// normal do not need translate
@@ -732,6 +742,107 @@ namespace dopixel
 		}
 	}
 
+	void Renderer::Impl::ToCVV()
+	{
+		math::Vector4f* pos = positions_->DataAs<math::Vector4f>();
+		for (int i = 0; i < vertexCount_; ++i)
+		{
+			if (vertexRefBuf_[i] == 0)
+				continue;
+			math::Vector4f* p = pos + i;
+			ASSERT(!math::Equal(p->w, 0.0f));
+			(*p) /= p->w;
+			if (p->x < -1 || p->x > 1 ||
+				p->y < -1 || p->y > 1 ||
+				p->z < 0 || p->z > 1)
+			{
+				vertexCullBuf_[i] |= VertexCull::Frustum;
+			}
+		}
+
+		if (indexBuf_)
+		{
+			unsigned int* indices = indexBuf_->GetData();
+			int indexCount = indexBuf_->GetIndexCount();
+			for (int i = 0, j = 0; i < indexCount; i += 3, ++j)
+			{
+				if (triangleCullBuff_[j])
+					continue;
+
+				auto index0 = *(indices + i);
+				auto index1 = *(indices + i + 1);
+				auto index2 = *(indices + i + 2);
+				if (vertexCullBuf_[index0] && vertexCullBuf_[index1] && vertexCullBuf_[index2])
+				{
+					triangleCullBuff_[j] |= TriangleCull::Frustum;
+					--vertexRefBuf_[index0];
+					--vertexRefBuf_[index1];
+					--vertexRefBuf_[index2];
+				}
+			}
+		}
+	}
+
+	void Renderer::Impl::ToViewport(int viewportWidth, int viewportHeight)
+	{
+		// assume the coordinate of object is normalized, range is [-1,1]
+		// then scale it by viewport, and reverse Y axis
+
+		// results: 
+		// x: [0, viewportWidth]
+		// y: [0, viewportHeight]
+
+		// so:
+		// x -> (x + 1) * viewportWidth / 2
+		// y -> viewportHeight - (y + 1) * viewportHeight / 2
+
+		math::Vector4f* pos = positions_->DataAs<math::Vector4f>();
+		for (int i = 0; i < vertexCount_; ++i)
+		{
+			if (vertexRefBuf_[i] == 0)
+				continue;
+			math::Vector4f* p = pos + i;
+			p->x = (p->x + 1) * viewportWidth / 2;
+			p->y = (1 - p->y) * viewportHeight / 2;
+		}
+	}
+
+	void Renderer::Impl::DrawPrimitives(RasterizerRef& rasterizer, ShadeMode::Type shadeMode)
+	{
+		if (indexBuf_)
+		{
+			unsigned int* indices = indexBuf_->GetData();
+			int indexCount = indexBuf_->GetIndexCount();
+			for (int i = 0, j = 0; i < indexCount; i += 3, ++j)
+			{
+				if (triangleCullBuff_[j])
+					continue;
+				auto index0 = *(indices + i);
+				auto index1 = *(indices + i + 1);
+				auto index2 = *(indices + i + 2);
+				DrawPrimitive(rasterizer, shadeMode, index0, index1, index2);
+			}
+		}
+	}
+
+	void Renderer::Impl::DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, int index0, int index1, int index2)
+	{
+		auto pos = positions_->DataAs<math::Vector4f>();
+		auto p0 = pos + index0;
+		auto p1 = pos + index1;
+		auto p2 = pos + index2;
+
+		auto color = colors_->DataAs<math::Vector3f>();
+		auto c0 = color + index0;
+		auto c1 = color + index1;
+		auto c2 = color + index2;
+		if (shadeMode == ShadeMode::WireFrame)
+		{
+			rasterizer->DrawFrameTriangle(int(p0->x), int(p0->y), int(p1->x), int(p1->y),
+				int(p2->x), int(p2->y), Color(*c0));
+		}
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 
 	Renderer::Renderer(const SceneManagerRef& sceneManager)
@@ -748,6 +859,7 @@ namespace dopixel
 		, pitch_(0)
 		, transformValid_(false)
 		, impl_(new Impl())
+		, rasterizer_(new Rasterizer())
 	{
 		for (auto& matrix : matrixs_)
 		{
@@ -830,6 +942,8 @@ namespace dopixel
 		{
 			zbuf_.resize(width_ * height_);
 		}
+
+		rasterizer_->SetBuffer(frameBuf_, width_, height_, pitch_, &zbuf_[0]);
 	}
 
 	void Renderer::BeginScene()
@@ -863,8 +977,9 @@ namespace dopixel
 	{
 		transformValid_ = true;
 
-		MatrixMultiply(worldViewMatrix_, matrixs_[Transform::World], matrixs_[Transform::View]);
-		MatrixMultiply(worldViewProjMatrix_, worldViewMatrix_, matrixs_[Transform::Projection]);
+		math::MatrixMultiply(worldViewMatrix_, matrixs_[Transform::World], matrixs_[Transform::View]);
+		math::MatrixMultiply(worldViewProjMatrix_, worldViewMatrix_, matrixs_[Transform::Projection]);
+		math::MatrixMultiply(viewProjMatrix_, matrixs_[Transform::View], matrixs_[Transform::Projection]);
 	}
 
 	void Renderer::AddClipPlane(const math::Plane& plane)
@@ -906,6 +1021,10 @@ namespace dopixel
 		material_ = material;
 
 		// init state
+		if (!transformValid_)
+		{
+			UpdateTransform();
+		}
 		auto cameraNode = sceneManager_->GetActiveCamera();
 		eyeWorldPos_ = cameraNode->GetWorldPosition();
 		viewFrustum_ = cameraNode->GetViewFrustum();
@@ -927,18 +1046,12 @@ namespace dopixel
 
 		// counter
 		impl_->ResetCounter(vertexCount, triangleCount);
-		int* vertexRefBuf = impl_->VertexRefBuf();
-		int* vertexCullBuf = impl_->VertexCullBuf();
-		int* triangleCullBuf = impl_->TriangleCullBuf();
 
 		// prepare buffer
 		impl_->PrepareBuf(vertexBuffer_, indexBuffer_, triangleNormalsBuf_, usingStatus);
 
 		// transform vertex from model to world
-		math::Matrix44f matrixINVT;
-		math::MatrixInverse(matrixINVT, matrixs_[Transform::World]);
-		matrixINVT.Transpose();
-		impl_->Transform(matrixs_[Transform::World], matrixINVT);
+		impl_->Transform(matrixs_[Transform::World], true);
 
 		// generate triangle normals for remove back face and vertex normals if need
 		impl_->GenNormals();
@@ -954,15 +1067,19 @@ namespace dopixel
 		planes.push_back(viewFrustum_.GetPlane(math::Frustum::PlaneNear));
 		impl_->CullPlanes(planes);
 
-		// transform vertex by WVP, only shared by at least one triangle
-
-		// clip by CCW?
-
 		// lighting for flat or gouraud shade mode here, phong will light in pixel shader
 
-		// transform projected vertex to screen
+		// transform vertex to projection space
+		impl_->Transform(viewProjMatrix_, false);
+
+		// clip by CVV
+		impl_->ToCVV();
+
+		// transform projected vertex to viewport
+		impl_->ToViewport(width_, height_);
 
 		// draw triangle
+		impl_->DrawPrimitives(rasterizer_, shadeMode_);
 
 		// end
 	}

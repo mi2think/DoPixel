@@ -43,9 +43,9 @@ namespace dopixel
 			int _r = (int)(v.x * 255);
 			int _g = (int)(v.y * 255);
 			int _b = (int)(v.z * 255);
-			r = (_r > 255 ? 255 : _r);
-			g = (_g > 255 ? 255 : _g);
-			b = (_b > 255 ? 255 : _b);
+			r = (unsigned char)(_r > 255 ? 255 : _r);
+			g = (unsigned char)(_g > 255 ? 255 : _g);
+			b = (unsigned char)(_b > 255 ? 255 : _b);
 			a = 255;
 		}
 

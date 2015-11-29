@@ -114,6 +114,7 @@
     <ClInclude Include="DpMesh.h" />
     <ClInclude Include="DpMouseEvent.h" />
     <ClInclude Include="DpQuaternion.h" />
+    <ClInclude Include="DpRasterizer.h" />
     <ClInclude Include="DpRectangle.h" />
     <ClInclude Include="DpRef.h" />
     <ClInclude Include="DpRenderer.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="DpMath.cpp" />
     <ClCompile Include="DpMesh.cpp" />
     <ClCompile Include="DpQuaternion.cpp" />
+    <ClCompile Include="DpRasterizer.cpp" />
     <ClCompile Include="DpRenderer.cpp" />
     <ClCompile Include="DpSceneManager.cpp" />
     <ClCompile Include="DpSceneNode.cpp" />
