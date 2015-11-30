@@ -272,5 +272,8 @@
     <ClCompile Include="DpRasterizer.cpp">
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
+    <ClCompile Include="DpTimer.cpp">
+      <Filter>DpCore</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

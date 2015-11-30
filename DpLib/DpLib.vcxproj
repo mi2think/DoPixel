@@ -158,6 +158,7 @@
     <ClCompile Include="DpSceneNodeAnimator.cpp" />
     <ClCompile Include="DpTexture.cpp" />
     <ClCompile Include="DpTga.cpp" />
+    <ClCompile Include="DpTimer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
