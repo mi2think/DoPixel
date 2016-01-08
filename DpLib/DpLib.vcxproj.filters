@@ -195,6 +195,9 @@
     <ClInclude Include="DpRasterizer.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
+    <ClInclude Include="DpLog.h">
+      <Filter>DpCore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpConsole.cpp">
@@ -273,6 +276,9 @@
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpTimer.cpp">
+      <Filter>DpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="DpLog.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
   </ItemGroup>

@@ -106,6 +106,7 @@
     <ClInclude Include="DpKeyEvent.h" />
     <ClInclude Include="DpInputState.h" />
     <ClInclude Include="DpLight.h" />
+    <ClInclude Include="DpLog.h" />
     <ClInclude Include="DpMaterial.h" />
     <ClInclude Include="DpMath.h" />
     <ClInclude Include="DpMatrix33.h" />
@@ -147,6 +148,7 @@
     <ClCompile Include="DpJson.cpp" />
     <ClCompile Include="DpInputState.cpp" />
     <ClCompile Include="DpLight.cpp" />
+    <ClCompile Include="DpLog.cpp" />
     <ClCompile Include="DpMaterial.cpp" />
     <ClCompile Include="DpMath.cpp" />
     <ClCompile Include="DpMesh.cpp" />

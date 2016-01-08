@@ -13,6 +13,7 @@
 #define __DOPIXEL__
 
 #include "DpRef.h"
+#include "DpLog.h"
 
 #include <functional>
 #include <string>
