@@ -113,8 +113,8 @@ namespace dopixel
 		Projection
 	END_DECLARE_ENUM()
 
-	using string = std::string;
-	using wstring = std::wstring;
+	using std::string;
+	using std::wstring;
 	using std::vector;
 	using std::map;
 
