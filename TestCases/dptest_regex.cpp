@@ -11,7 +11,6 @@
 *********************************************************************/
 #include "DpUnitTest.h"
 #include <regex>
-#include <string>
 
 using namespace dopixel;
 using namespace std;
@@ -214,6 +213,6 @@ DPTEST(Regex)
 	}
 	catch (regex_error e)
 	{
-		os_cout << e.what() << "\n";
+		g_LogS << e.what() << "\n";
 	}
 }

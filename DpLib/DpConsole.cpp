@@ -11,30 +11,8 @@
 *********************************************************************/
 
 #include "DpConsole.h"
-#include <windows.h>
 
 namespace dopixel
 {
-	void SetConsoleColor(ConsoleColor color)
-	{
-		HANDLE hWnd = GetStdHandle(STD_OUTPUT_HANDLE);
-		switch (color)
-		{
-		default:
-		case COLOR_WHITE:
-			SetConsoleTextAttribute(hWnd, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-			break;
-		case COLOR_RED:
-			SetConsoleTextAttribute(hWnd, FOREGROUND_RED | FOREGROUND_INTENSITY);
-			break;
-		case COLOR_GREEN:
-			SetConsoleTextAttribute(hWnd, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-			break;
-		case COLOR_BLUE:
-			SetConsoleTextAttribute(hWnd, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-			break;
-		}
-	}
-
-	OStreamHelper os_cout;
+	LogStream g_LogS;
 }

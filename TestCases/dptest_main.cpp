@@ -17,7 +17,7 @@ using namespace dopixel;
 
 int main()
 {
-	UnitTest::GetInstance()->Run();
+	UnitTest::GetInstance().Run();
 	system("pause");
 
 	return 0;

@@ -12,67 +12,33 @@
 #ifndef __DP_CONSOLE__
 #define __DP_CONSOLE__
 
-#include <iostream>
+#include "DoPixel.h"
+#include <sstream>
 
 namespace dopixel
 {
-	enum ConsoleColor
+	class LogStream
 	{
-		COLOR_WHITE,
-		COLOR_RED,
-		COLOR_GREEN,
-		COLOR_BLUE,
-	};
+	public:
+		LogStream() : level_(Log::Info) {}
 
-	void SetConsoleColor(ConsoleColor color);
+		void SetLevel(int level) { level_ = level; }
 
-	struct OStreamHelper
-	{
 		template<typename T>
-		inline OStreamHelper& operator << (const T& t)
+		LogStream& operator<<(const T& t)
 		{
-			std::cout << t;
+			LOGSCOPE_NEWLINE(false);
+
+			std::ostringstream oss;
+			oss << t;
+			g_Log.WriteBuf(level_, "%s", oss.str().c_str());
 			return *this;
 		}
+	private:
+		int level_;
 	};
 
-	inline OStreamHelper& operator << (OStreamHelper& os, OStreamHelper& (*p)(OStreamHelper& os))
-	{
-		p(os);
-		return os;
-	}
-
-	inline OStreamHelper& Red(OStreamHelper& os)
-	{
-		SetConsoleColor(COLOR_RED);
-		return os;
-	}
-
-	inline OStreamHelper& Green(OStreamHelper& os)
-	{
-		SetConsoleColor(COLOR_GREEN);
-		return os;
-	}
-
-	inline OStreamHelper& Blue(OStreamHelper& os)
-	{
-		SetConsoleColor(COLOR_BLUE);
-		return os;
-	}
-
-	inline OStreamHelper& White(OStreamHelper& os)
-	{
-		SetConsoleColor(COLOR_WHITE);
-		return os;
-	}
-
-	inline OStreamHelper& endl(OStreamHelper& os)
-	{
-		os << "\n";
-		return os;
-	}
-
-	extern OStreamHelper os_cout;
+	extern LogStream g_LogS;
 }
 
 #endif

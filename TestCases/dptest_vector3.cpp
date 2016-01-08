@@ -46,7 +46,7 @@ DPTEST(Vector3)
 	EXPECT_EQ(v8, Vector3f(0.0f, -1.0f, 0.0f));
 
 	float fAngle = VectorAngle(Vector3f(1.0f, 0.0f, 0.0f), Vector3f(1.0f, 0.0f, 1.0f));
-	os_cout << fAngle << endl;
+	g_LogS << fAngle << "\n";
 	EXPECT_TRUE(math::Equal(fAngle, 45));
 
 	Vector3f v9(1.0f, 0.5f, 0.0f);

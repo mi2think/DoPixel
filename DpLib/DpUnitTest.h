@@ -9,156 +9,132 @@
 
 	purpose:	Unit Test
 *********************************************************************/
-
 #ifndef __DP_UNITTEST__
 #define __DP_UNITTEST__
 
+#include "DoPixel.h"
 #include "DpConsole.h"
-#include <vector>
-using namespace dopixel;
 
 namespace dopixel
 {
 	class TestCase
 	{
 	public:
-		TestCase(const char* _testCaseName) : nPassed(0), nFailed(0), testCaseName(_testCaseName) {}
+		TestCase(const char* testCaseName);
+		virtual ~TestCase() = 0;
 
 		virtual void Run() = 0;
 
-		int nPassed;
-		int nFailed;
-		const char* testCaseName;
+		int& GetPassed() { return nPassed_; }
+		int& GetFailed() { return nFailed_; }
+		const char* GetTestCaseName() const { return testCaseName_; }
+	protected:
+		int nPassed_;
+		int nFailed_;
+		const char* testCaseName_;
 	};
 
 	class UnitTest
 	{
 	public:
-		static UnitTest* GetInstance() { static UnitTest unitTest; return &unitTest; }
+		static UnitTest& GetInstance() { static UnitTest unitTest; return unitTest; }
 
-		UnitTest() : nFailed(0), nPassed(0), currTestCase(NULL) {}
+		UnitTest();
+		~UnitTest();
 
-		~UnitTest()
-		{
-			for (auto e : testCaseVec)
-			{
-				delete e;
-			}
-		}
+		TestCase* RegisterTestCase(TestCase* testCase);
+		TestCase* GetCurrentTestCase() const { return currTestCase_; }
 
-		TestCase* RegisterTestCase(TestCase* testCase)
-		{
-			testCaseVec.push_back(testCase);
-			return testCase;
-		}
+		void Run();
 
-		void Run()
-		{
-			for (auto e : testCaseVec)
-			{
-				currTestCase = e;
-				e->Run();
-
-				nPassed += e->nPassed;
-				nFailed += e->nFailed;
-
-				os_cout << White << ">>>>>>>> " << currTestCase->testCaseName << endl;
-				os_cout << "*************************************" << endl;
-			}
-
-			os_cout << White << "Run Tests:" << nPassed + nFailed << endl;
-			os_cout << Green << "Passed:" << nPassed << endl;
-			if (nFailed > 0)
-				os_cout << Red;
-			os_cout << "Failed:" << nFailed << endl;
-		}
-
-		static void MarkCurrentTestCase(bool b)
-		{
-			TestCase* currTestCase = UnitTest::GetInstance()->currTestCase;
-			b ? ++currTestCase->nPassed : ++currTestCase->nFailed;
-		}
-		TestCase* currTestCase;
+		static void MarkCurrentTestCase(bool passed);
 	protected:
-		int nPassed;
-		int nFailed;
-		std::vector<TestCase*> testCaseVec;
+		int nPassed_;
+		int nFailed_;
+		std::vector<TestCase*> testCases_;
+		TestCase* currTestCase_;
 	};
 
-#define TESTCASE_NAME(testCaseName) testCaseName##TEST
+	#define TESTCASE_NAME(testCaseName) testCaseName##TEST
 
-#define DPTEST(testCaseName) \
-		class TESTCASE_NAME(testCaseName) : public TestCase \
-		{ \
-		public: \
-			TESTCASE_NAME(testCaseName) (const char* _testCaseName) : TestCase(_testCaseName) {} \
-			virtual void Run(); \
-		private: \
-			static const TestCase* testCase; \
-		}; \
-		const TestCase* TESTCASE_NAME(testCaseName) \
-			::testCase = UnitTest::GetInstance()->RegisterTestCase(new TESTCASE_NAME(testCaseName)(#testCaseName));\
-		void TESTCASE_NAME(testCaseName)::Run()
+	#define DPTEST(testCaseName) \
+			class TESTCASE_NAME(testCaseName) : public TestCase \
+			{ \
+			public: \
+				TESTCASE_NAME(testCaseName) (const char* testCaseName) : TestCase(testCaseName) {} \
+				virtual void Run(); \
+			private: \
+				static const TestCase* testCase; \
+			}; \
+			const TestCase* TESTCASE_NAME(testCaseName) \
+				::testCase = UnitTest::GetInstance().RegisterTestCase(new TESTCASE_NAME(testCaseName)(#testCaseName));\
+			void TESTCASE_NAME(testCaseName)::Run()
 
 	// compare helper
 
-#define DPTEST_CMP_FUNC(op_name, op) CmpHelper##op_name
+	#define DPTEST_CMP_FUNC(op_name, op) CmpHelper##op_name
 
-#define DPTEST_CMP_HELPER(op_name, op) \
-	template <typename T, typename U> \
-	void DPTEST_CMP_FUNC(op_name, op)(const T& a, const U& b) \
-		{ \
-			TestCase* currTestCase = UnitTest::GetInstance()->currTestCase; \
-			if (a op b) \
+	#define DPTEST_CMP_HELPER(op_name, op) \
+		template <typename T, typename U> \
+		void DPTEST_CMP_FUNC(op_name, op)(const T& a, const U& b) \
 			{ \
-				UnitTest::MarkCurrentTestCase(true); \
-				os_cout << Green << "!>" << currTestCase->testCaseName << " SUCCESS:\t" << a << " " #op " " << b << endl; \
-			} \
-			else \
+				TestCase* currTestCase = UnitTest::GetInstance().GetCurrentTestCase(); \
+				const char* testCastName = currTestCase->GetTestCaseName(); \
+				if (a op b) \
+				{ \
+					UnitTest::MarkCurrentTestCase(true); \
+					g_LogS.SetLevel(Log::Info); \
+					g_LogS << "!>" << testCastName << " SUCCESS:\t" << a << " " #op " " << b << "\n"; \
+				} \
+				else \
+				{ \
+					UnitTest::MarkCurrentTestCase(false); \
+					g_LogS.SetLevel(Log::Error); \
+					g_LogS << "!>" << testCastName << " FAILED:\t" << a << " " #op " " << b << "\n"; \
+				} \
+			}
+
+	#define DPTEST_TEST_BOOL(cond, context, b) \
 			{ \
-				UnitTest::MarkCurrentTestCase(false); \
-				os_cout << Red << "!>" << currTestCase->testCaseName << " FAILED:\t" << a << " " #op " " << b << endl; \
-			} \
-		}
+				TestCase* currTestCase = UnitTest::GetInstance().GetCurrentTestCase(); \
+				const char* testCastName = currTestCase->GetTestCaseName(); \
+				if (cond == b) \
+				{ \
+					UnitTest::MarkCurrentTestCase(true); \
+					g_LogS.SetLevel(Log::Info); \
+					g_LogS << "!>" << testCastName << " SUCCESS:\t" #context " " << "\n"; \
+				} \
+				else \
+				{ \
+					UnitTest::MarkCurrentTestCase(false); \
+					g_LogS.SetLevel(Log::Error); \
+					g_LogS << "!>" << testCastName << " FAILED:\t" #context " " << "\n"; \
+				} \
+			}
 
-#define DPTEST_TEST_BOOL(cond, context, b) \
-		{ \
-			TestCase* currTestCase = UnitTest::GetInstance()->currTestCase; \
-			if (cond == b) \
-			{ \
-				UnitTest::MarkCurrentTestCase(true); \
-				os_cout << Green << "!>" << currTestCase->testCaseName << " SUCCESS:\t" #context " " << endl; \
-			} \
-			else \
-			{ \
-				UnitTest::MarkCurrentTestCase(false); \
-				os_cout << Red << "!>" << currTestCase->testCaseName << " FAILED:\t" #context " " << endl; \
-			} \
-		}
+	// Compare functions
+	DPTEST_CMP_HELPER(EQ, == )
+	DPTEST_CMP_HELPER(NE, != )
+	DPTEST_CMP_HELPER(LT, <)
+	DPTEST_CMP_HELPER(LE, <= )
+	DPTEST_CMP_HELPER(GT, >)
+	DPTEST_CMP_HELPER(GE, >= )
+			// ==
+	#define EXPECT_EQ(a, b) { DPTEST_CMP_FUNC(EQ, ==)(a, b); }
+				// !=
+	#define EXPECT_NE(a, b) { DPTEST_CMP_FUNC(NE, !=)(a, b); }
+				// <
+	#define EXPECT_LT(a, b) { DPTEST_CMP_FUNC(LT, <)(a, b); }
+				// <=
+	#define EXPECT_LE(a, b) { DPTEST_CMP_FUNC(LE, <=)(a, b); }
+				// >
+	#define EXPECT_GT(a, b) { DPTEST_CMP_FUNC(GT, >)(a, b); }
+				// >=
+	#define EXPECT_GE(a, b) { DPTEST_CMP_FUNC(GE, >=)(a, b); }
 
-		// Compare functions
-		DPTEST_CMP_HELPER(EQ, == )
-		DPTEST_CMP_HELPER(NE, != )
-		DPTEST_CMP_HELPER(LT, <)
-		DPTEST_CMP_HELPER(LE, <= )
-		DPTEST_CMP_HELPER(GT, >)
-		DPTEST_CMP_HELPER(GE, >= )
-		// ==
-#define EXPECT_EQ(a, b) { DPTEST_CMP_FUNC(EQ, ==)(a, b); }
-			// !=
-#define EXPECT_NE(a, b) { DPTEST_CMP_FUNC(NE, !=)(a, b); }
-			// <
-#define EXPECT_LT(a, b) { DPTEST_CMP_FUNC(LT, <)(a, b); }
-			// <=
-#define EXPECT_LE(a, b) { DPTEST_CMP_FUNC(LE, <=)(a, b); }
-			// >
-#define EXPECT_GT(a, b) { DPTEST_CMP_FUNC(GT, >)(a, b); }
-			// >=
-#define EXPECT_GE(a, b) { DPTEST_CMP_FUNC(GE, >=)(a, b); }
+	#define EXPECT_TRUE(cond)  DPTEST_TEST_BOOL(cond, #cond, true)
 
-#define EXPECT_TRUE(cond)  DPTEST_TEST_BOOL(cond, #cond, true)
-
-#define EXPECT_FALSE(cond) DPTEST_TEST_BOOL(!(cond), #cond, true)
+	#define EXPECT_FALSE(cond) DPTEST_TEST_BOOL(!(cond), #cond, true)
 }
 
 #endif

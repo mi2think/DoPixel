@@ -54,7 +54,7 @@ DPTEST(Matrix33)
 	Matrix33f m7;
 	MatrixInverse(m7, m6);
 
-	os_cout << m7;
+	g_LogS << m7;
 
 	Matrix33f m8 = m7 * m6;
 	EXPECT_EQ(m8, Matrix33f(1, 0, 0, 0, 1, 0, 0, 0, 1));
