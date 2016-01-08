@@ -27,9 +27,6 @@
     <ClInclude Include="DpUnitTest.h">
       <Filter>DpCore</Filter>
     </ClInclude>
-    <ClInclude Include="DpConsole.h">
-      <Filter>DpCore</Filter>
-    </ClInclude>
     <ClInclude Include="DpColor.h">
       <Filter>DpCore</Filter>
     </ClInclude>
@@ -200,9 +197,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DpConsole.cpp">
-      <Filter>DpCore</Filter>
-    </ClCompile>
     <ClCompile Include="DpColor.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
@@ -279,6 +273,9 @@
       <Filter>DpCore</Filter>
     </ClCompile>
     <ClCompile Include="DpLog.cpp">
+      <Filter>DpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="DpUnitTest.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
   </ItemGroup>

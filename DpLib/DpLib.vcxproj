@@ -94,7 +94,6 @@
     <ClInclude Include="DpAABB.h" />
     <ClInclude Include="DpCamera.h" />
     <ClInclude Include="DpColor.h" />
-    <ClInclude Include="DpConsole.h" />
     <ClInclude Include="DpEvent.h" />
     <ClInclude Include="DpFileParser.h" />
     <ClInclude Include="DpFileStream.h" />
@@ -139,7 +138,6 @@
     <ClCompile Include="DoPixel.cpp" />
     <ClCompile Include="DpCamera.cpp" />
     <ClCompile Include="DpColor.cpp" />
-    <ClCompile Include="DpConsole.cpp" />
     <ClCompile Include="DpEvent.cpp" />
     <ClCompile Include="DpFileParser.cpp" />
     <ClCompile Include="DpFileStream.cpp" />
@@ -161,6 +159,7 @@
     <ClCompile Include="DpTexture.cpp" />
     <ClCompile Include="DpTga.cpp" />
     <ClCompile Include="DpTimer.cpp" />
+    <ClCompile Include="DpUnitTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

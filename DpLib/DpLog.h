@@ -12,6 +12,8 @@
 #ifndef __DP_LOG_H__
 #define __DP_LOG_H__
 
+#include <sstream>
+
 namespace dopixel
 {
 	class Log
@@ -54,6 +56,30 @@ namespace dopixel
 	#define LOGSCOPE_NAMELINE_CAT(name, line) name##line
 	#define LOGSCOPE_NAMELINE(name, line) LOGSCOPE_NAMELINE_CAT(name, line)
 	#define LOGSCOPE_NEWLINE(newline) Log::ScopeNewline LOGSCOPE_NAMELINE(LogScope, __LINE__)(newline)
+
+	// log stream
+	class LogStream
+	{
+	public:
+		LogStream() : level_(Log::Info) {}
+
+		void SetLevel(int level) { level_ = level; }
+
+		template<typename T>
+		LogStream& operator<<(const T& t)
+		{
+			LOGSCOPE_NEWLINE(false);
+
+			std::ostringstream oss;
+			oss << t;
+			g_Log.WriteBuf(level_, "%s", oss.str().c_str());
+			return *this;
+		}
+	private:
+		int level_;
+	};
+
+	extern LogStream g_LogS;
 }
 
 #endif

@@ -18,6 +18,7 @@
 namespace dopixel
 {
 	Log g_Log;
+	LogStream g_LogS;
 
 	Log::Log()
 		: hwnd_(nullptr)

@@ -13,7 +13,6 @@
 #define __DP_UNITTEST__
 
 #include "DoPixel.h"
-#include "DpConsole.h"
 
 namespace dopixel
 {
