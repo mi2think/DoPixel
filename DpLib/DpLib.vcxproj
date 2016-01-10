@@ -39,7 +39,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\Vendor;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -49,6 +49,7 @@
       <TreatWarningAsError>false</TreatWarningAsError>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(DXSDK_DIR)Include;..\Vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -56,6 +57,7 @@
     </Link>
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -94,6 +96,7 @@
     <ClInclude Include="DpAABB.h" />
     <ClInclude Include="DpCamera.h" />
     <ClInclude Include="DpColor.h" />
+    <ClInclude Include="DpDXUtils.h" />
     <ClInclude Include="DpEvent.h" />
     <ClInclude Include="DpFileParser.h" />
     <ClInclude Include="DpFileStream.h" />
@@ -138,6 +141,7 @@
     <ClCompile Include="DoPixel.cpp" />
     <ClCompile Include="DpCamera.cpp" />
     <ClCompile Include="DpColor.cpp" />
+    <ClCompile Include="DpDXUtils.cpp" />
     <ClCompile Include="DpEvent.cpp" />
     <ClCompile Include="DpFileParser.cpp" />
     <ClCompile Include="DpFileStream.cpp" />
