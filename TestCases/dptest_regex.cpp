@@ -101,7 +101,7 @@ void test_special_char()
 		regex r(pattern);
 		smatch results;
 		if (regex_search(test_str, results, r))
-			g_LogS << results.str();
+			GLOGS << results.str();
 	}
 
 	// | : or
@@ -160,7 +160,7 @@ void test_regex_func()
 		string test_str = "abc 234 ee12 acd2kl0";
 		regex r(pattern);
 
-		g_LogS << regex_replace(test_str, r, "_");
+		GLOGS << regex_replace(test_str, r, "_");
 	}
 }
 
@@ -213,6 +213,6 @@ DPTEST(Regex)
 	}
 	catch (regex_error e)
 	{
-		g_LogS << e.what() << "\n";
+		GLOGS << e.what() << "\n";
 	}
 }

@@ -17,9 +17,6 @@
 
 namespace dopixel
 {
-	Log g_Log;
-	LogStream g_LogS;
-
 	Log::Log()
 		: hwnd_(nullptr)
 		, newline_(true)
@@ -86,12 +83,12 @@ namespace dopixel
 
 	Log::ScopeNewline::ScopeNewline(bool newline)
 	{
-		newline_ = g_Log.GetNewline();
-		g_Log.SetNewline(newline);
+		newline_ = GLOG.GetNewline();
+		GLOG.SetNewline(newline);
 	}
 
 	Log::ScopeNewline::~ScopeNewline()
 	{
-		g_Log.SetNewline(newline_);
+		GLOG.SetNewline(newline_);
 	}
 }

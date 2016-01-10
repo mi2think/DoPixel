@@ -33,6 +33,8 @@ namespace dopixel
 			Error,
 			Fatal,
 		};
+
+		static Log& GetInstance() { static Log s_ins; return s_ins; }
 		Log();
 
 		void WriteBuf(int level, const char* fmt, ...);
@@ -45,9 +47,8 @@ namespace dopixel
 		bool newline_;
 	};
 
-	extern Log g_Log;
-
-	#define LOG_TO(level, fmt, ...) g_Log.WriteBuf(level, fmt, __VA_ARGS__)
+	#define GLOG Log::GetInstance()
+	#define LOG_TO(level, fmt, ...) GLOG.WriteBuf(level, fmt, __VA_ARGS__)
 	#define LOG_INFO(fmt, ...)	LOG_TO(Log::Info, fmt, __VA_ARGS__)
 	#define LOG_WARN(fmt, ...)	LOG_TO(Log::Warn, fmt, __VA_ARGS__)
 	#define LOG_ERROR(fmt, ...)	LOG_TO(Log::Error, fmt, __VA_ARGS__)
@@ -61,6 +62,7 @@ namespace dopixel
 	class LogStream
 	{
 	public:
+		static LogStream& GetInstance() { static LogStream s_ins; return s_ins; }
 		LogStream() : level_(Log::Info) {}
 
 		void SetLevel(int level) { level_ = level; }
@@ -69,17 +71,16 @@ namespace dopixel
 		LogStream& operator<<(const T& t)
 		{
 			LOGSCOPE_NEWLINE(false);
-
 			std::ostringstream oss;
 			oss << t;
-			g_Log.WriteBuf(level_, "%s", oss.str().c_str());
+			GLOG.WriteBuf(level_, "%s", oss.str().c_str());
 			return *this;
 		}
 	private:
 		int level_;
 	};
 
-	extern LogStream g_LogS;
+	#define GLOGS LogStream::GetInstance()
 }
 
 #endif

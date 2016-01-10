@@ -82,14 +82,14 @@ namespace dopixel
 				if (a op b) \
 				{ \
 					UnitTest::MarkCurrentTestCase(true); \
-					g_LogS.SetLevel(Log::Info); \
-					g_LogS << "!>" << testCastName << " SUCCESS:\t" << a << " " #op " " << b << "\n"; \
+					GLOGS.SetLevel(Log::Info); \
+					GLOGS << "!>" << testCastName << " SUCCESS:\t" << a << " " #op " " << b << "\n"; \
 				} \
 				else \
 				{ \
 					UnitTest::MarkCurrentTestCase(false); \
-					g_LogS.SetLevel(Log::Error); \
-					g_LogS << "!>" << testCastName << " FAILED:\t" << a << " " #op " " << b << "\n"; \
+					GLOGS.SetLevel(Log::Error); \
+					GLOGS << "!>" << testCastName << " FAILED:\t" << a << " " #op " " << b << "\n"; \
 				} \
 			}
 
@@ -100,14 +100,14 @@ namespace dopixel
 				if (cond == b) \
 				{ \
 					UnitTest::MarkCurrentTestCase(true); \
-					g_LogS.SetLevel(Log::Info); \
-					g_LogS << "!>" << testCastName << " SUCCESS:\t" #context " " << "\n"; \
+					GLOGS.SetLevel(Log::Info); \
+					GLOGS << "!>" << testCastName << " SUCCESS:\t" #context " " << "\n"; \
 				} \
 				else \
 				{ \
 					UnitTest::MarkCurrentTestCase(false); \
-					g_LogS.SetLevel(Log::Error); \
-					g_LogS << "!>" << testCastName << " FAILED:\t" #context " " << "\n"; \
+					GLOGS.SetLevel(Log::Error); \
+					GLOGS << "!>" << testCastName << " FAILED:\t" #context " " << "\n"; \
 				} \
 			}
 

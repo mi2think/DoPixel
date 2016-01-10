@@ -268,7 +268,7 @@ namespace dopixel
 		if (std::regex_search(str, results, r))
 		{
 #ifdef PRINT_REGEX_MATCH_INFO
-			g_LogS << results.str() << "\n";
+			GLOGS << results.str() << "\n";
 #endif
 			// Save sub expression
 			for (std::smatch::size_type i = 1, index = 1; i < results.size(); ++i)
@@ -298,7 +298,7 @@ namespace dopixel
 				}
 				++index;
 #ifdef PRINT_REGEX_MATCH_INFO
-				g_LogS << subExpr.str() << "\n";
+				GLOGS << subExpr.str() << "\n";
 #endif
 			}
 			return true;
