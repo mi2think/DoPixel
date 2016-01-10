@@ -92,6 +92,7 @@
     <ClInclude Include="..\Vendor\rapidjson\writer.h" />
     <ClInclude Include="..\Vendor\stb\stb_image.h" />
     <ClInclude Include="..\Vendor\stb\stb_image_write.h" />
+    <ClInclude Include="DemoApp.h" />
     <ClInclude Include="DoPixel.h" />
     <ClInclude Include="DpAABB.h" />
     <ClInclude Include="DpCamera.h" />
@@ -101,6 +102,7 @@
     <ClInclude Include="DpFileParser.h" />
     <ClInclude Include="DpFileStream.h" />
     <ClInclude Include="DpFps.h" />
+    <ClInclude Include="DpFrameDX.h" />
     <ClInclude Include="DpGeometry.h" />
     <ClInclude Include="DpImage.h" />
     <ClInclude Include="DpIndexBuffer.h" />
@@ -138,6 +140,7 @@
   <ItemGroup>
     <ClCompile Include="..\Vendor\stb\stb_image.c" />
     <ClCompile Include="..\Vendor\stb\stb_image_write.c" />
+    <ClCompile Include="DemoApp.cpp" />
     <ClCompile Include="DoPixel.cpp" />
     <ClCompile Include="DpCamera.cpp" />
     <ClCompile Include="DpColor.cpp" />
@@ -145,6 +148,7 @@
     <ClCompile Include="DpEvent.cpp" />
     <ClCompile Include="DpFileParser.cpp" />
     <ClCompile Include="DpFileStream.cpp" />
+    <ClCompile Include="DpFrameDX.cpp" />
     <ClCompile Include="DpGeometry.cpp" />
     <ClCompile Include="DpImage.cpp" />
     <ClCompile Include="DpJson.cpp" />

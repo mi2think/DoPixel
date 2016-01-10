@@ -845,14 +845,13 @@ namespace dopixel
 
 	//////////////////////////////////////////////////////////////////////////
 
-	Renderer::Renderer(const SceneManagerRef& sceneManager)
+	Renderer::Renderer()
 		: shadeMode_(ShadeMode::WireFrame)
 		, cullMode_(CullMode::Back)
 		, zbufType_(ZBuffer::None)
 		, zfunc_(Condition::LessThan)
 		, textureWrap_(TextureWrap::ClampToEdge)
 		, textureFilter_(TextureFilter::Linear)
-		, sceneManager_(sceneManager)
 		, frameBuf_(nullptr)
 		, width_(0)
 		, height_(0)

@@ -147,6 +147,7 @@ namespace dopixel
 	typedef Ref<Camera> CameraRef;
 	typedef Ref<Event> EventRef;
 	typedef Ref<Light> LightRef;
+	typedef Ref<Renderer> RendererRef;
 	typedef Ref<Rasterizer> RasterizerRef;
 
 	// can not copy

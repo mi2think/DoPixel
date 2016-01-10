@@ -58,11 +58,6 @@ namespace dopixel
 				IDirect3DTexture9* tex;
 			};
 
-			// Device info
-			void PrintDisplayMode(D3DDISPLAYMODE& display_mode);
-			void PrintCurDisplayMode() { PrintDisplayMode(displayMode); }
-			void PrintAdapterIdentifier();
-			void PrintCaps();
 
 			void Init(HWND hwnd, int wndWidth, int wndHeight, bool bWindow = true);
 

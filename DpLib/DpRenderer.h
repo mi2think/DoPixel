@@ -22,7 +22,7 @@ namespace dopixel
 	class Renderer
 	{
 	public:
-		Renderer(const SceneManagerRef& sceneManager);
+		Renderer();
 		~Renderer();
 
 		void SetShadeMode(ShadeMode::Type shadeMode);

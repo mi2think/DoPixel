@@ -192,6 +192,12 @@
     <ClInclude Include="DpRasterizer.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
+    <ClInclude Include="DpFrameDX.h">
+      <Filter>DpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoApp.h">
+      <Filter>DpCore</Filter>
+    </ClInclude>
     <ClInclude Include="DpDXUtils.h">
       <Filter>DpCore</Filter>
     </ClInclude>
@@ -273,6 +279,12 @@
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpTimer.cpp">
+      <Filter>DpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="DpFrameDX.cpp">
+      <Filter>DpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoApp.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
     <ClCompile Include="DpDXUtils.cpp">

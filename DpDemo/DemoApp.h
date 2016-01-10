@@ -40,10 +40,6 @@ public:
 
 	virtual bool OnEvent(const Event& event) { return false; }
 protected:
-	Device device;
-
-	LightManager lightFactory;
-
 	int clientWidth;
 	int clientHeight;
 	int startClock;
