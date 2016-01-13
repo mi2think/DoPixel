@@ -39,7 +39,7 @@ namespace dopixel
 		void SetupDX();
 		void UpdateDX(const Timestep& timestep);
 		void DisplayDX();
-		void ReleaseDX();
+		void DestoryDX();
 	private:
 		int width_;
 		int height_;

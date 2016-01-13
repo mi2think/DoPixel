@@ -44,6 +44,7 @@ namespace dopixel
 	// setup
 	IDirect3D9* SetupD3D();
 	IDirect3DDevice9* SetupD3DDevice(HWND hwnd, bool wndmode);
+	void DestoryDirectX();
 	// format
 	const char* D3DFormat2String(D3DFORMAT format);
 	// default display mode

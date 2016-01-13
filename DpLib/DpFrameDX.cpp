@@ -317,7 +317,7 @@ namespace dopixel
 			}
 		}
 
-		ReleaseDX();
+		DestoryDX();
 
 		return false;
 	}
@@ -350,11 +350,10 @@ namespace dopixel
 		}
 	}
 
-	void Window::ReleaseDX()
+	void Window::DestoryDX()
 	{
 		SAFE_RELEASE(g_pVB);
 		SAFE_RELEASE(g_pTex);
-		SAFE_RELEASE(g_pD3DD);
-		SAFE_RELEASE(g_pD3D);
+		DestoryDirectX();
 	}
 }

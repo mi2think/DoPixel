@@ -109,6 +109,12 @@ namespace dopixel
 		return g_pD3DD;
 	}
 
+	void DestoryDirectX()
+	{
+		SAFE_RELEASE(g_pD3DD);
+		SAFE_RELEASE(g_pD3D);
+	}
+
 	void ShowDisplayMode()
 	{
 		D3DDISPLAYMODE dm;
