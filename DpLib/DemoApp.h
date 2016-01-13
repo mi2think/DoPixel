@@ -18,6 +18,10 @@
 #include "DpInputState.h"
 #include "DpColor.h"
 #include "DpCamera.h"
+#include "DpVertexArray.h"
+#include "DpVertexBuffer.h"
+#include "DpSceneManager.h"
+#include "DpRenderer.h"
 
 namespace dopixel
 {
@@ -37,7 +41,7 @@ namespace dopixel
 
 		void Draw(const Timestep& timestep, unsigned char* buffer, int width, int height, int pitch);
 
-		virtual void OnCreate() {}
+		virtual void OnCreate();
 
 		virtual void OnUpdate(const Timestep& timestep) {}
 
@@ -49,6 +53,8 @@ namespace dopixel
 		int height_;
 		Window* window_;
 		RendererRef renderer_;
+		CameraRef camera_;
+		CameraSceneNodeRef cameraNode_;
 	};
 }
 

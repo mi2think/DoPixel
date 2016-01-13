@@ -71,7 +71,7 @@ namespace dopixel
 		virtual void OnRegisterSceneNode(SceneManager* manager);
 		virtual void OnUpdate(const Timestep& timestep);
 		virtual bool OnEvent(const Event& event);
-		virtual void OnRender(const Renderer& renderer) = 0;
+		virtual void OnRender(const Renderer& renderer) {}
 
 		virtual MeshSceneNode* AsMeshNode() { return nullptr; }
 		virtual CameraSceneNode* AsCameraNode() { return nullptr; }
@@ -118,6 +118,7 @@ namespace dopixel
 	class CameraSceneNode : public SceneNode
 	{
 	public:
+		CameraSceneNode(const string& name, const CameraRef& camera);
 		CameraSceneNode(const string& name, const CameraRef& camera,
 			const math::Vector3f& position, const math::Vector3f& target);
 		~CameraSceneNode();

@@ -136,8 +136,11 @@ namespace dopixel
 
 		SetWindowLong(g_hwnd, GWL_USERDATA, (LONG)this);
 
+		width_ = width;
+		height_ = height;
 		wndmode_ = wndmode;
 
+		ShowWindow(g_hwnd, SW_SHOW);
 		SetupDX();
 	}
 
@@ -256,7 +259,7 @@ namespace dopixel
 	void Window::SetupDX()
 	{
 		SetupD3D();
-		SetupD3DDevice(g_hwnd, wndmode_);
+		SetupD3DDevice(g_hwnd, width_, height_, wndmode_);
 
 		if (!g_pD3DD)
 			return;
@@ -289,7 +292,7 @@ namespace dopixel
 			CHECK_HR = g_pVB->Unlock();
 		}
 
-		CHECK_HR = g_pD3DD->CreateTexture(width_, height_, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8B8G8R8, D3DPOOL_DEFAULT, &g_pTex, nullptr);
+		CHECK_HR = g_pD3DD->CreateTexture(width_, height_, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &g_pTex, nullptr);
 		CHECK_HR = g_pD3DD->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 	}
 
@@ -314,6 +317,8 @@ namespace dopixel
 				app_->OnUpdate(timestep);
 				UpdateDX(timestep);
 				DisplayDX();
+
+				timer_.Reset();
 			}
 		}
 

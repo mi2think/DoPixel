@@ -152,10 +152,13 @@ namespace dopixel
 		primitiveCount_ = (indexBuf ? indexBuf->GetPrimitiveCount() : vertexBuf->GetPrimitiveCount());
 		
 		AllocVertexBuf(vertexCount_, false);
-		AllocIndexBuf(primitiveCount_, false);
-
+	
 		// copy indices to cache
-		(*indexBuf_) = (*indexBuf);
+		if (indexBuf)
+		{
+			AllocIndexBuf(primitiveCount_, false);
+			*indexBuf_ = *indexBuf;
+		}
 
 		// copy position to cache
 		math::Vector3f* raw_position = vertexBuf->GetPositions()->DataAs<math::Vector3f>();
@@ -823,6 +826,15 @@ namespace dopixel
 				DrawPrimitive(rasterizer, shadeMode, index0, index1, index2);
 			}
 		}
+		else
+		{
+			for (int i = 0, j = 0; i < vertexCount_; i += 3, ++j)
+			{
+				if (triangleCullBuff_[j])
+					continue;
+				DrawPrimitive(rasterizer, shadeMode, i, i + 1, i + 2);
+			}
+		}
 	}
 
 	void Renderer::Impl::DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, int index0, int index1, int index2)
@@ -942,7 +954,7 @@ namespace dopixel
 			zbuf_.resize(width_ * height_);
 		}
 
-		rasterizer_->SetBuffer(frameBuf_, width_, height_, pitch_, &zbuf_[0]);
+		rasterizer_->SetBuffer(frameBuf_, width_, height_, pitch_, zbuf_.empty() ? nullptr : &zbuf_[0]);
 	}
 
 	void Renderer::BeginScene()
@@ -957,6 +969,11 @@ namespace dopixel
 
 	void Renderer::EndScene()
 	{
+	}
+
+	void Renderer::SetCameraNode(CameraSceneNodeRef cameraNode)
+	{
+		cameraNode_ = cameraNode;
 	}
 
 	void Renderer::SetTransform(Transform::Type type, const math::Matrix44f& matrix)
@@ -1024,7 +1041,7 @@ namespace dopixel
 		{
 			UpdateTransform();
 		}
-		auto cameraNode = sceneManager_->GetActiveCamera();
+		auto cameraNode = cameraNode_;
 		eyeWorldPos_ = cameraNode->GetWorldPosition();
 		viewFrustum_ = cameraNode->GetViewFrustum();
 		impl_->SetPrimitiveType(vertexBuffer_->GetPrimitiveType());

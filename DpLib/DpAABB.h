@@ -24,39 +24,39 @@ namespace dopixel
 		class AABB
 		{
 		public:
-			Vector3f min;
-			Vector3f max;
+			Vector3f min_;
+			Vector3f max_;
 
 			AABB() { Reset(); }
-			AABB(const AABB& aabb) : min(aabb.min), max(aabb.max) {}
-			AABB& operator=(const AABB& aabb) { min = aabb.min; max = aabb.max; return *this; }
+			AABB(const AABB& aabb) : min_(aabb.min_), max_(aabb.max_) {}
+			AABB& operator=(const AABB& aabb) { min_ = aabb.min_; max_ = aabb.max_; return *this; }
 
-			bool operator==(const AABB& aabb) const { return min == aabb.min && max == aabb.max; }
+			bool operator==(const AABB& aabb) const { return min_ == aabb.min_ && max_ == aabb.max_; }
 			bool operator!=(const AABB& aabb) const { return !operator==(aabb); }
 
-			Vector3f Size() const { return max - min; }
-			float XSize() const { return max.x - min.x; }
-			float YSize() const { return max.y - min.y; }
-			float ZSize() const { return max.z - min.z; }
+			Vector3f Size() const { return max_ - min_; }
+			float XSize() const { return max_.x - min_.x; }
+			float YSize() const { return max_.y - min_.y; }
+			float ZSize() const { return max_.z - min_.z; }
 
-			Vector3f Center() const { return (max + min) / 2.0f; }
+			Vector3f Center() const { return (max_ + min_) / 2.0f; }
 
-			bool Valid() const { return min.x <= max.x && min.y <= max.y && min.z <= max.z; }
+			bool Valid() const { return min_.x <= max_.x && min_.y <= max_.y && min_.z <= max_.z; }
 			void Reset()
 			{
-				min.x = min.y = min.z = FLT_MAX; 
-				max.x = max.y = max.z = FLT_MIN;
+				min_.x = min_.y = min_.z = FLT_MAX; 
+				max_.x = max_.y = max_.z = FLT_MIN;
 			}
 
 			AABB& Add(const Vector3f& pt)
 			{
-				if (pt.x < min.x) min.x = pt.x;
-				if (pt.y < min.y) min.y = pt.y;
-				if (pt.z < min.z) min.z = pt.z;
+				if (pt.x < min_.x) min_.x = pt.x;
+				if (pt.y < min_.y) min_.y = pt.y;
+				if (pt.z < min_.z) min_.z = pt.z;
 
-				if (pt.x > max.x) max.x = pt.x;
-				if (pt.y > min.y) max.y = pt.y;
-				if (pt.z > min.z) max.z = pt.z;
+				if (pt.x > max_.x) max_.x = pt.x;
+				if (pt.y > min_.y) max_.y = pt.y;
+				if (pt.z > min_.z) max_.z = pt.z;
 
 				return *this;
 			}
@@ -64,13 +64,13 @@ namespace dopixel
 			{
 				if (&aabb != this)
 				{
-					if (aabb.min.x < min.x) min.x = aabb.min.x;
-					if (aabb.min.y < min.y) min.y = aabb.min.y;
-					if (aabb.min.z < min.z) min.z = aabb.min.z;
+					if (aabb.min_.x < min_.x) min_.x = aabb.min_.x;
+					if (aabb.min_.y < min_.y) min_.y = aabb.min_.y;
+					if (aabb.min_.z < min_.z) min_.z = aabb.min_.z;
 
-					if (aabb.max.x > max.x) max.x = aabb.max.x;
-					if (aabb.max.y > max.y) max.y = aabb.max.y;
-					if (aabb.max.z > max.z) max.z = aabb.max.z;
+					if (aabb.max_.x > max_.x) max_.x = aabb.max_.x;
+					if (aabb.max_.y > max_.y) max_.y = aabb.max_.y;
+					if (aabb.max_.z > max_.z) max_.z = aabb.max_.z;
 				}
 
 				return *this;
@@ -80,10 +80,10 @@ namespace dopixel
 			{
 				Vector3f size = Size();
 				Vector3f corners[8] = {
-					min, Vector3f(min + Vector3f(0, size.y, 0)),
-					Vector3f(min + Vector3f(size.x, size.y, 0)), Vector3f(min + Vector3f(size.x, 0, 0)),
-					Vector3f(min + Vector3f(0, 0, size.z)), Vector3f(min + Vector3f(0, size.y, size.z)),
-					max, Vector3f(min + Vector3f(size.x, 0, size.z))
+					min_, Vector3f(min_ + Vector3f(0, size.y, 0)),
+					Vector3f(min_ + Vector3f(size.x, size.y, 0)), Vector3f(min_ + Vector3f(size.x, 0, 0)),
+					Vector3f(min_ + Vector3f(0, 0, size.z)), Vector3f(min_ + Vector3f(0, size.y, size.z)),
+					max_, Vector3f(min_ + Vector3f(size.x, 0, size.z))
 				};
 				return vec.assign(corners, corners + 8);
 			}
@@ -109,9 +109,9 @@ namespace dopixel
 
 			bool Contains(const Vector3f& pt) const
 			{
-				return pt.x >= min.x && pt.x <= max.x
-					&& pt.y >= min.y && pt.y <= max.y
-					&& pt.z >= min.z && pt.z <= max.z;
+				return pt.x >= min_.x && pt.x <= max_.x
+					&& pt.y >= min_.y && pt.y <= max_.y
+					&& pt.z >= min_.z && pt.z <= max_.z;
 			}
 		};
 	}

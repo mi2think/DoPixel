@@ -13,6 +13,15 @@
 
 namespace dopixel
 {
+	Rasterizer::Rasterizer()
+		: frameBuf_(nullptr)
+		, width_(0)
+		, height_(0)
+		, pitch_(0)
+		, zbuf_(nullptr)
+	{
+	}
+
 	Rasterizer::Rasterizer(unsigned char* buf, int width, int height, int pitch, float* zbuf)
 		: frameBuf_(buf)
 		, width_(width)

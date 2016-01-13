@@ -16,6 +16,9 @@ namespace dopixel
 	IDirect3D9* g_pD3D = nullptr;
 	IDirect3DDevice9* g_pD3DD = nullptr;
 
+	// hack for dxerr.lib for it not compatible with vs2015
+	int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf;
+
 	DXErrorChecker::DXErrorChecker(const char* file, int line)
 		: file_(file)
 		, line_(line)
@@ -74,7 +77,7 @@ namespace dopixel
 		return g_pD3D;
 	}
 
-	IDirect3DDevice9* SetupD3DDevice(HWND hwnd, bool wndmode)
+	IDirect3DDevice9* SetupD3DDevice(HWND hwnd, int width, int height, bool wndmode)
 	{
 		D3DPRESENT_PARAMETERS d3dpp;
 		ZeroMemory(&d3dpp, sizeof(d3dpp));
@@ -88,8 +91,8 @@ namespace dopixel
 		if (wndmode)
 		{
 			d3dpp.BackBufferCount = 2;
-			d3dpp.BackBufferWidth = 0;
-			d3dpp.BackBufferHeight = 0;
+			d3dpp.BackBufferWidth = width;
+			d3dpp.BackBufferHeight = height;
 			d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
 			d3dpp.FullScreen_RefreshRateInHz = 0;
 			d3dpp.SwapEffect = D3DSWAPEFFECT_FLIP;

@@ -10,7 +10,6 @@
 	purpose:	Demo App
 *********************************************************************/
 #include "DemoApp.h"
-#include "DpRenderer.h"
 #include "DpDXUtils.h"
 #include "DpFrameDX.h"
 
@@ -21,6 +20,7 @@ namespace dopixel
 		, height_(0)
 		, window_(new Window())
 		, renderer_(new Renderer())
+		, camera_(new Camera())
 	{
 	}
 
@@ -32,16 +32,27 @@ namespace dopixel
 	{
 		window_->Create(width, height, title, wndmode);
 		OnCreate();
-		width_ = window_->GetWidth();
-		height_ = window_->GetHeight();
 	}
 
 	void DemoApp::CreateFullScreen(const char* title)
 	{
 		window_->CreateFullScreen(title);
 		OnCreate();
+	}
+
+	void DemoApp::OnCreate()
+	{
+		window_->SetApp(this);
+
 		width_ = window_->GetWidth();
 		height_ = window_->GetHeight();
+		// default camera
+		camera_->SetFovy(90);
+		camera_->SetNearClip(50);
+		camera_->SetFarClip(500);
+		camera_->SetAspectRatio((float)width_ / height_);
+
+		cameraNode_ = new CameraSceneNode("camera", camera_);
 	}
 
 	bool DemoApp::Loop()

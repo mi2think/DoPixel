@@ -269,6 +269,14 @@ namespace dopixel
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
+	CameraSceneNode::CameraSceneNode(const string& name, const CameraRef& camera)
+		: SceneNode(name)
+		, camera_(camera)
+		, target_(0.0f, 0.0f, 1.0f)
+		, up_(0.0f, 1.0f, 0.0f)
+	{
+		SetPosition(math::Vector3f(0.0f, 0.0f, 0.0f));
+	}
 
 	CameraSceneNode::CameraSceneNode(const string& name, const CameraRef& camera,
 		const math::Vector3f& position, const math::Vector3f& target)

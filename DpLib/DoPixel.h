@@ -126,6 +126,7 @@ namespace dopixel
 	class Mesh;
 	class SubMesh;
 	class SceneNode;
+	class CameraSceneNode;
 	class SceneNodeAnimator;
 	class SceneManager;
 	class Camera;
@@ -142,6 +143,7 @@ namespace dopixel
 	typedef Ref<Mesh> MeshRef;
 	typedef Ref<SubMesh> SubMeshRef;
 	typedef Ref<SceneNode> SceneNodeRef;
+	typedef Ref<CameraSceneNode> CameraSceneNodeRef;
 	typedef Ref<SceneNodeAnimator> SceneNodeAnimatorRef;
 	typedef Ref<SceneManager> SceneManagerRef;
 	typedef Ref<Camera> CameraRef;

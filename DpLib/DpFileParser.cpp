@@ -15,9 +15,6 @@
 #include <cassert>
 
 #define PRINT_REGEX_MATCH_INFO
-#ifdef PRINT_REGEX_MATCH_INFO
-#include "DpConsole.h"
-#endif
 
 namespace dopixel
 {

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DpLib", "DpLib\DpLib.vcxproj", "{4C95835D-13E9-4AD4-9311-0112334FEE13}"
 EndProject
@@ -74,6 +74,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "21_SpotLight", "DpOpenGLDemo\21_SpotLight\21_SpotLight.vcxproj", "{A145FC31-22A6-4F5F-8517-82FB0FC8A487}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "22_AssimpLib", "DpOpenGLDemo\22_AssimpLib\22_AssimpLib.vcxproj", "{D0BBF967-5534-4DC8-8139-3ED8B1FF577C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_WireframeTriangle", "DpDemo\01_WireframeTriangle\01_WireframeTriangle.vcxproj", "{647553E8-30BF-423C-9E5A-59E43B893330}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -307,6 +309,14 @@ Global
 		{D0BBF967-5534-4DC8-8139-3ED8B1FF577C}.Release|Win32.Build.0 = Release|Win32
 		{D0BBF967-5534-4DC8-8139-3ED8B1FF577C}.Release|x64.ActiveCfg = Release|x64
 		{D0BBF967-5534-4DC8-8139-3ED8B1FF577C}.Release|x64.Build.0 = Release|x64
+		{647553E8-30BF-423C-9E5A-59E43B893330}.Debug|Win32.ActiveCfg = Debug|Win32
+		{647553E8-30BF-423C-9E5A-59E43B893330}.Debug|Win32.Build.0 = Debug|Win32
+		{647553E8-30BF-423C-9E5A-59E43B893330}.Debug|x64.ActiveCfg = Debug|x64
+		{647553E8-30BF-423C-9E5A-59E43B893330}.Debug|x64.Build.0 = Debug|x64
+		{647553E8-30BF-423C-9E5A-59E43B893330}.Release|Win32.ActiveCfg = Release|Win32
+		{647553E8-30BF-423C-9E5A-59E43B893330}.Release|Win32.Build.0 = Release|Win32
+		{647553E8-30BF-423C-9E5A-59E43B893330}.Release|x64.ActiveCfg = Release|x64
+		{647553E8-30BF-423C-9E5A-59E43B893330}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -338,5 +348,6 @@ Global
 		{300DCA6A-3186-4022-82BC-3B162A64E15E} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{A145FC31-22A6-4F5F-8517-82FB0FC8A487} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{D0BBF967-5534-4DC8-8139-3ED8B1FF577C} = {492FEE1D-F038-4594-847F-8790D133612D}
+		{647553E8-30BF-423C-9E5A-59E43B893330} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
 	EndGlobalSection
 EndGlobal
