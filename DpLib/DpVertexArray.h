@@ -48,7 +48,7 @@ namespace dopixel
 				{
 					memcpy(data_, old_data, dataStride_ * vertexCount_);
 				}
-				SAFE_DELETEARRAY(data_);
+				SAFE_DELETEARRAY(old_data);
 				vertexCount_ = vertexCount;
 			}
 		}
@@ -66,6 +66,7 @@ namespace dopixel
 		template<typename U>
 		U* DataAs(int index = 0)
 		{
+			ASSERT(sizeof(U) == dataStride_);
 			return reinterpret_cast<U*>(data_ + index * componentCount_);
 		}
 

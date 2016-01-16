@@ -421,7 +421,7 @@ namespace dopixel
 			if (triangleNormals_)
 			{
 				math::Vector3f* triangleNormals = triangleNormals_->DataAs<math::Vector3f>();
-				for (int i = 0; i < vertexCount_; ++i)
+				for (int i = 0; i < primitiveCount_; ++i)
 				{
 					math::Vector3f& n = *(triangleNormals + i);
 					// normal do not need translate

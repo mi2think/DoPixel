@@ -35,10 +35,10 @@ namespace dopixel
 			return vertexCount_ / num;
 		}
 
-		void SetPositions(Ref<VertexArray3f> positions) { positions_ = positions; Internal(VertexType::Position); }
-		void SetNormals(Ref<VertexArray3f> normals) { normals_ = normals; Internal(VertexType::Normal); }
-		void SetColors(Ref<VertexArray3f> colors) { colors_ = colors; Internal(VertexType::Color); }
-		void SetTexCoords(Ref<VertexArray2f> texCoords) { texCoords_ = texCoords; Internal(VertexType::TexCoord); }
+		void SetPositions(const Ref<VertexArray3f>& positions) { positions_ = positions; Internal(VertexType::Position); }
+		void SetNormals(const Ref<VertexArray3f>& normals) { normals_ = normals; Internal(VertexType::Normal); }
+		void SetColors(const Ref<VertexArray3f>& colors) { colors_ = colors; Internal(VertexType::Color); }
+		void SetTexCoords(const Ref<VertexArray2f>& texCoords) { texCoords_ = texCoords; Internal(VertexType::TexCoord); }
 
 		const Ref<VertexArray3f>& GetPositions() const { return positions_; }
 		const Ref<VertexArray3f>& GetNormals() const { return normals_; }
