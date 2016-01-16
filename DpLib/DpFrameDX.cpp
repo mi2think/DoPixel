@@ -39,6 +39,7 @@ namespace dopixel
 
 	//////////////////////////////////////////////////////////////////////////
 	HWND g_hwnd = NULL;
+	Window* g_Window = nullptr;
 	static int s_clickCount = 0;
 	IDirect3DVertexBuffer9* g_pVB = nullptr;
 	IDirect3DTexture9* g_pTex = nullptr;
@@ -60,10 +61,9 @@ namespace dopixel
 
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		Window* window = (Window*)GetWindowLong(g_hwnd, GWL_USERDATA);
-		if (window && g_hwnd == hWnd)
+		if (g_Window && g_hwnd == hWnd)
 		{
-			window->MsgProc(hWnd, uMsg, wParam, lParam);
+			g_Window->MsgProc(hWnd, uMsg, wParam, lParam);
 		}
 		else
 		{
@@ -84,6 +84,7 @@ namespace dopixel
 
 	Window::~Window()
 	{
+		g_Window = nullptr;
 	}
 
 	void Window::SetApp(DemoApp* app)
@@ -121,7 +122,7 @@ namespace dopixel
 		if (wndmode)
 		{
 			RECT rect = { 0, 0, width, height };
-			AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, 0);
+			AdjustWindowRect(&rect, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, 0);
 			w = rect.right - rect.left;
 			h = rect.bottom - rect.top;
 		}
@@ -134,13 +135,15 @@ namespace dopixel
 			return;
 		}
 
-		SetWindowLong(g_hwnd, GWL_USERDATA, (LONG)this);
+		g_Window = this;
 
 		width_ = width;
 		height_ = height;
 		wndmode_ = wndmode;
 
 		ShowWindow(g_hwnd, SW_SHOW);
+		UpdateWindow(g_hwnd);
+
 		SetupDX();
 	}
 
