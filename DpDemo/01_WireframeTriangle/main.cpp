@@ -42,7 +42,7 @@ void WireframeTriangle::OnCreate()
 	// camera
 	cameraNode_->SetPosition(Vector3f(0, 0, -100));
 
-	renderer_->SetShadeMode(ShadeMode::WireFrame);
+	renderer_->SetShadeMode(ShadeMode::Wireframe);
 	renderer_->SetCameraNode(cameraNode_);
 
 	angleY_ = 0.0f;

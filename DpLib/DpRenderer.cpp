@@ -848,7 +848,7 @@ namespace dopixel
 		auto c0 = color + index0;
 		auto c1 = color + index1;
 		auto c2 = color + index2;
-		if (shadeMode == ShadeMode::WireFrame)
+		if (shadeMode == ShadeMode::Wireframe)
 		{
 			rasterizer->DrawFrameTriangle(int(p0->x), int(p0->y), int(p1->x), int(p1->y),
 				int(p2->x), int(p2->y), Color(*c0));

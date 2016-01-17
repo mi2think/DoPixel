@@ -79,7 +79,7 @@ namespace dopixel
 	END_DECLARE_ENUM()
 
 	DECLARE_ENUM(ShadeMode)
-		WireFrame,
+		Wireframe,
 		Constant,
 		Flat,
 		Gouraud,
