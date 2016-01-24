@@ -14,6 +14,7 @@
 
 #include "DpRef.h"
 #include "DpLog.h"
+#include "DpMath.h"
 
 #include <functional>
 #include <string>
@@ -189,6 +190,10 @@ namespace dopixel
 	// swap
 	template<typename T>
 	inline void swap_t(T& a, T& b) { T t = a; a = b; b = t; }
+	// equal
+	template<typename T>
+	inline bool equal_t(const T& a, const T& b) { return a == b; }
+	inline bool equal_t(const float& a, const float& b) { return math::Equal(a, b); }
 
 	// string utils
 

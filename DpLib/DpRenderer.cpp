@@ -753,7 +753,7 @@ namespace dopixel
 			if (vertexRefBuf_[i] == 0)
 				continue;
 			math::Vector4f* p = pos + i;
-			ASSERT(!math::Equal(p->w, 0.0f));
+			ASSERT(!equal_t(p->w, 0.0f));
 			(*p) /= p->w;
 			if (p->x < -1 || p->x > 1 ||
 				p->y < -1 || p->y > 1 ||
@@ -840,9 +840,9 @@ namespace dopixel
 	void Renderer::Impl::DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, int index0, int index1, int index2)
 	{
 		auto pos = positions_->DataAs<math::Vector4f>();
-		auto p0 = pos + index0;
-		auto p1 = pos + index1;
-		auto p2 = pos + index2;
+		auto& p0 = *(math::Vector3f*)(pos + index0);
+		auto& p1 = *(math::Vector3f*)(pos + index1);
+		auto& p2 = *(math::Vector3f*)(pos + index2);
 
 		auto color = colors_->DataAs<math::Vector3f>();
 		auto c0 = color + index0;
@@ -850,15 +850,23 @@ namespace dopixel
 		auto c2 = color + index2;
 		if (shadeMode == ShadeMode::Wireframe)
 		{
-			rasterizer->DrawFrameTriangle(int(p0->x), int(p0->y), int(p1->x), int(p1->y),
-				int(p2->x), int(p2->y), Color(*c0));
+			rasterizer->DrawFrameTriangle(int(p0.x), int(p0.y), int(p1.x), int(p1.y),
+				int(p2.x), int(p2.y), Color(*c0));
+		}
+		else if (shadeMode == ShadeMode::Constant)
+		{
+			rasterizer->DrawTriangle<PSFlat, Color>(p0, p1, p2, Color(0, 0, 255));
+		}
+		else if (shadeMode == ShadeMode::Flat)
+		{
+			rasterizer->DrawTriangle<PSFlat, Color>(p0, p1, p2, Color(*c0));
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////
 
 	Renderer::Renderer()
-		: shadeMode_(ShadeMode::WireFrame)
+		: shadeMode_(ShadeMode::Wireframe)
 		, cullMode_(CullMode::Back)
 		, zbufType_(ZBuffer::None)
 		, zfunc_(Condition::LessThan)
@@ -1048,11 +1056,11 @@ namespace dopixel
 
 		// using status
 		int usingStatus = 0;
-		if (shadeMode_ != ShadeMode::WireFrame && shadeMode_ != ShadeMode::Constant || vertexBuffer->GetColors())
+		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant || vertexBuffer->GetColors())
 			usingStatus |= UsingStatus::VertexColor;
 		if ((vertexBuffer->GetVertexType() & VertexType::TexCoord) && material_->GetTexture())
 			usingStatus |= UsingStatus::Texture;
-		if (shadeMode_ != ShadeMode::WireFrame && shadeMode_ != ShadeMode::Constant)
+		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant)
 			usingStatus |= UsingStatus::Lighting;
 		if (cullMode_ != CullMode::None && vertexBuffer_->GetPrimitiveType() == PrimitiveType::Triangles)
 			usingStatus |= UsingStatus::Cull;

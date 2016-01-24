@@ -30,12 +30,6 @@ namespace dopixel
 		// floating point comparison
 		#define EPSILON_E3 (float)(1E-3)
 		#define FCMP(a,b) ( (fabs(a-b) < EPSILON_E3) ? true : false)
-
-		template <typename T>
-		inline bool Equal(const T& a, const T& b)
-		{
-			return a == b;
-		}
 		
 		bool Equal(const float& a, const float& b);
 
