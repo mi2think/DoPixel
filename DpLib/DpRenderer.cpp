@@ -855,11 +855,11 @@ namespace dopixel
 		}
 		else if (shadeMode == ShadeMode::Constant)
 		{
-			rasterizer->DrawTriangle<PSFlat, Color>(p0, p1, p2, Color(0, 0, 255));
+			rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(0, 0, 255));
 		}
 		else if (shadeMode == ShadeMode::Flat)
 		{
-			rasterizer->DrawTriangle<PSFlat, Color>(p0, p1, p2, Color(*c0));
+			rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(*c0));
 		}
 	}
 

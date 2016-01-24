@@ -13,6 +13,7 @@
 #ifndef __DP_COLOR__
 #define __DP_COLOR__
 
+#include "DoPixel.h"
 #include "DpMath.h"
 #include "DpVector3.h"
 
@@ -40,6 +41,7 @@ namespace dopixel
 		Color(unsigned int val) : value(val) {}
 		Color(const math::Vector3f& v)
 		{
+			ASSERT(v.x >= 0 && v.y >= 0 && v.z >= 0);
 			int _r = (int)(v.x * 255);
 			int _g = (int)(v.y * 255);
 			int _b = (int)(v.z * 255);
