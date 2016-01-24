@@ -55,10 +55,10 @@ namespace dopixel
 		// sort by y
 		if (_p0.y > _p1.y)
 			swap_t(_p0, _p1);
-		if (_p1.y > _p2.y)
-			swap_t(_p1, _p2);
 		if (_p0.y > _p2.y)
 			swap_t(_p0, _p2);
+		if (_p1.y > _p2.y)
+			swap_t(_p1, _p2);
 
 		if (equal_t(_p0.y, _p1.y))
 		{
