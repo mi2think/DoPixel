@@ -63,7 +63,7 @@ namespace dopixel
 		color *= ambient_;
 
 		float dp = DotProduct(invLightWorldDir_, normal);
-		if (dp > math::EPSILON_E5)
+		if (dp > EPSILON_E5)
 		{
 			// diffuse color
 			math::Vector3f diffuseColor = material_->GetDiffuseColor();
@@ -81,7 +81,7 @@ namespace dopixel
 		color *= ambient_;
 
 		float dp = DotProduct(invLightWorldDir_, normal);
-		if (dp > math::EPSILON_E5)
+		if (dp > EPSILON_E5)
 		{
 			// diffuse color
 			math::Vector3f diffuseColor = material_->GetDiffuseColor();
@@ -95,7 +95,7 @@ namespace dopixel
 			math::Vector3f lightReflect = (lightWorldDir_ - 2 * normal * DotProduct(lightWorldDir_, normal));
 			lightReflect.Normalize();
 			float k = DotProduct(posToEye, lightReflect);
-			if (k > math::EPSILON_E5)
+			if (k > EPSILON_E5)
 			{
 				k = pow(k, material_->GetShininess());
 				math::Vector3f specularColor = material_->GetSpecularColor();
@@ -148,7 +148,7 @@ namespace dopixel
 		color *= ambient_;
 
 		float dp = DotProduct(-lightWorldDir, normal);
-		if (dp > math::EPSILON_E5)
+		if (dp > EPSILON_E5)
 		{
 			// diffuse color
 			math::Vector3f diffuseColor = material_->GetDiffuseColor();
@@ -173,7 +173,7 @@ namespace dopixel
 		color *= ambient_;
 
 		float dp = DotProduct(-lightToPos, normal);
-		if (dp > math::EPSILON_E5)
+		if (dp > EPSILON_E5)
 		{
 			// diffuse color
 			math::Vector3f diffuseColor = material_->GetDiffuseColor();
@@ -187,7 +187,7 @@ namespace dopixel
 			math::Vector3f lightReflect = (lightToPos - 2 * normal * DotProduct(lightToPos, normal));
 			lightReflect.Normalize();
 			float k = DotProduct(posToEye, lightReflect);
-			if (k > math::EPSILON_E5)
+			if (k > EPSILON_E5)
 			{
 				k = pow(k, material_->GetShininess());
 				math::Vector3f specularColor = material_->GetSpecularColor();
@@ -259,7 +259,7 @@ namespace dopixel
 		else
 		{
 			float k = DotProduct(-lightToPos, normal);
-			if (k > math::EPSILON_E5)
+			if (k > EPSILON_E5)
 			{
 				// diffuse color
 				math::Vector3f diffuseColor = material_->GetDiffuseColor();
@@ -301,7 +301,7 @@ namespace dopixel
 		else
 		{
 			float k = DotProduct(-lightToPos, normal);
-			if (k > math::EPSILON_E5)
+			if (k > EPSILON_E5)
 			{
 				// diffuse color
 				math::Vector3f diffuseColor = material_->GetDiffuseColor();
@@ -323,7 +323,7 @@ namespace dopixel
 				math::Vector3f lightReflect = (lightToPos - 2 * normal * DotProduct(lightToPos, normal));
 				lightReflect.Normalize();
 				float w = DotProduct(posToEye, lightReflect);
-				if (w > math::EPSILON_E5)
+				if (w > EPSILON_E5)
 				{
 					w = pow(w, material_->GetShininess());
 					math::Vector3f specularColor = material_->GetSpecularColor();

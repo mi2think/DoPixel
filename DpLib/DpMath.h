@@ -18,8 +18,6 @@ namespace dopixel
 {
 	namespace math
 	{
-		const float EPSILON_E5 = (float)(1E-5);
-
 		#define M_PI 3.14159265358979323846
 		#define angle2radian(a) (float)((a) * M_PI / 180)
 		#define radian2angle(r) (float)((r) * 180 / M_PI)
@@ -29,6 +27,7 @@ namespace dopixel
 
 		// floating point comparison
 		#define EPSILON_E3 (float)(1E-3)
+		#define EPSILON_E5 (float)(1E-5)
 		#define FCMP(a,b) ( (fabs(a-b) < EPSILON_E3) ? true : false)
 		
 		bool Equal(const float& a, const float& b);
