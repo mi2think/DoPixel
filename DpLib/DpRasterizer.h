@@ -206,7 +206,7 @@ namespace dopixel
 		VectorT srv = (v2 - v0) / yp2p0;
 		// v left, v right
 		VectorT vl = v0 + slv * ysp0;
-		VectorT vr = v1 + srv * ysp0;
+		VectorT vr = v0 + srv * ysp0;
 
 		// buf
 		unsigned char* buf = frameBuf_ + ys * pitch_;
@@ -240,6 +240,14 @@ namespace dopixel
 		unsigned int operator()(float f, const Color& color) const
 		{
 			return color.value;
+		}
+	};
+
+	struct PSGouraud
+	{
+		unsigned int operator()(const math::Vector3f& v, const Color& color) const
+		{
+			return Color(v).value;
 		}
 	};
 }

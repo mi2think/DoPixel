@@ -48,8 +48,8 @@ namespace dopixel
 		height_ = window_->GetHeight();
 		// default camera
 		camera_->SetFovy(90);
-		camera_->SetNearClip(50);
-		camera_->SetFarClip(500);
+		camera_->SetNearClip(1);
+		camera_->SetFarClip(1000);
 		camera_->SetAspectRatio((float)width_ / height_);
 
 		cameraNode_ = new CameraSceneNode("camera", camera_);

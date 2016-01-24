@@ -845,21 +845,24 @@ namespace dopixel
 		auto& p2 = *(math::Vector3f*)(pos + index2);
 
 		auto color = colors_->DataAs<math::Vector3f>();
-		auto c0 = color + index0;
-		auto c1 = color + index1;
-		auto c2 = color + index2;
-		if (shadeMode == ShadeMode::Wireframe)
+		auto& c0 = *(color + index0);
+		auto& c1 = *(color + index1);
+		auto& c2 = *(color + index2);
+
+		switch (shadeMode)
 		{
-			rasterizer->DrawFrameTriangle(int(p0.x), int(p0.y), int(p1.x), int(p1.y),
-				int(p2.x), int(p2.y), Color(*c0));
-		}
-		else if (shadeMode == ShadeMode::Constant)
-		{
+		case ShadeMode::Wireframe:
+			rasterizer->DrawFrameTriangle(int(p0.x), int(p0.y), int(p1.x), int(p1.y), int(p2.x), int(p2.y), Color(c0));
+			break;
+		case ShadeMode::Constant:
 			rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(0, 0, 255));
-		}
-		else if (shadeMode == ShadeMode::Flat)
-		{
-			rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(*c0));
+			break;
+		case ShadeMode::Flat:
+			rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(c0));
+			break;
+		case ShadeMode::Gouraud:
+			rasterizer->DrawTriangle<PSGouraud, math::Vector3f, Color>(p0, c0, p1, c1, p2, c2, Color(c0));
+			break;
 		}
 	}
 
