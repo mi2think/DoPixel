@@ -16,32 +16,39 @@
 namespace dopixel
 {
 	template<typename T>
+	void default_destory(T* p) { delete p;}
+
+	template<typename T>
+	void default_array_destory(T* p) { delete[] p; }
+
+	template<typename T>
 	class Ref
 	{
 	public:
-		Ref() : ptr(nullptr), counter(nullptr)
-		{
+		typedef void(*Deleter)(T*);
 
+		Ref() : ptr(nullptr), counter(nullptr), del(&default_destory<T>)
+		{
 		}
 
-		Ref(T* p) : ptr(p), counter(new int(0))
-		{
-			IncRef();
-		}
-
-		Ref(const Ref<T>& r) : ptr(r.ptr), counter(r.counter)
+		Ref(T* p, Deleter d = &default_destory<T>) : ptr(p), counter(new int(0)), del(d)
 		{
 			IncRef();
 		}
 
-		Ref(Ref<T>&& r) : ptr(r.ptr), counter(r.counter)
+		Ref(const Ref<T>& r) : ptr(r.ptr), counter(r.counter), del(r.del)
+		{
+			IncRef();
+		}
+
+		Ref(Ref<T>&& r) : ptr(r.ptr), counter(r.counter), del(r.del)
 		{
 			r.ptr = nullptr;
 			r.counter = nullptr;
 		}
 
 		template<typename U>
-		Ref(const Ref<U>& r) : ptr(r.ptr), counter(r.counter)
+		Ref(const Ref<U>& r) : ptr(r.ptr), counter(r.counter), del(r.del)
 		{
 			IncRef();
 		}
@@ -58,6 +65,7 @@ namespace dopixel
 				DecRef();
 				ptr = r.ptr;
 				counter = r.counter;
+				del = r.del;
 				IncRef();
 			}
 			return *this;
@@ -70,6 +78,7 @@ namespace dopixel
 			{
 				counter = new int(0);
 				ptr = p;
+				del = &default_destory<T>;
 				IncRef();
 			}
 			else
@@ -87,6 +96,7 @@ namespace dopixel
 				DecRef();
 				ptr = r.ptr;
 				counter = r.counter;
+				del = r.del;
 
 				r.ptr = nullptr;
 				r.counter = nullptr;
@@ -101,6 +111,7 @@ namespace dopixel
 
 			ptr = r.ptr;
 			counter = r.counter;
+			del = r.del;
 			IncRef();
 			return *this;
 		}
@@ -167,13 +178,14 @@ namespace dopixel
 			{
 				if ((--(*counter)) == 0)
 				{
-					delete ptr;
+					del(ptr);
 					delete counter;
 				}
 			}
 		}
 
 		T* ptr;
+		Deleter del;
 		mutable int* counter;
 	};
 }

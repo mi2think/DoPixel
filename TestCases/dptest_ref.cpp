@@ -63,4 +63,8 @@ DPTEST(Ref)
 
 	EXPECT_TRUE(r3->GetId() == 2);
 	EXPECT_TRUE(r3.Count() == 1);
+
+	{
+		Ref<char> ch(new char[10], &default_array_destory<char>);
+	}
 }
