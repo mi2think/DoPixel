@@ -89,7 +89,7 @@ namespace dopixel
 		size_t readSize = fs.Read(fileData, size);
 		if (readSize != size)
 		{
-			fprintf(stderr, "error: load %s failed!\n", path.c_str());
+			LOG_ERROR("error: load %s failed!\n", path.c_str());
 			return ImageRef();
 		}
 
@@ -99,7 +99,7 @@ namespace dopixel
 		stbi_uc* stbi_data = stbi_load_from_memory(fileData, size, &width, &height, &comp, 4);
 		if (!stbi_data)
 		{
-			fprintf(stderr, "error: stbi decode image %s filed!\n", path.c_str());
+			LOG_ERROR("error: stbi decode image %s filed!\n", path.c_str());
 			return ImageRef();
 		}
 

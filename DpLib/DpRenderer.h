@@ -29,15 +29,11 @@ namespace dopixel
 		void SetCullMode(CullMode::Type cullMode);
 		void SetZBufferType(ZBuffer::Type zbufType);
 		void SetZFuncType(Condition::Type zfunc);
-		void SetTextureWrap(TextureWrap::Type wrap);
-		void SetTextureFilter(TextureFilter::Type filter);
 
 		ShadeMode::Type GetShadeMode() const;
 		CullMode::Type GetCullMode() const;
 		ZBuffer::Type GetZBufferType() const;
 		Condition::Type GetZFuncType() const;
-		TextureWrap::Type GetTextureWrap() const;
-		TextureFilter::Type GetTextureFilter() const;
 
 		void SetFrameBuffer(unsigned char* frameBuf, int width, int height, int pitch);
 		void BeginScene();
@@ -63,8 +59,6 @@ namespace dopixel
 		CullMode::Type cullMode_;
 		ZBuffer::Type zbufType_;
 		Condition::Type zfunc_;
-		TextureWrap::Type textureWrap_;
-		TextureFilter::Type textureFilter_;
 
 		unsigned char* frameBuf_;
 		int width_;

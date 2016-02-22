@@ -873,8 +873,6 @@ namespace dopixel
 		, cullMode_(CullMode::Back)
 		, zbufType_(ZBuffer::None)
 		, zfunc_(Condition::LessThan)
-		, textureWrap_(TextureWrap::ClampToEdge)
-		, textureFilter_(TextureFilter::Linear)
 		, frameBuf_(nullptr)
 		, width_(0)
 		, height_(0)
@@ -913,16 +911,6 @@ namespace dopixel
 		zfunc_ = zfunc;
 	}
 
-	void Renderer::SetTextureWrap(TextureWrap::Type wrap)
-	{
-		textureWrap_ = wrap;
-	}
-
-	void Renderer::SetTextureFilter(TextureFilter::Type filter)
-	{
-		textureFilter_ = filter;
-	}
-
 	ShadeMode::Type Renderer::GetShadeMode() const
 	{
 		return shadeMode_;
@@ -941,16 +929,6 @@ namespace dopixel
 	Condition::Type Renderer::GetZFuncType() const
 	{
 		return zfunc_;
-	}
-
-	TextureWrap::Type Renderer::GetTextureWrap() const
-	{
-		return textureWrap_;
-	}
-
-	TextureFilter::Type Renderer::GetTextureFilter() const
-	{
-		return textureFilter_;
 	}
 
 	void Renderer::SetFrameBuffer(unsigned char* frameBuf, int width, int height, int pitch)

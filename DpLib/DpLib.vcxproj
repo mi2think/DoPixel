@@ -127,6 +127,7 @@
     <ClInclude Include="DpSceneNode.h" />
     <ClInclude Include="DpSceneNodeAnimator.h" />
     <ClInclude Include="DpTexture.h" />
+    <ClInclude Include="DpTextureSampler.h" />
     <ClInclude Include="DpTga.h" />
     <ClInclude Include="DpTimer.h" />
     <ClInclude Include="DpUnitTest.h" />
@@ -165,6 +166,7 @@
     <ClCompile Include="DpSceneNode.cpp" />
     <ClCompile Include="DpSceneNodeAnimator.cpp" />
     <ClCompile Include="DpTexture.cpp" />
+    <ClCompile Include="DpTextureSampler.cpp" />
     <ClCompile Include="DpTga.cpp" />
     <ClCompile Include="DpTimer.cpp" />
     <ClCompile Include="DpUnitTest.cpp" />

@@ -50,13 +50,13 @@ namespace dopixel
 		RGB,
 		RGBA,
 		ARGB,
-		FLOAT4
+		FLOAT4 //ARGB
 	END_DECLARE_ENUM()
 
 	DECLARE_ENUM(TextureFilter)
-		Nearest,
-		Linear,
-		Mipmap
+		NearestPoint,
+		Bilinear,
+		Trilinear
 	END_DECLARE_ENUM()
 
 	DECLARE_ENUM(TextureWrap)

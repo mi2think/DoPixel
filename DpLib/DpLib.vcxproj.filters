@@ -204,6 +204,7 @@
     <ClInclude Include="DpLog.h">
       <Filter>DpCore</Filter>
     </ClInclude>
+    <ClInclude Include="DpTextureSampler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpColor.cpp">
@@ -296,5 +297,6 @@
     <ClCompile Include="DpUnitTest.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
+    <ClCompile Include="DpTextureSampler.cpp" />
   </ItemGroup>
 </Project>

@@ -18,8 +18,8 @@ namespace dopixel
 		, height_(0)
 		, format_(ImageFormat::Unknown)
 		, mipmapCount_(0)
-		, filterMin_(TextureFilter::Linear)
-		, filterMag_(TextureFilter::Linear)
+		, filterMin_(TextureFilter::NearestPoint)
+		, filterMag_(TextureFilter::NearestPoint)
 		, wrapS_(TextureWrap::Reapeat)
 		, wrapT_(TextureWrap::Reapeat)
 	{
@@ -29,8 +29,8 @@ namespace dopixel
 		: width_(width)
 		, height_(height)
 		, format_(format)
-		, filterMin_(TextureFilter::Linear)
-		, filterMag_(TextureFilter::Linear)
+		, filterMin_(TextureFilter::NearestPoint)
+		, filterMag_(TextureFilter::NearestPoint)
 		, wrapS_(TextureWrap::Reapeat)
 		, wrapT_(TextureWrap::Reapeat)
 		, mipmapCount_(1)
@@ -40,8 +40,8 @@ namespace dopixel
 	}
 
 	Texture::Texture(const string& path, bool mipmaps)
-		: filterMin_(TextureFilter::Linear)
-		, filterMag_(TextureFilter::Linear)
+		: filterMin_(TextureFilter::NearestPoint)
+		, filterMag_(TextureFilter::NearestPoint)
 		, wrapS_(TextureWrap::Reapeat)
 		, wrapT_(TextureWrap::Reapeat)
 	{
@@ -53,8 +53,8 @@ namespace dopixel
 		, height_(image->GetFormat())
 		, format_(image->GetFormat())
 		, mipmapCount_(1)
-		, filterMin_(TextureFilter::Linear)
-		, filterMag_(TextureFilter::Linear)
+		, filterMin_(TextureFilter::NearestPoint)
+		, filterMag_(TextureFilter::NearestPoint)
 		, wrapS_(TextureWrap::Reapeat)
 		, wrapT_(TextureWrap::Reapeat)
 	{
