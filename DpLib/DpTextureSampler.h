@@ -33,6 +33,7 @@ namespace dopixel
 		void SetWrapT(TextureWrap::Type wrap) { wrapT_ = wrap; }
 
 		void SetBorderColor(const math::Vector3f& borderColor) { borderColor_ = borderColor; }
+		math::Vector2f GetTextureSize() const;
 
 		void BeginSample(
 			const math::Vector2f& p0, 

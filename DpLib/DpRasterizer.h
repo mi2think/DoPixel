@@ -14,6 +14,7 @@
 
 #include "DoPixel.h"
 #include "DpColor.h"
+#include "DpTextureSampler.h"
 
 namespace dopixel
 {
@@ -24,6 +25,7 @@ namespace dopixel
 		Rasterizer(unsigned char* buf, int width, int height, int pitch, float* zbuf);
 
 		void SetBuffer(unsigned char* buf, int width, int height, int pitch, float* zbuf);
+		void SetTextureSampler(TextureSampler* textureSampler);
 
 		void DrawPixel(int x, int y, const Color& color);
 		void DrawLine(int x0, int y0, int x1, int y1, const Color& color);
@@ -52,6 +54,7 @@ namespace dopixel
 		int height_;
 		int pitch_;
 		float* zbuf_;
+		TextureSampler* textureSampler_;
 	};
 
 	template<typename PixelShader, typename VectorT, typename T>
@@ -167,7 +170,7 @@ namespace dopixel
 
 			for (int x = xs; x <= xe; ++x)
 			{
-				((unsigned int*)buf)[x] = ps(vs, t);
+				((unsigned int*)buf)[x] = ps(vs, t, textureSampler_);
 				vs += step;
 			}
 			
@@ -223,7 +226,7 @@ namespace dopixel
 
 			for (int x = xs; x <= xe; ++x)
 			{
-				((unsigned int*)buf)[x] = ps(vs, t);
+				((unsigned int*)buf)[x] = ps(vs, t, textureSampler_);
 				vs += step;
 			}
 			xl += slx;
@@ -237,7 +240,7 @@ namespace dopixel
 	// pixel shader
 	struct PSFlat
 	{
-		unsigned int operator()(float f, const Color& color) const
+		unsigned int operator()(float f, const Color& color, const TextureSampler* textureSampler) const
 		{
 			return color.value;
 		}
@@ -245,9 +248,21 @@ namespace dopixel
 
 	struct PSGouraud
 	{
-		unsigned int operator()(const math::Vector3f& v, const Color& color) const
+		unsigned int operator()(const math::Vector3f& v, const Color& color, const TextureSampler* textureSampler) const
 		{
 			return Color(v).value;
+		}
+	};
+
+	struct PSFlatTexture
+	{
+		unsigned int operator()(const math::Vector2f& uv, const math::Vector3f& color, const TextureSampler* textureSampler) const
+		{
+			math::Vector3f c = textureSampler->Sample(uv);
+			c.x *= color.x;
+			c.y *= color.y;
+			c.z *= color.z;
+			return Color(c).value;
 		}
 	};
 }

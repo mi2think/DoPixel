@@ -117,7 +117,6 @@ namespace dopixel
 	public:
 		virtual ~ITextureFilter() = 0 {};
 		virtual math::Vector3f Sample(const math::Vector2f& uv) const = 0;
-		virtual math::Vector2f TextureSize() const = 0;
 	};
 
 	class NearestPointFilter : public TextureSampler::ITextureFilter
@@ -155,11 +154,6 @@ namespace dopixel
 				return math::Vector3f(p[0], p[1], p[2]);
 			}
 		}
-
-		virtual math::Vector2f TextureSize() const override
-		{
-			return math::Vector2f(float(width_), float(height_));
-		}
 	private:
 		const ImageRef image_;
 		const float* data_;
@@ -189,6 +183,18 @@ namespace dopixel
 	void TextureSampler::SetTexture(const TextureRef& texture)
 	{
 		texture_ = texture;
+		if (texture_)
+		{
+			SetWrapS(texture_->GetWrapS());
+			SetWrapT(texture_->GetWrapT());
+			SetFilterMin(texture_->GetFilterMin());
+			SetFilterMag(texture_->GetFilterMag());
+		}
+	}
+
+	math::Vector2f TextureSampler::GetTextureSize() const
+	{
+		return math::Vector2f(texture_->GetWidth(), texture_->GetHeight());
 	}
 
 	void TextureSampler::BeginSample(
@@ -199,6 +205,8 @@ namespace dopixel
 		const math::Vector2f& p2, 
 		const math::Vector2f& uv2)
 	{
+		ASSERT(texture_ != nullptr);
+
 		// Note: simple process on choose minifying & magnification filter:
 		// if pixel area > texel area: choose magnification
 		// else: choose minifying

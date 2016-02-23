@@ -47,6 +47,7 @@ namespace dopixel
 		void DrawPrimitive(const VertexBufferRef& vertexBuffer, const IndexBufferRef& indexBuffer);
 		void DrawPrimitive(const VertexBufferRef& vertexBuffer, const IndexBufferRef& indexBuffer, const MaterialRef& material);
 
+		void SetTexture(const TextureRef& texture);
 		void SetCameraNode(CameraSceneNodeRef cameraNode);
 		void SetTransform(Transform::Type type, const math::Matrix44f& matrix);
 		const math::Matrix44f& GetTransform(Transform::Type type) const;
@@ -68,6 +69,7 @@ namespace dopixel
 		RasterizerRef rasterizer_;
 
 //		SceneManagerRef sceneManager_;
+		TextureRef texture_;
 		CameraSceneNodeRef cameraNode_;
 		MaterialRef material_;
 		VertexBufferRef vertexBuffer_;

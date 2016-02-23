@@ -83,7 +83,7 @@ namespace dopixel
 		return shininess_;
 	}
 
-	void Material::SetTexture(TextureRef texture)
+	void Material::SetTexture(const TextureRef& texture)
 	{
 		texture_ = texture;
 	}

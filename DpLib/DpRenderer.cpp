@@ -12,10 +12,12 @@
 #include "DpRenderer.h"
 #include "DpSceneManager.h"
 #include "DpMesh.h"
+#include "DpTexture.h"
 #include "DpMaterial.h"
 #include "DpVertexBuffer.h"
 #include "DpIndexBuffer.h"
 #include "DpRasterizer.h"
+#include "DpTextureSampler.h"
 
 namespace dopixel
 {
@@ -89,6 +91,7 @@ namespace dopixel
 		void ToViewport(int viewportWidth, int viewportHeight);
 		void DrawPrimitives(RasterizerRef& rasterizer, ShadeMode::Type shadeMode);
 		void DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, int index0, int index1, int index2);
+		void SetTexture(const TextureRef& texture);
 	private:
 		// cache buffer
 		Ref<VertexArray4f> positions_;
@@ -111,6 +114,8 @@ namespace dopixel
 		bool genTriangleNormals_;
 
 		int usingStatus_;
+
+		TextureSampler textureSampler_;
 	};
 
 	Renderer::Impl::Impl()
@@ -849,13 +854,30 @@ namespace dopixel
 		auto& c1 = *(color + index1);
 		auto& c2 = *(color + index2);
 
+		math::Vector2f uv0, uv1, uv2;
+		if (usingStatus_ & UsingStatus::Texture)
+		{
+			math::Vector2f textureSize = textureSampler_.GetTextureSize();
+			auto uv = texCoords_->DataAs<math::Vector2f>();
+			uv0 = *uv;
+			uv1 = *(uv + 1);
+			uv2 = *(uv + 2);
+			// convert to actual texture coord
+			uv0.x *= textureSize.x;	uv0.y *= textureSize.y;
+			uv1.x *= textureSize.x;	uv1.y *= textureSize.y;
+			uv2.x *= textureSize.x;	uv2.y *= textureSize.y;
+		}
+
 		switch (shadeMode)
 		{
 		case ShadeMode::Wireframe:
 			rasterizer->DrawFrameTriangle(int(p0.x), int(p0.y), int(p1.x), int(p1.y), int(p2.x), int(p2.y), Color(c0));
 			break;
 		case ShadeMode::Constant:
-			rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(0, 0, 255));
+			if (usingStatus_ & UsingStatus::Texture)
+				rasterizer->DrawTriangle<PSFlatTexture, math::Vector2f, math::Vector3f>(p0, uv0, p1, uv1, p2, uv2, math::Vector3f(1.0f, 1.0f, 1.0f));
+			else
+				rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(0, 0, 255));
 			break;
 		case ShadeMode::Flat:
 			rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(c0));
@@ -864,6 +886,11 @@ namespace dopixel
 			rasterizer->DrawTriangle<PSGouraud, math::Vector3f, Color>(p0, c0, p1, c1, p2, c2, Color(c0));
 			break;
 		}
+	}
+
+	void Renderer::Impl::SetTexture(const TextureRef& texture)
+	{
+		textureSampler_.SetTexture(texture);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -960,6 +987,11 @@ namespace dopixel
 	{
 	}
 
+	void Renderer::SetTexture(const TextureRef& texture)
+	{
+		texture_ = texture;
+	}
+
 	void Renderer::SetCameraNode(CameraSceneNodeRef cameraNode)
 	{
 		cameraNode_ = cameraNode;
@@ -1026,6 +1058,11 @@ namespace dopixel
 		material_ = material;
 
 		// init state
+		TextureRef texture = texture_;
+		if (! texture)
+		{
+			texture = (material_ != nullptr ? material_->GetTexture() : nullptr);
+		}
 		if (!transformValid_)
 		{
 			UpdateTransform();
@@ -1034,12 +1071,13 @@ namespace dopixel
 		eyeWorldPos_ = cameraNode->GetWorldPosition();
 		viewFrustum_ = cameraNode->GetViewFrustum();
 		impl_->SetPrimitiveType(vertexBuffer_->GetPrimitiveType());
+		impl_->SetTexture(texture_);
 
 		// using status
 		int usingStatus = 0;
 		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant || vertexBuffer->GetColors())
 			usingStatus |= UsingStatus::VertexColor;
-		if ((vertexBuffer->GetVertexType() & VertexType::TexCoord) && material_->GetTexture())
+		if ((vertexBuffer->GetVertexType() & VertexType::TexCoord) && texture != nullptr);
 			usingStatus |= UsingStatus::Texture;
 		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant)
 			usingStatus |= UsingStatus::Lighting;

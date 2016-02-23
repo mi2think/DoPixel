@@ -19,6 +19,7 @@ namespace dopixel
 		, height_(0)
 		, pitch_(0)
 		, zbuf_(nullptr)
+		, textureSampler_(nullptr)
 	{
 	}
 
@@ -28,6 +29,7 @@ namespace dopixel
 		, height_(height)
 		, pitch_(pitch)
 		, zbuf_(zbuf)
+		, textureSampler_(nullptr)
 	{
 	}
 
@@ -38,6 +40,11 @@ namespace dopixel
 		height_ = height;
 		pitch_ = pitch;
 		zbuf_ = zbuf;
+	}
+
+	void Rasterizer::SetTextureSampler(TextureSampler* textureSampler)
+	{
+		textureSampler_ = textureSampler;
 	}
 
 	void Rasterizer::DrawPixel(int x, int y, const Color& color)

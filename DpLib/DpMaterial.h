@@ -39,7 +39,7 @@ namespace dopixel
 		const math::Vector3f& GetSpecularColor() const;
 		const float& GetShininess() const;
 
-		void SetTexture(TextureRef texture);
+		void SetTexture(const TextureRef& texture);
 		const TextureRef& GetTexture() const;
 	private:
 		string name_;
