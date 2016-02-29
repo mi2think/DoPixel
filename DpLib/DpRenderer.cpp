@@ -1077,7 +1077,7 @@ namespace dopixel
 		int usingStatus = 0;
 		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant || vertexBuffer->GetColors())
 			usingStatus |= UsingStatus::VertexColor;
-		if ((vertexBuffer->GetVertexType() & VertexType::TexCoord) && texture != nullptr);
+		if ((vertexBuffer->GetVertexType() & VertexType::TexCoord) && texture != nullptr)
 			usingStatus |= UsingStatus::Texture;
 		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant)
 			usingStatus |= UsingStatus::Lighting;
