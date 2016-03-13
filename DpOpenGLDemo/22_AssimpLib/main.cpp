@@ -7,14 +7,18 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-#include "Pipeline.h"
-
-#include "DpVector2.h"
-#include "DpVector3.h"
-#include "DpVector4.h"
-using namespace dopixel::math;
+#include "ogl_app.h"
+#include "ogl_glut.h"
+#include "ogl_pipeline.h"
+#include "ogl_camera.h"
+#include "ogl_mesh.h"
+#include "ogl_basic_lighting.h"
+using namespace ogl;
 
 #pragma comment(lib, "glew32.lib")
+#pragma comment(lib, "DpOpenGL.lib")
+#pragma comment(lib, "DpLib.lib")
+#pragma comment(lib, "assimp.lib")
 
 #define WINDOW_WIDTH	1920
 #define WINDOW_HEIGHT	1200
@@ -37,8 +41,8 @@ public:
 
 	virtual void RenderSceneCB() override;
 private:
-	basiclighting::DirectionalLight directionalLight_;
-	basiclighting::BasicLightingTechnique* effect_;
+	DirectionalLight directionalLight_;
+	BasicLightingTechnique* effect_;
 	Mesh* mesh_;
 	Camera* camera_;
 	PersProjInfo persProjInfo_;
@@ -78,7 +82,7 @@ bool AssimpLibApp::Init()
 
 	camera_ = new Camera(pos, target, up, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	effect_ = new basiclighting::BasicLightingTechnique();
+	effect_ = new BasicLightingTechnique();
 	if (!effect_->Init())
 	{
 		fprintf(stderr, "error init lighting technique\n");
@@ -113,7 +117,7 @@ void AssimpLibApp::RenderSceneCB()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	basiclighting::PointLight pl[2];
+	PointLight pl[2];
 	pl[0].ambientIntensity_ = 0.0f;
 	pl[0].diffuseIntensity_ = 0.25f;
 	pl[0].color_ = Vector3f(1.0f, 0.5f, 0.0f);
@@ -132,7 +136,7 @@ void AssimpLibApp::RenderSceneCB()
 
 	effect_->SetPointLights(2, pl);
 
-	basiclighting::SpotLight sl[1];
+	SpotLight sl[1];
 	sl[0].ambientIntensity_ = 0.0f;
 	sl[0].diffuseIntensity_ = 0.9f;
 	sl[0].color_ = Vector3f(0.0f, 1.0f, 1.0f);

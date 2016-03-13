@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Pipeline.h"
+#include "ogl_technique.h"
+using namespace ogl;
 
 #define UNVALID_UNIFORM 0xffffffff
 

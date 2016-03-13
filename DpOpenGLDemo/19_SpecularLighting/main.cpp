@@ -7,16 +7,18 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-#include "Pipeline.h"
-
-#include "DpVector2.h"
-#include "DpVector3.h"
-#include "DpMatrix44.h"
-using namespace dopixel::math;
+#include "ogl_app.h"
+#include "ogl_glut.h"
+#include "ogl_pipeline.h"
+#include "ogl_camera.h"
+#include "ogl_texture.h"
+using namespace ogl;
 
 #include "lighting_technique.h"
 
 #pragma comment(lib, "glew32.lib")
+#pragma comment(lib, "DpOpenGL.lib")
+#pragma comment(lib, "DpLib.lib")
 
 #define WINDOW_WIDTH	1024
 #define WINDOW_HEIGHT	768

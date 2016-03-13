@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Pipeline.h"
+#include "ogl_technique.h"
+using namespace ogl;
 
 const char* vs = "#version 330\n"
 "layout(location = 0) in vec3 Position;\n"

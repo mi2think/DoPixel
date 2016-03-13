@@ -4,14 +4,13 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-#include "Pipeline.h"
-
-#include "DpVector3.h"
-#include "DpVector4.h"
-#include "DpMatrix44.h"
-using namespace dopixel::math;
+#include "ogl_pipeline.h"
+#include "ogl_camera.h"
+using namespace ogl;
 
 #pragma comment(lib, "glew32.lib")
+#pragma comment(lib, "DpOpenGL.lib")
+#pragma comment(lib, "DpLib.lib")
 
 PersProjInfo gPersProjInfo;
 Camera* gCamera = nullptr;

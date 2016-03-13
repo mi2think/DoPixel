@@ -1,6 +1,9 @@
 #pragma once
 
-#include "Pipeline.h"
+#include "ogl_technique.h"
+using namespace ogl;
+
+#define INVALID_UNIFORM 0xffffffff
 
 struct BaseLight
 {

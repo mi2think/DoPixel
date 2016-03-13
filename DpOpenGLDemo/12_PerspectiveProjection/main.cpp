@@ -4,15 +4,11 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-#include "Pipeline.h"
-
 #include "DpVector4.h"
 #include "DpMatrix44.h"
 using namespace dopixel::math;
 
 #pragma comment(lib, "glew32.lib")
-
-PersProjInfo gPersProjInfo;
 
 GLuint VAO;
 GLuint VBO[2];
@@ -38,6 +34,16 @@ const char* ps = "#version 330\n"
 "}";
 
 #define USE_OGL 0
+
+#if ! USE_OGL
+#include "ogl_pipeline.h"
+using namespace ogl;
+
+#pragma comment(lib, "DpOpenGL.lib")
+#pragma comment(lib, "DpLib.lib")
+
+PersProjInfo gPersProjInfo;
+#endif
 
 void RenderScene()
 {
