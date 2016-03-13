@@ -399,7 +399,7 @@ namespace dopixel
 		}
 		if (genVertexNormals_)
 		{
-			AllocTriangleNormals(vertexCount_);
+			AllocNormals(vertexCount_);
 			GenVertexNormals();
 		}
 	}
