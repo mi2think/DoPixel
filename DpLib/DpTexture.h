@@ -27,6 +27,7 @@ namespace dopixel
 		~Texture();
 
 		const string& GetName() const { return name_; }
+		void SetImage(const ImageRef& image);
 		void Load(const string& path, bool mipmaps);
 		void Clear();
 

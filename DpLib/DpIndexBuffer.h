@@ -20,7 +20,7 @@ namespace dopixel
 	{
 	public:
 		IndexBuffer(int primitiveType, int primitiveCount)
-			: primitiveType_(primitiveType_)
+			: primitiveType_(primitiveType)
 			, primitiveCount_(primitiveCount)
 			, indices_(primitiveCount * GetVertexNumByPerPrimitive(primitiveType))
 		{}

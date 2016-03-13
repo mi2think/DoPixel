@@ -76,7 +76,12 @@ namespace dopixel
 
 			for (int i = 0; i <= dx; ++i)
 			{
-				DrawPixel(xstart, ystart, color);
+				if (xstart >= 0 && xstart < width_ &&
+					ystart >= 0 && ystart < height_)
+				{
+					DrawPixel(xstart, ystart, color);
+				}
+
 				if (d <= 0)
 				{
 					// choose e
@@ -103,7 +108,12 @@ namespace dopixel
 
 			for (int i = 0; i <= dy; ++i)
 			{
-				DrawPixel(xstart, ystart, color);
+				if (xstart >= 0 && xstart < width_ &&
+					ystart >= 0 && ystart < height_)
+				{
+					DrawPixel(xstart, ystart, color);
+				}
+
 				if (d <= 0)
 				{
 					// choose e

@@ -25,6 +25,11 @@ namespace dopixel
 			, vertexType_(VertexType::Position)
 			, vertexCount_(0)
 		{}
+		VertexBuffer(int vertexType)
+			: primitiveType_(PrimitiveType::Triangles)
+			, vertexType_(vertexType)
+			, vertexCount_(0)
+		{}
 
 		int GetPrimitiveType() const { return primitiveType_; }
 		int GetVertexType() const { return vertexType_; }

@@ -49,21 +49,26 @@ namespace dopixel
 	}
 
 	Texture::Texture(const ImageRef& image)
-		: width_(image->GetWidth())
-		, height_(image->GetFormat())
-		, format_(image->GetFormat())
-		, mipmapCount_(1)
-		, filterMin_(TextureFilter::NearestPoint)
-		, filterMag_(TextureFilter::NearestPoint)
-		, wrapS_(TextureWrap::Reapeat)
-		, wrapT_(TextureWrap::Reapeat)
 	{
-		mipmaps_.push_back(image);
+		SetImage(image);
 	}
 
 	Texture::~Texture()
 	{
 		Clear();
+	}
+
+	void Texture::SetImage(const ImageRef& image)
+	{
+		width_ = image->GetWidth();
+		height_ = image->GetHeight();
+		format_ = image->GetFormat();
+		mipmapCount_ = 1;
+		filterMin_ = TextureFilter::NearestPoint;
+		filterMag_ = TextureFilter::NearestPoint;
+		wrapS_ = TextureWrap::Reapeat;
+		wrapT_ = TextureWrap::Reapeat;
+		mipmaps_.push_back(image);
 	}
 
 	void Texture::Load(const string& path, bool mipmaps)

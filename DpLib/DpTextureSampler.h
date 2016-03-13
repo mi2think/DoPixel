@@ -57,7 +57,7 @@ namespace dopixel
 		// texture border color
 		math::Vector3f borderColor_;
 
-		Ref<ITextureFilter> textureFilter_;
+		ITextureFilter* textureFilter_;
 		Ref<char> buf_;
 	};
 }

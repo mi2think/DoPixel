@@ -20,6 +20,8 @@
 #include "DpCamera.h"
 #include "DpVertexArray.h"
 #include "DpVertexBuffer.h"
+#include "DpIndexBuffer.h"
+#include "DpTexture.h"
 #include "DpSceneManager.h"
 #include "DpRenderer.h"
 

@@ -172,6 +172,7 @@ namespace dopixel
 		, wrapS_(TextureWrap::Reapeat)
 		, wrapT_(TextureWrap::Reapeat)
 		, borderColor_(0.0f, 0.0f, 0.0f)
+		, textureFilter_(nullptr)
 		, buf_(new char[128], &default_array_destory<char>)
 	{
 	}
