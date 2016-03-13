@@ -81,6 +81,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03_GouraudTriangle", "DpDem
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04_TextureWrap", "DpDemo\04_TextureWrap\04_TextureWrap.vcxproj", "{7B914D2B-FB91-4D10-9F04-C9829612C837}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DpOpenGL", "DpOpenGL\DpOpenGL.vcxproj", "{E753AB76-21C1-4A1F-A53D-A3A7EA87213B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -339,6 +341,14 @@ Global
 		{7B914D2B-FB91-4D10-9F04-C9829612C837}.Release|Win32.Build.0 = Release|Win32
 		{7B914D2B-FB91-4D10-9F04-C9829612C837}.Release|x64.ActiveCfg = Release|x64
 		{7B914D2B-FB91-4D10-9F04-C9829612C837}.Release|x64.Build.0 = Release|x64
+		{E753AB76-21C1-4A1F-A53D-A3A7EA87213B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E753AB76-21C1-4A1F-A53D-A3A7EA87213B}.Debug|Win32.Build.0 = Debug|Win32
+		{E753AB76-21C1-4A1F-A53D-A3A7EA87213B}.Debug|x64.ActiveCfg = Debug|x64
+		{E753AB76-21C1-4A1F-A53D-A3A7EA87213B}.Debug|x64.Build.0 = Debug|x64
+		{E753AB76-21C1-4A1F-A53D-A3A7EA87213B}.Release|Win32.ActiveCfg = Release|Win32
+		{E753AB76-21C1-4A1F-A53D-A3A7EA87213B}.Release|Win32.Build.0 = Release|Win32
+		{E753AB76-21C1-4A1F-A53D-A3A7EA87213B}.Release|x64.ActiveCfg = Release|x64
+		{E753AB76-21C1-4A1F-A53D-A3A7EA87213B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
