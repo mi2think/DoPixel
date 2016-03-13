@@ -859,13 +859,16 @@ namespace dopixel
 		{
 			math::Vector2f textureSize = textureSampler_.GetTextureSize();
 			auto uv = texCoords_->DataAs<math::Vector2f>();
-			uv0 = *uv;
-			uv1 = *(uv + 1);
-			uv2 = *(uv + 2);
+			uv0 = *(uv + index0);
+			uv1 = *(uv + index1);
+			uv2 = *(uv + index2);
 			// convert to actual texture coord
 			uv0.x *= textureSize.x;	uv0.y *= textureSize.y;
 			uv1.x *= textureSize.x;	uv1.y *= textureSize.y;
 			uv2.x *= textureSize.x;	uv2.y *= textureSize.y;
+
+			textureSampler_.BeginSample(*(math::Vector2f*)(pos + index0), uv0, *(math::Vector2f*)(pos + index1), uv1, *(math::Vector2f*)(pos + index2), uv2);
+			rasterizer->SetTextureSampler(&textureSampler_);
 		}
 
 		switch (shadeMode)
@@ -880,11 +883,19 @@ namespace dopixel
 				rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(0, 0, 255));
 			break;
 		case ShadeMode::Flat:
-			rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(c0));
+			if (usingStatus_ & UsingStatus::Texture)
+				rasterizer->DrawTriangle<PSFlatTexture, math::Vector2f, math::Vector3f>(p0, uv0, p1, uv1, p2, uv2, c0);
+			else
+				rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(c0));
 			break;
 		case ShadeMode::Gouraud:
 			rasterizer->DrawTriangle<PSGouraud, math::Vector3f, Color>(p0, c0, p1, c1, p2, c2, Color(c0));
 			break;
+		}
+
+		if (usingStatus_ & UsingStatus::Texture)
+		{
+			textureSampler_.EndSample();
 		}
 	}
 

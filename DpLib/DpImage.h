@@ -35,6 +35,7 @@ namespace dopixel
 		void* GetData() { return data_; }
 		const void* GetData() const { return data_; }
 
+		void SaveTGA(const string& path);
 		static int GetBytesPerPixel(ImageFormat::Type format);
 		static ImageRef FromFile(const string& path);
 	private:

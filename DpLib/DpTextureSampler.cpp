@@ -26,7 +26,7 @@ namespace dopixel
 			}
 			else
 			{
-				if (a > r)
+				if (a >= r)
 					a %= r;
 			}
 			return true;
@@ -45,17 +45,17 @@ namespace dopixel
 				if (c & 0x1)
 					a = -b;
 				else
-					a = r + b;
+					a = r - 1 + b;
 			}
 			else
 			{
-				if (a > r)
+				if (a >= r)
 				{
 					int b = a % r;
 					int c = a / r;
 					// odd
 					if (c & 0x1)
-						a = r - b;
+						a = r - 1 - b;
 					else
 						a = b;
 				}
@@ -70,7 +70,7 @@ namespace dopixel
 		{
 			if (a < 0)
 				a = 0;
-			if (a > r)
+			if (a >= r)
 				a = r - 1;
 			return true;
 		}
@@ -80,7 +80,7 @@ namespace dopixel
 	{
 		bool operator()(int& a, int r) const
 		{
-			if (a < 0 || a > r)
+			if (a < 0 || a >= r)
 				return false;
 
 			return true;
@@ -171,7 +171,7 @@ namespace dopixel
 		, filterMag_(TextureFilter::NearestPoint)
 		, wrapS_(TextureWrap::Reapeat)
 		, wrapT_(TextureWrap::Reapeat)
-		, borderColor_(0.0f, 0.0f, 0.0f)
+		, borderColor_(1.0f, 1.0f, 1.0f)
 		, textureFilter_(nullptr)
 		, buf_(new char[128], &default_array_destory<char>)
 	{

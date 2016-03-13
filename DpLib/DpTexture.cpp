@@ -90,9 +90,9 @@ namespace dopixel
 			for (int x = 0; x < width; ++x)
 			{
 				destData[0] = data[3] / 255.0f;
-				destData[1] = data[2] / 255.0f;
+				destData[1] = data[0] / 255.0f;
 				destData[2] = data[1] / 255.0f;
-				destData[3] = data[0] / 255.0f;
+				destData[3] = data[2] / 255.0f;
 				destData += 4;
 				data += 4;
 			}
@@ -107,6 +107,12 @@ namespace dopixel
 			GenMipmaps(destImage);
 		else
 			mipmapCount_ = 1;
+	}
+
+	void Texture::SaveTGA(const string& path, int level)
+	{
+		ASSERT(level < mipmaps_.size());
+		mipmaps_[level]->SaveTGA(path);
 	}
 
 	ImageRef Texture::GetMipmap(int level) const
