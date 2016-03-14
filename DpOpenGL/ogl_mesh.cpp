@@ -176,11 +176,11 @@ namespace ogl
 			}
 
 			// loading a white texture in case model does not include its own texture
-			if (!textures_[i])
-			{
-				textures_[i] = new Texture(GL_TEXTURE_2D, "../Resource/white.png");
-				ret = textures_[i]->Load();
-			}
+			//if (!textures_[i])
+			//{
+			//	textures_[i] = new Texture(GL_TEXTURE_2D, "../Resource/white.png");
+			//	ret = textures_[i]->Load();
+			//}
 		}
 
 		return ret;

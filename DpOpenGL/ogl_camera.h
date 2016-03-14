@@ -33,6 +33,10 @@ namespace ogl
 
 		void SetStepScale(float stepScale);
 
+		void SetPosition(const Vector3f& position) { position_ = position; }
+		void SetTarget(const Vector3f& target) { target_ = target; }
+		void SetUp(const Vector3f& up) { up_ = up; }
+
 		const Vector3f& GetPosition() const { return position_; }
 		const Vector3f& GetTarget() const { return target_; }
 		const Vector3f& GetUp() const { return up_; }
