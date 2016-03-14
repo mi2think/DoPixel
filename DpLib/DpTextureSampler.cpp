@@ -171,7 +171,7 @@ namespace dopixel
 		, filterMag_(TextureFilter::NearestPoint)
 		, wrapS_(TextureWrap::Reapeat)
 		, wrapT_(TextureWrap::Reapeat)
-		, borderColor_(1.0f, 1.0f, 1.0f)
+		, borderColor_(0.0f, 0.0f, 0.0f)
 		, textureFilter_(nullptr)
 		, buf_(new char[128], &default_array_destory<char>)
 	{
@@ -184,13 +184,6 @@ namespace dopixel
 	void TextureSampler::SetTexture(const TextureRef& texture)
 	{
 		texture_ = texture;
-		if (texture_)
-		{
-			SetWrapS(texture_->GetWrapS());
-			SetWrapT(texture_->GetWrapT());
-			SetFilterMin(texture_->GetFilterMin());
-			SetFilterMag(texture_->GetFilterMag());
-		}
 	}
 
 	math::Vector2f TextureSampler::GetTextureSize() const
@@ -207,6 +200,11 @@ namespace dopixel
 		const math::Vector2f& uv2)
 	{
 		ASSERT(texture_ != nullptr);
+
+		SetWrapS(texture_->GetWrapS());
+		SetWrapT(texture_->GetWrapT());
+		SetFilterMin(texture_->GetFilterMin());
+		SetFilterMag(texture_->GetFilterMag());
 
 		// Note: simple process on choose minifying & magnification filter:
 		// if pixel area > texel area: choose magnification

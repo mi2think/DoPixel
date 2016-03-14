@@ -119,32 +119,58 @@ bool TextureWrapApp::OnEvent(const Event& event)
 
 bool TextureWrapApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 {
-	bool update = false;
 	int key = keyEvent.GetKey();
-	if (key == KEY_KEY_W)
+	// wrap
 	{
-		cameraPos_.z += 0.05f;
-		update = true;
+		switch (key)
+		{
+		case KEY_KEY_1:
+			texture_->SetWrapS(TextureWrap::ClampToEdge);
+			texture_->SetWrapT(TextureWrap::ClampToEdge);
+			break;
+		case KEY_KEY_2:
+			texture_->SetWrapS(TextureWrap::ClampToBorder);
+			texture_->SetWrapT(TextureWrap::ClampToBorder);
+			break;
+		case KEY_KEY_3:
+			texture_->SetWrapS(TextureWrap::Reapeat);
+			texture_->SetWrapT(TextureWrap::Reapeat);
+			break;
+		case KEY_KEY_4:
+			texture_->SetWrapS(TextureWrap::Mirror);
+			texture_->SetWrapT(TextureWrap::Mirror);
+			break;
+		}
 	}
-	else if (key == KEY_KEY_S)
+	// zoom
 	{
-		cameraPos_.z -= 0.05f;
-		update = true;
+		bool update = false;
+		if (key == KEY_KEY_W)
+		{
+			cameraPos_.z += 0.05f;
+			update = true;
+		}
+		else if (key == KEY_KEY_S)
+		{
+			cameraPos_.z -= 0.05f;
+			update = true;
+		}
+
+		if (update)
+		{
+			cameraNode_->SetPosition(cameraPos_);
+			renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
+			renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
+		}
 	}
 
-	if (update)
-	{
-		cameraNode_->SetPosition(cameraPos_);
-		renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
-		renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
-	}
 	return true;
 }
 
 int main()
 {
 	Ref<TextureWrapApp> app(new TextureWrapApp);
-	app->Create(400, 400, "Texture Wrap");
+	app->Create(512, 512, "Texture Wrap");
 	app->Loop();
 
 	return 0;
