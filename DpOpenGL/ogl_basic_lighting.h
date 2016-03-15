@@ -13,6 +13,7 @@
 #define __OGL_BASIC_LIGHTING_H__
 
 #include "ogl_technique.h"
+#include "ogl_lights_common.h"
 
 #include "DpVector3.h"
 #include "DpMatrix44.h"
@@ -20,65 +21,6 @@ using namespace dopixel::math;
 
 namespace ogl
 {
-	struct BaseLight
-	{
-		Vector3f color_;
-		float ambientIntensity_;
-		float diffuseIntensity_;
-
-		BaseLight()
-			: color_(0, 0, 0)
-			, ambientIntensity_(0)
-			, diffuseIntensity_(0)
-		{}
-	};
-
-	struct DirectionalLight : public BaseLight
-	{
-		Vector3f direction_;
-
-		DirectionalLight()
-			: direction_(0, 0, 0)
-		{}
-	};
-
-	struct PointLight : public BaseLight
-	{
-		struct Attenuation
-		{
-			float kc;
-			float kl;
-			float kq;
-			Attenuation()
-				: kc(1)
-				, kl(0)
-				, kq(0)
-			{}
-		};
-
-		Vector3f position_;
-		Attenuation attenuation_;
-
-		PointLight()
-			: position_(0, 0, 0)
-		{}
-	};
-
-	struct SpotLight : public PointLight
-	{
-		Vector3f direction_;
-		float theta_;
-		float phi_;
-		float pf_;
-
-		SpotLight()
-			: direction_(0, 0, 0)
-			, theta_(0)
-			, phi_(0)
-			, pf_(1)
-		{}
-	};
-
 	class BasicLightingTechnique : public Technique
 	{
 	public:
