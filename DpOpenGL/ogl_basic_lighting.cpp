@@ -105,21 +105,14 @@ namespace ogl
 			p = dopixel::str_format("gSpotLights[%d].direction", i);
 			light.direction = GetUniformLocation(p);
 
-			p = dopixel::str_format("gSpotLights[%d].cosThetaOver2", i);
-			light.cosThetaOver2 = GetUniformLocation(p);
-
-			p = dopixel::str_format("gSpotLights[%d].cosPhiOver2", i);
-			light.cosPhiOver2 = GetUniformLocation(p);
-
-			p = dopixel::str_format("gSpotLights[%d].pf", i);
-			light.pf = GetUniformLocation(p);
+			p = dopixel::str_format("gSpotLights[%d].cutoff", i);
+			light.cutoff = GetUniformLocation(p);
 
 			if (light.color == INVALID_UNIFORM || light.ambientIntensity == INVALID_UNIFORM ||
 				light.diffuseIntensity == INVALID_UNIFORM || light.position == INVALID_UNIFORM ||
 				light.position == INVALID_UNIFORM || light.atten.kc == INVALID_UNIFORM ||
 				light.atten.kl == INVALID_UNIFORM || light.atten.kq == INVALID_UNIFORM ||
-				light.direction == INVALID_UNIFORM || light.cosThetaOver2 == INVALID_UNIFORM ||
-				light.cosPhiOver2 == INVALID_UNIFORM || light.pf == INVALID_UNIFORM)
+				light.direction == INVALID_UNIFORM || light.cutoff == INVALID_UNIFORM)
 				return false;
 		}
 
@@ -218,11 +211,7 @@ namespace ogl
 			Vector3f dir = light.direction_;
 			dir.Normalize();
 			glUniform3f(loc.direction, dir.x, dir.y, dir.z);
-
-			glUniform1f(loc.cosThetaOver2, cos(light.theta_ / 2.0f));
-			glUniform1f(loc.cosPhiOver2, cos(light.phi_ / 2.0f));
-
-			glUniform1f(loc.pf, light.pf_);
+			glUniform1f(loc.cutoff, cos(light.cutoff));
 		}
 	}
 }

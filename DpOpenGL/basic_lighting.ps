@@ -40,9 +40,7 @@ struct SpotLight
 {
 	PointLight pl;
 	vec3 direction;
-	float cosThetaOver2;
-	float cosPhiOver2;
-	float pf;
+	float cutoff;
 };
 
 uniform int gNumPointLights;
@@ -100,29 +98,16 @@ vec4 CalcSpotLight(SpotLight sl, vec3 normal)
 {
 	vec3 lightToPixel = normalize(WorldPos0 - sl.pl.position);
 
-	vec4 color = vec4(0, 0, 0, 0);
-	float k1 = dot(lightToPixel, sl.direction);
-
-	// case 1: alpha > phi / 2, no ligthing
-	if (k1 < sl.cosPhiOver2)
+	float k = dot(lightToPixel, sl.direction);
+	if (k > sl.cutoff)
 	{
-		return color;
+		vec4 color = CalcPointLight(sl.base, normal);
+		return color * (1.0 - (1.0 - k) * 1.0 / (1.0 - sl.cutoff));
 	}
-	// case 2: alpha < theta, as point light
-	else if(k1 > sl.cosThetaOver2)
-	{
-		color = CalcPointLight(sl.pl, normal);
-	}
-	// case 3: theta / 2 < alpha < phi / 2
 	else
 	{
-		color = CalcPointLight(sl.pl, normal);
-		float k2 = pow(k1 - sl.cosPhiOver2, sl.pf);
-		float k3 = sl.cosThetaOver2 - sl.cosPhiOver2;
-		color = color * k2 / k3;
+		return vec4(0,0,0,0);
 	}
-
-	return color;
 }
 
 void main()

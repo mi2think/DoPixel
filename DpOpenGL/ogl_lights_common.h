@@ -48,7 +48,7 @@ namespace ogl
 			float kl;
 			float kq;
 			Attenuation()
-				: kc(1)
+				: kc(0)
 				, kl(0)
 				, kq(0)
 			{}
@@ -65,15 +65,11 @@ namespace ogl
 	struct SpotLight : public PointLight
 	{
 		Vector3f direction_;
-		float theta_;
-		float phi_;
-		float pf_;
+		float cutoff;
 
 		SpotLight()
 			: direction_(0, 0, 0)
-			, theta_(0)
-			, phi_(0)
-			, pf_(1)
+			, cutoff(0)
 		{}
 	};
 }

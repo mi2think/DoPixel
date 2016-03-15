@@ -81,4 +81,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="basic_lighting.ps">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="basic_lighting.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

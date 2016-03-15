@@ -87,9 +87,7 @@ namespace ogl
 			} atten;
 
 			GLuint direction;
-			GLuint cosThetaOver2;
-			GLuint cosPhiOver2;
-			GLuint pf;
+			GLuint cutoff;
 		} spotLightsLocation_[MAX_SPOT_LIGHTS];
 	};
 }

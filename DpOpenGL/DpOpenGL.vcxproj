@@ -135,6 +135,10 @@
     <ClCompile Include="ogl_technique.cpp" />
     <ClCompile Include="ogl_texture.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="basic_lighting.ps" />
+    <None Include="basic_lighting.vs" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
