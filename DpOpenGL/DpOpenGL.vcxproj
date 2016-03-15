@@ -117,6 +117,7 @@
     <ClInclude Include="ogl_glut.h" />
     <ClInclude Include="ogl_mesh.h" />
     <ClInclude Include="ogl_pipeline.h" />
+    <ClInclude Include="ogl_shadow_map_fbo.h" />
     <ClInclude Include="ogl_technique.h" />
     <ClInclude Include="ogl_texture.h" />
   </ItemGroup>
@@ -127,6 +128,7 @@
     <ClCompile Include="ogl_glut.cpp" />
     <ClCompile Include="ogl_mesh.cpp" />
     <ClCompile Include="ogl_pipeline.cpp" />
+    <ClCompile Include="ogl_shadow_map_fbo.cpp" />
     <ClCompile Include="ogl_technique.cpp" />
     <ClCompile Include="ogl_texture.cpp" />
   </ItemGroup>
