@@ -47,6 +47,7 @@ namespace ogl
 		void SetPerspectiveProj(const PersProjInfo& p);
 
 		void SetCamera(const Camera& camera);
+		void SetCamera(const Vector3f& position, const Vector3f& target, const Vector3f& up);
 
 		// world
 		const Matrix44f& GetOGLWorldTrans();
@@ -65,7 +66,10 @@ namespace ogl
 		Vector3f rotate_;
 
 		PersProjInfo persProjInfo_;
-		const Camera* camera_;
+
+		Vector3f cameraPosition_;
+		Vector3f cameraTarget_;
+		Vector3f cameraUp_;
 
 		Matrix44f worldTrans_;
 		Matrix44f viewTrans_;

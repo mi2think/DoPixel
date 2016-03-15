@@ -18,7 +18,9 @@ namespace ogl
 		: scale_(1, 1, 1)
 		, position_(0, 0, 0)
 		, rotate_(0, 0, 0)
-		, camera_(nullptr)
+		, cameraPosition_(0, 0, 0)
+		, cameraTarget_(0, 0, 1)
+		, cameraUp_(0, 1, 0)
 	{
 
 	}
@@ -71,7 +73,14 @@ namespace ogl
 
 	void Pipeline::SetCamera(const Camera& camera)
 	{
-		camera_ = &camera;
+		SetCamera(camera.GetPosition(), camera.GetTarget(), camera.GetUp());
+	}
+
+	void Pipeline::SetCamera(const Vector3f& position, const Vector3f& target, const Vector3f& up)
+	{
+		cameraPosition_ = position;
+		cameraTarget_ = target;
+		cameraUp_ = up;
 	}
 
 	const Matrix44f& Pipeline::GetOGLWorldTrans()
@@ -103,14 +112,14 @@ namespace ogl
 	{
 		// Note: inverse translation of camera position!
 		Matrix44f translationTrans;
-		MaxtrixTranslation(translationTrans, -camera_->GetPosition());
+		MaxtrixTranslation(translationTrans, -cameraPosition_);
 		translationTrans.Transpose();
 
 		// n: target
-		Vector3f n = camera_->GetTarget();
+		Vector3f n = cameraTarget_;
 		n.Normalize();
 		// v: up
-		Vector3f v = camera_->GetUp();
+		Vector3f v = cameraUp_;
 		v.Normalize();
 		// u: right
 		// u = v x n
