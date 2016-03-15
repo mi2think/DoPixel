@@ -45,6 +45,9 @@
     <ClInclude Include="ogl_lights_common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ogl_shadow_map_technique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ogl_app.cpp">
@@ -72,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ogl_shadow_map_fbo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ogl_shadow_map_technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

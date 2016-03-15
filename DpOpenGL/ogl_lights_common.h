@@ -13,6 +13,7 @@
 #define __OGL_LIGHTS_COMMON_H__
 
 #include "DpVector3.h"
+#include "DpMatrix44.h"
 using namespace dopixel::math;
 
 namespace ogl
