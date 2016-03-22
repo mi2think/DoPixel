@@ -20,7 +20,7 @@ namespace ogl
 
 	}
 
-	bool ShadowMapTechnique::Init(const char* vsFileName, const char* psFileName, const char* wvpName, const char* shadowMapName)
+	bool ShadowMapTechnique::Init(const char* vsFileName, const char* psFileName, const char* wvpName)
 	{
 		if (!Technique::Init())
 			return false;
@@ -35,9 +35,8 @@ namespace ogl
 			return false;
 
 		WVPLocation_ = GetUniformLocation(wvpName);
-		textureLocation_ = GetUniformLocation(shadowMapName);
 
-		if (WVPLocation_ == INVALID_UNIFORM || textureLocation_ == INVALID_UNIFORM)
+		if (WVPLocation_ == INVALID_UNIFORM)
 			return false;
 
 		return true;
@@ -47,10 +46,4 @@ namespace ogl
 	{
 		glUniformMatrix4fv(WVPLocation_, 1, GL_TRUE, &(WVP.m[0][0]));
 	}
-
-	void ShadowMapTechnique::SetTextureUnit(unsigned int textureUnit)
-	{
-		glUniform1i(textureLocation_, textureUnit);
-	}
-
 }

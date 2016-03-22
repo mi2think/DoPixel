@@ -24,13 +24,11 @@ namespace ogl
 	public:
 		ShadowMapTechnique();
 
-		bool Init(const char* vsFileName, const char* psFileName, const char* wvpName, const char* shadowMapName);
+		bool Init(const char* vsFileName, const char* psFileName, const char* wvpName);
 
 		void SetWVP(const Matrix44f& WVP);
-		void SetTextureUnit(unsigned int textureUnit);
 	private:
 		GLuint WVPLocation_;
-		GLuint textureLocation_;
 	};
 }
 

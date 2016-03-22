@@ -92,7 +92,7 @@ bool ShadowMapApp2::Init()
 	camera_ = new Camera(Vector3f(3.0f, 8.0f, -10.0f), Vector3f(0.0f, -0.2f, 1.0f), Vector3f(0.0f, 1.0f, 0.0f), WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	shadowMapTechnique_ = new ShadowMapTechnique();
-	if (!shadowMapTechnique_->Init("../DpOpenGLDemo/24_ShadowMapping2/shadow_map.vs", "../DpOpenGLDemo/24_ShadowMapping2/shadow_map.ps", "gWVP", "gShadowMap"))
+	if (!shadowMapTechnique_->Init("../DpOpenGLDemo/24_ShadowMapping2/shadow_map.vs", "../DpOpenGLDemo/24_ShadowMapping2/shadow_map.ps", "gWVP"))
 	{
 		fprintf(stderr, "error init shadow map technique!\n");
 		return false;
