@@ -30,6 +30,8 @@ namespace ogl
 		if (data_)
 		{
 			free(data_);
+			stbi_image_free(data_);
+			data_ = nullptr;
 		}
 	}
 
@@ -45,8 +47,6 @@ namespace ogl
 			size_t readSize = fs.Read(fileData, size);
 			ASSERT(readSize == size);
 
-			stbi_set_flip_vertically_on_load(true);
-
 			int comp = 0;
 			data_ = stbi_load_from_memory(fileData, size, &width_, &height_, &comp, 4);
 			if (data_ != nullptr)
@@ -57,8 +57,6 @@ namespace ogl
 				glTexParameterf(textureTarget_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameterf(textureTarget_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glBindTexture(textureTarget_, 0);
-
-				stbi_set_flip_vertically_on_load(false);
 				return true;
 			}
 		}

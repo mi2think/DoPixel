@@ -114,6 +114,7 @@
     <ClInclude Include="ogl_app.h" />
     <ClInclude Include="ogl_basic_lighting.h" />
     <ClInclude Include="ogl_camera.h" />
+    <ClInclude Include="ogl_cubemap_texture.h" />
     <ClInclude Include="ogl_glut.h" />
     <ClInclude Include="ogl_lights_common.h" />
     <ClInclude Include="ogl_mesh.h" />
@@ -127,6 +128,7 @@
     <ClCompile Include="ogl_app.cpp" />
     <ClCompile Include="ogl_basic_lighting.cpp" />
     <ClCompile Include="ogl_camera.cpp" />
+    <ClCompile Include="ogl_cubemap_texture.cpp" />
     <ClCompile Include="ogl_glut.cpp" />
     <ClCompile Include="ogl_mesh.cpp" />
     <ClCompile Include="ogl_pipeline.cpp" />

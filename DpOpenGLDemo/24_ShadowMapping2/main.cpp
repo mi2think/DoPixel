@@ -109,7 +109,7 @@ bool ShadowMapApp2::Init()
 	lightTechnique_->SetTextureUnit(0);
 	lightTechnique_->SetShadowMapTextureUnit(1);
 
-	groundTex_ = new Texture(GL_TEXTURE_2D, "../Resource/checkerboard.png");
+	groundTex_ = new Texture(GL_TEXTURE_2D, "../Resource/checkerboard_flip.png");
 	if (!groundTex_->Load())
 		return false;
 
