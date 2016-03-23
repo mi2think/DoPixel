@@ -51,9 +51,6 @@
     <ClInclude Include="ogl_cubemap_texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ogl_skybox_technique.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ogl_app.cpp">
@@ -87,9 +84,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ogl_cubemap_texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ogl_skybox_technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
