@@ -119,10 +119,10 @@ namespace dopixel
 		virtual math::Vector3f Sample(const math::Vector2f& uv) const = 0;
 	};
 
-	class NearestPointFilter : public TextureSampler::ITextureFilter
+	class BaseFilter : public TextureSampler::ITextureFilter
 	{
 	public:
-		NearestPointFilter(const ImageRef& image, const math::Vector3f& borderColor,TextureWrap::Type wrapS, TextureWrap::Type wrapT)
+		BaseFilter(const ImageRef& image, const math::Vector3f& borderColor, TextureWrap::Type wrapS, TextureWrap::Type wrapT)
 			: image_(image)
 			, borderColor_(borderColor)
 			, width_(image->GetWidth())
@@ -133,6 +133,24 @@ namespace dopixel
 		{
 			ASSERT(image->GetFormat() == ImageFormat::FLOAT4);
 			ASSERT(data_ != nullptr);
+		}
+	protected:
+		const ImageRef image_;
+		const float* data_;
+		math::Vector3f borderColor_;
+		int width_;
+		int height_;
+		std::function<bool(int&, int)> wrapSFunc_;
+		std::function<bool(int&, int)> wrapTFunc_;
+	};
+
+
+	class NearestPointFilter : public BaseFilter
+	{
+	public:
+		NearestPointFilter(const ImageRef& image, const math::Vector3f& borderColor, TextureWrap::Type wrapS, TextureWrap::Type wrapT)
+			: BaseFilter(image, borderColor, wrapS, wrapT)
+		{
 		}
 
 		virtual math::Vector3f Sample(const math::Vector2f& uv) const override
@@ -150,18 +168,66 @@ namespace dopixel
 				ASSERT(u >= 0 && u < width_);
 				ASSERT(v >= 0 && v < height_);
 				const float* p = data_ + (v * width_ + u) * 4;
-				++p; // TODO: skip alpha temporary
-				return math::Vector3f(p[0], p[1], p[2]);
+				return math::Vector3f(p[1], p[2], p[3]); // RGB
 			}
 		}
-	private:
-		const ImageRef image_;
-		const float* data_;
-		math::Vector3f borderColor_;
-		int width_;
-		int height_;
-		std::function<bool(int&, int)> wrapSFunc_;
-		std::function<bool(int&, int)> wrapTFunc_;
+	};
+
+	class BilinearFilter : public BaseFilter
+	{
+	public:
+		BilinearFilter(const ImageRef& image, const math::Vector3f& borderColor, TextureWrap::Type wrapS, TextureWrap::Type wrapT)
+			: BaseFilter(image, borderColor, wrapS, wrapT)
+		{
+		}
+
+		virtual math::Vector3f Sample(const math::Vector2f& uv) const override
+		{
+			int u = (int)uv.x;
+			int v = (int)uv.y;
+			bool s_border = !wrapSFunc_(u, width_);
+			bool t_border = !wrapTFunc_(v, height_);
+			if (s_border || t_border)
+			{
+				return borderColor_;
+			}
+			else
+			{
+				//  4 texel
+				//  |  0  |  1  |
+				//  |-----|-----|
+				//  |  3  |  2  |
+				const float* p0 = data_ + (v * width_ + u) * 4;
+				const float* p3 = p0;
+				if (v + 1 < height_)
+					p3 += width_ * 4;
+				const float* p1 = p0;
+				const float* p2 = p3;
+				if (u + 1 < width_)
+				{
+					p1 += 4;
+					p2 += 4;
+				}
+
+				// RGB
+				math::Vector3f texel0(p0[1], p0[2], p0[3]);
+				math::Vector3f texel1(p1[1], p1[2], p1[3]);
+				math::Vector3f texel2(p2[1], p2[2], p2[3]);
+				math::Vector3f texel3(p3[1], p3[2], p3[3]);
+
+				float du = uv.x - u;
+				float dv = uv.y - v;
+				float one_minus_du = 1.0f - du;
+				float one_minus_dv = 1.0f - dv;
+
+				math::Vector3f r;
+				r += texel0 * (one_minus_du * one_minus_dv);
+				r += texel1 * (du * one_minus_dv);
+				r += texel2 * (du * dv);
+				r += texel3 * (dv * one_minus_du);
+				return r;
+			}
+		}
 	};
 
 	//////////////////////////////////////////////////////////////////////////
@@ -223,6 +289,9 @@ namespace dopixel
 		{
 		case TextureFilter::NearestPoint:
 			textureFilter_ = new(buf_.Get()) NearestPointFilter(image, borderColor_, wrapS_, wrapT_);
+			break;
+		case TextureFilter::Bilinear:
+			textureFilter_ = new(buf_.Get()) BilinearFilter(image, borderColor_, wrapS_, wrapT_);
 			break;
 		default:
 			ASSERT(false && "Not Supported Filter Type!");

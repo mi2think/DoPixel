@@ -140,6 +140,15 @@ bool TextureWrapApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 			texture_->SetWrapS(TextureWrap::Mirror);
 			texture_->SetWrapT(TextureWrap::Mirror);
 			break;
+
+		case KEY_KEY_5:
+			texture_->SetFilterMin(TextureFilter::NearestPoint);
+			texture_->SetFilterMag(TextureFilter::NearestPoint);
+			break;
+		case KEY_KEY_6:
+			texture_->SetFilterMin(TextureFilter::Bilinear);
+			texture_->SetFilterMag(TextureFilter::Bilinear);
+			break;
 		}
 	}
 	// zoom

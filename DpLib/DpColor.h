@@ -44,7 +44,9 @@ namespace dopixel
 			ASSERT(v.x > 0 || equal_t(v.x, 0.0f));
 			ASSERT(v.y > 0 || equal_t(v.y, 0.0f));
 			ASSERT(v.z > 0 || equal_t(v.z, 0.0f));
-			ASSERT(v.x <= 1.0f && v.y <= 1.0f && v.z <= 1.0f);
+			ASSERT(v.x < 1.0f || equal_t(v.x, 1.0f));
+			ASSERT(v.y < 1.0f || equal_t(v.y, 1.0f));
+			ASSERT(v.z < 1.0f || equal_t(v.z, 1.0f));
 			int _r = (int)(v.x * 255);
 			int _g = (int)(v.y * 255);
 			int _b = (int)(v.z * 255);
