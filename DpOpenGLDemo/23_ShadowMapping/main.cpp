@@ -65,9 +65,7 @@ ShadowMapApp::ShadowMapApp()
 	spotLight_.position_ = Vector3f(-20.0f, 20.0f, 5.0f);
 	spotLight_.direction_ = Vector3f(1.0f, -1.0f, 0.0f);
 	spotLight_.attenuation_.kl = 0.01f;
-	spotLight_.pf_ = 1.0f;
-	spotLight_.theta_ = angle2radian(10);
-	spotLight_.phi_ = angle2radian(30);
+	spotLight_.cutoff = 20.0f;
 
 	persProjInfo_.FOV = 60.0f;
 	persProjInfo_.Width = WINDOW_WIDTH;

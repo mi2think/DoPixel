@@ -145,9 +145,7 @@ void AssimpLibApp::RenderSceneCB()
 	sl[0].attenuation_.kc = 1.0f;
 	sl[0].attenuation_.kl = 0.1f;
 	sl[0].attenuation_.kq = 0.0f;
-	sl[0].pf_ = 1.0f;
-	sl[0].theta_ = angle2radian(10);
-	sl[0].phi_ = angle2radian(30);
+	sl[0].cutoff = 10.0f;
 
 	effect_->SetSpotLights(1, sl);
 

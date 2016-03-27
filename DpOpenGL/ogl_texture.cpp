@@ -29,7 +29,6 @@ namespace ogl
 	{
 		if (data_)
 		{
-			free(data_);
 			stbi_image_free(data_);
 			data_ = nullptr;
 		}
