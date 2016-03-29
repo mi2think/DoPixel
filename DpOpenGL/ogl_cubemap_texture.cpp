@@ -25,7 +25,7 @@ namespace ogl
 		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 
-	CubemapTexture::CubemapTexture(const std::string& directory,
+	CubemapTexture::CubemapTexture(
 		const std::string& posXFileName,
 		const std::string& negXFileName,
 		const std::string& posYFileName,
@@ -33,18 +33,12 @@ namespace ogl
 		const std::string& posZFileName,
 		const std::string& negZFileName)
 	{
-		std::string baseDir = directory;
-		auto it = directory.cend();
-		--it;
-		if (*it != '/')
-			baseDir += "/";
-
-		fileNames_[0] = baseDir + posXFileName;
-		fileNames_[1] = baseDir + negXFileName;
-		fileNames_[2] = baseDir + posYFileName;
-		fileNames_[3] = baseDir + negYFileName;
-		fileNames_[4] = baseDir + posZFileName;
-		fileNames_[5] = baseDir + negZFileName;
+		fileNames_[0] = posXFileName;
+		fileNames_[1] = negXFileName;
+		fileNames_[2] = posYFileName;
+		fileNames_[3] = negYFileName;
+		fileNames_[4] = posZFileName;
+		fileNames_[5] = negZFileName;
 
 		textureObj_ = 0;
 	}

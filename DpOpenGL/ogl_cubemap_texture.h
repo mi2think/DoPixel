@@ -20,8 +20,7 @@ namespace ogl
 	class CubemapTexture
 	{
 	public:
-		CubemapTexture(	const std::string& directory,
-						const std::string& posXFileName,
+		CubemapTexture( const std::string& posXFileName,
 						const std::string& negXFileName,
 						const std::string& posYFileName,
 						const std::string& negYFileName,
