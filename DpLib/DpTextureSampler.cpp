@@ -193,6 +193,8 @@ namespace dopixel
 			}
 			else
 			{
+				// TODO: fix mirror wrap type
+
 				//  4 texel
 				//  |  0  |  1  |
 				//  |-----|-----|
@@ -215,8 +217,8 @@ namespace dopixel
 				math::Vector3f texel2(p2[1], p2[2], p2[3]);
 				math::Vector3f texel3(p3[1], p3[2], p3[3]);
 
-				float du = uv.x - u;
-				float dv = uv.y - v;
+				float du = uv.x - (int)uv.x;
+				float dv = uv.y - (int)uv.y;
 				float one_minus_du = 1.0f - du;
 				float one_minus_dv = 1.0f - dv;
 
