@@ -22,7 +22,9 @@ namespace ogl
 
 	Skybox::~Skybox()
 	{
-
+		SAFE_DELETE(skyboxTechnique_);
+		SAFE_DELETE(cubemapTexture_);
+		SAFE_DELETE(mesh_);
 	}
 
 	bool Skybox::Init(
@@ -44,7 +46,7 @@ namespace ogl
 		skyboxTechnique_->SetTextureUnit(0);
 
 		cubemapTexture_ = new CubemapTexture(posXFileName, negXFileName, posYFileName, negYFileName, posZFileName, negZFileName);
-		if (cubemapTexture_->Load())
+		if (! cubemapTexture_->Load())
 			return false;
 
 		mesh_ = new Mesh();

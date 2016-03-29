@@ -101,7 +101,7 @@ vec4 CalcSpotLight(SpotLight sl, vec3 normal)
 	float k = dot(lightToPixel, sl.direction);
 	if (k > sl.cutoff)
 	{
-		vec4 color = CalcPointLight(sl.base, normal);
+		vec4 color = CalcPointLight(sl.pl, normal);
 		return color * (1.0 - (1.0 - k) * 1.0 / (1.0 - sl.cutoff));
 	}
 	else
