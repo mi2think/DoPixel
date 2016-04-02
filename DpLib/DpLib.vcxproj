@@ -134,6 +134,7 @@
     <ClInclude Include="DpVector2.h" />
     <ClInclude Include="DpVector3.h" />
     <ClInclude Include="DpVector4.h" />
+    <ClInclude Include="DpVectorT.h" />
     <ClInclude Include="DpVertex.h" />
     <ClInclude Include="DpVertexArray.h" />
     <ClInclude Include="DpVertexBuffer.h" />

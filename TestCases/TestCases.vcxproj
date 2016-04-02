@@ -87,6 +87,7 @@
     <ClCompile Include="dptest_vector2.cpp" />
     <ClCompile Include="dptest_vector3.cpp" />
     <ClCompile Include="dptest_vector4.cpp" />
+    <ClCompile Include="dptest_vectorT.cpp" />
     <ClCompile Include="dptest_vertexarray.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

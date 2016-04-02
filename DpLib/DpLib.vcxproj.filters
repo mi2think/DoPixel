@@ -204,7 +204,12 @@
     <ClInclude Include="DpLog.h">
       <Filter>DpCore</Filter>
     </ClInclude>
-    <ClInclude Include="DpTextureSampler.h" />
+    <ClInclude Include="DpTextureSampler.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="DpVectorT.h">
+      <Filter>DpMath</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpColor.cpp">
@@ -297,6 +302,8 @@
     <ClCompile Include="DpUnitTest.cpp">
       <Filter>DpCore</Filter>
     </ClCompile>
-    <ClCompile Include="DpTextureSampler.cpp" />
+    <ClCompile Include="DpTextureSampler.cpp">
+      <Filter>Dp3DEngine</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
