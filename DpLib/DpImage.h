@@ -46,6 +46,23 @@ namespace dopixel
 		int dataSize_;
 		void* data_;
 	};
+
+	class ImageConverter
+	{
+	public:
+		ImageConverter(const Image* srcImage);
+
+		ImageRef Convert(PixelFormat::Type destFormat);
+	private:
+		void ConvertFLOAT4ToRGBA(const void* data, int width, int height);
+
+		void ConvertARGBToRGBA(const void* data, int width, int height);
+
+		void ConvertRGBAToFLOAT4(const void* data, int width, int height);
+
+		const Image* srcImage_;
+		ImageRef destImage_;
+	};
 }
 
 #endif

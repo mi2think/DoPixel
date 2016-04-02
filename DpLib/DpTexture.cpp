@@ -77,26 +77,13 @@ namespace dopixel
 
 		// get 4bp RGBA data from file
 		ImageRef image = Image::FromFile(path);
-		unsigned char* data = (unsigned char*)image->GetData();
 		int width = image->GetWidth();
 		int height = image->GetHeight();
 		ASSERT(image->Valid());
 
-		// texture use float4(ARGB) for convenient
-		ImageRef destImage(new Image(width, height, PixelFormat::FLOAT4));
-		float* destData = (float*)destImage->GetData();
-		for (int y = 0; y < height; ++y)
-		{
-			for (int x = 0; x < width; ++x)
-			{
-				destData[0] = data[3] / 255.0f;
-				destData[1] = data[0] / 255.0f;
-				destData[2] = data[1] / 255.0f;
-				destData[3] = data[2] / 255.0f;
-				destData += 4;
-				data += 4;
-			}
-		}
+		// texture use float4(RGBA) for convenient
+		ImageConverter converter(image.Get());
+		ImageRef destImage = converter.Convert(PixelFormat::FLOAT4);
 
 		width_ = width;
 		height_ = height;

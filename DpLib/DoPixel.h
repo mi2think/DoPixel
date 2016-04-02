@@ -50,7 +50,7 @@ namespace dopixel
 		RGB,
 		RGBA,
 		ARGB,
-		FLOAT4 //ARGB
+		FLOAT4 //RGBA
 	END_DECLARE_ENUM()
 
 	DECLARE_ENUM(TextureFilter)

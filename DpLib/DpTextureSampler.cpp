@@ -131,7 +131,7 @@ namespace dopixel
 			, wrapSFunc_(GetWrapFuncByType(wrapS))
 			, wrapTFunc_(GetWrapFuncByType(wrapT))
 		{
-			ASSERT(image->GetFormat() == ImageFormat::FLOAT4);
+			ASSERT(image->GetFormat() == PixelFormat::FLOAT4);
 			ASSERT(data_ != nullptr);
 		}
 	protected:
@@ -168,7 +168,7 @@ namespace dopixel
 				ASSERT(u >= 0 && u < width_);
 				ASSERT(v >= 0 && v < height_);
 				const float* p = data_ + (v * width_ + u) * 4;
-				return math::Vector3f(p[1], p[2], p[3]); // RGB
+				return math::Vector3f(p[0], p[1], p[2]); // RGB
 			}
 		}
 	};
@@ -212,10 +212,10 @@ namespace dopixel
 				}
 
 				// RGB
-				math::Vector3f texel0(p0[1], p0[2], p0[3]);
-				math::Vector3f texel1(p1[1], p1[2], p1[3]);
-				math::Vector3f texel2(p2[1], p2[2], p2[3]);
-				math::Vector3f texel3(p3[1], p3[2], p3[3]);
+				math::Vector3f texel0(p0[0], p0[1], p0[2]);
+				math::Vector3f texel1(p1[0], p1[1], p1[2]);
+				math::Vector3f texel2(p2[0], p2[1], p2[2]);
+				math::Vector3f texel3(p3[0], p3[1], p3[2]);
 
 				float du = uv.x - (int)uv.x;
 				float dv = uv.y - (int)uv.y;

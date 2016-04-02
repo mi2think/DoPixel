@@ -60,27 +60,10 @@ namespace dopixel
 
 	void Image::SaveTGA(const string& path)
 	{
-		ASSERT(format_ == PixelFormat::FLOAT4);
-
 		// convert to RGBA
-		int writeSize = width_ * height_ * Image::GetBytesPerPixel(PixelFormat::RGBA);
-		unsigned char* writeBuf = new unsigned char[writeSize];
-		ON_SCOPE_EXIT([&writeBuf]() { SAFE_DELETEARRAY(writeBuf); });
-
-		float* data = (float*)data_;
-		unsigned char* dest = writeBuf;
-		for (int y = 0; y < height_; ++y)
-		{
-			for (int x = 0; x < width_; ++x)
-			{
-				dest[0] = unsigned char(data[1] * 255.0f);
-				dest[1] = unsigned char(data[2] * 255.0f);
-				dest[2] = unsigned char(data[3] * 255.0f);
-				dest[3] = unsigned char(data[0] * 255.0f);
-				dest += 4;
-				data += 4;
-			}
-		}
+		ImageConverter converter(this);
+		ImageRef destImage = converter.Convert(PixelFormat::RGBA);
+		unsigned char* destData = (unsigned char*)destImage->GetData();
 
 		// write tga
 		FileStream fs(path.c_str(), FileStream::BinaryWrite);
@@ -103,8 +86,8 @@ namespace dopixel
 
 		memset(&header, 0, sizeof(TGAHeader));
 		header.datatypecode = 2;	// uncompressed RGB
-		header.width = width_;
-		header.height = height_;
+		header.width = (short int)width_;
+		header.height = (short int)height_;
 		header.bitsperpixel = 32;
 
 		// write out the TGA header
@@ -121,7 +104,7 @@ namespace dopixel
 		fs.Write((char*)&header.bitsperpixel, 1);
 		fs.Write((char*)&header.imagedescriptor, 1);
 
-		const unsigned char* src = writeBuf;
+		const unsigned char* src = destData;
 		for (int y = height_ - 1; y >= 0; --y)
 		{
 			const unsigned char* row = src + y * width_ * 4;
@@ -193,5 +176,110 @@ namespace dopixel
 		stbi_image_free(stbi_data);
 
 		return image;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	ImageConverter::ImageConverter(const Image* srcImage)
+		: srcImage_(srcImage)
+	{
+	}
+
+	ImageRef ImageConverter::Convert(PixelFormat::Type destFormat)
+	{
+		ASSERT(srcImage_ != nullptr);
+
+		PixelFormat::Type srcFormat = srcImage_->GetFormat();
+		int width = srcImage_->GetWidth();
+		int height = srcImage_->GetHeight();
+		const void* data = srcImage_->GetData();
+
+		// same format
+		if (destFormat == srcFormat)
+		{
+			destImage_ = new Image(width, height, destFormat);
+			memcpy(destImage_->GetData(), data, srcImage_->GetImageDataSize());
+			return destImage_;
+		}
+
+		// need convert
+		destImage_ = nullptr;
+		switch (srcFormat)
+		{
+		case PixelFormat::FLOAT4:
+			if (destFormat == PixelFormat::RGBA)
+				ConvertFLOAT4ToRGBA(data, width, height);
+			break;
+		case PixelFormat::ARGB:
+			if (destFormat == PixelFormat::RGBA)
+				ConvertARGBToRGBA(data, width, height);
+			break;
+		case PixelFormat::RGBA:
+			if (destFormat == PixelFormat::FLOAT4)
+				ConvertRGBAToFLOAT4(data, width, height);
+			break;
+		}
+
+		ASSERT(destImage_ != nullptr);
+		return destImage_;
+	}
+
+	void ImageConverter::ConvertFLOAT4ToRGBA(const void* data, int width, int height)
+	{
+		destImage_ = new Image(width, height, PixelFormat::RGBA);
+
+		const float* srcData = (const float*)data;
+		unsigned char* destData = (unsigned char*)destImage_->GetData();
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				destData[0] = unsigned char(srcData[0] * 255.0f);
+				destData[1] = unsigned char(srcData[1] * 255.0f);
+				destData[2] = unsigned char(srcData[2] * 255.0f);
+				destData[3] = unsigned char(srcData[3] * 255.0f);
+				destData += 4;
+				srcData += 4;
+			}
+		}
+	}
+
+	void ImageConverter::ConvertARGBToRGBA(const void* data, int width, int height)
+	{
+		destImage_ = new Image(width, height, PixelFormat::RGBA);
+
+		const unsigned char* srcData = (const unsigned char*)data;
+		unsigned char* destData = (unsigned char*)destImage_->GetData();
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				destData[0] = srcData[2];
+				destData[1] = srcData[1];
+				destData[2] = srcData[0];
+				destData[3] = srcData[3];
+				destData += 4;
+				srcData += 4;
+			}
+		}
+	}
+
+	void ImageConverter::ConvertRGBAToFLOAT4(const void* data, int width, int height)
+	{
+		destImage_ = new Image(width, height, PixelFormat::FLOAT4);
+
+		const unsigned char* srcData = (const unsigned char*)data;
+		float* destData = (float*)destImage_->GetData();
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				destData[0] = srcData[0] / 255.0f;
+				destData[1] = srcData[1] / 255.0f;
+				destData[2] = srcData[2] / 255.0f;
+				destData[3] = srcData[3] / 255.0f;
+				destData += 4;
+				srcData += 4;
+			}
+		}
 	}
 }
