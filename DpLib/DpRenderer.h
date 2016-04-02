@@ -53,6 +53,9 @@ namespace dopixel
 		const math::Matrix44f& GetTransform(Transform::Type type) const;
 
 		void RenderSubMesh(const SubMeshRef& submesh);
+		
+		PixelFormat::Type GetPixelFormat() const;
+		void CopyTexImage(ImageRef& image);
 	private:
 		void UpdateTransform();
 
@@ -60,6 +63,7 @@ namespace dopixel
 		CullMode::Type cullMode_;
 		ZBuffer::Type zbufType_;
 		Condition::Type zfunc_;
+		PixelFormat::Type pixelFormat_;
 
 		unsigned char* frameBuf_;
 		int width_;

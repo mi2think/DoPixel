@@ -911,6 +911,7 @@ namespace dopixel
 		, cullMode_(CullMode::Back)
 		, zbufType_(ZBuffer::None)
 		, zfunc_(Condition::LessThan)
+		, pixelFormat_(PixelFormat::ARGB)
 		, frameBuf_(nullptr)
 		, width_(0)
 		, height_(0)
@@ -1038,6 +1039,27 @@ namespace dopixel
 	void Renderer::ClearClipPlane()
 	{
 		clipPlanes_.clear();
+	}
+
+	PixelFormat::Type Renderer::GetPixelFormat() const
+	{
+		return pixelFormat_;
+	}
+
+	void Renderer::CopyTexImage(ImageRef& image)
+	{
+		ASSERT(image->GetWidth() == width_);
+		ASSERT(image->GetHeight() == height_);
+
+		unsigned char* data = (unsigned char*)image->GetData();
+		unsigned char* p = frameBuf_;
+		int bytesPerLine = width_ * 4;
+		for (int i = 0; i < height_; ++i)
+		{
+			memcpy(data, p, bytesPerLine);
+			data += bytesPerLine;
+			p += pitch_;
+		}
 	}
 
 	void Renderer::RenderSubMesh(const SubMeshRef& submesh)

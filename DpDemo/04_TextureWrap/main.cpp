@@ -75,6 +75,8 @@ void TextureWrapApp::OnCreate()
 	// camera
 	cameraPos_ = Vector3f(0, 0, 0);
 	cameraNode_->SetPosition(cameraPos_);
+	renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
+	renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
 
 	renderer_->SetShadeMode(ShadeMode::Flat);
 	renderer_->SetCameraNode(cameraNode_);
@@ -93,11 +95,11 @@ void TextureWrapApp::CreateCheckerboardImage(int w, int h)
 			bool ih = ((i & 0x8) == 0);
 			bool jw = ((j & 0x8) == 0);
 			float c = (ih == jw ? 0.0f : 1.0f);
-			//ARGB
-			*data = 1.0f;
+			//Float4(RGBA)
+			*data = c;
 			*(data + 1) = c;
 			*(data + 2) = c;
-			*(data + 3) = c;
+			*(data + 3) = 1.0f;
 			data += 4;
 		}
 	}
@@ -151,18 +153,28 @@ bool TextureWrapApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 			break;
 		}
 	}
-	// zoom
+
 	{
 		bool update = false;
-		if (key == KEY_KEY_W)
+		switch (key)
 		{
+		// zoom
+		case KEY_KEY_W:
 			cameraPos_.z += 0.05f;
 			update = true;
-		}
-		else if (key == KEY_KEY_S)
-		{
+			break;
+		case KEY_KEY_S:
 			cameraPos_.z -= 0.05f;
 			update = true;
+			break;
+
+		case KEY_KEY_R:
+			{
+				ImageRef snapshot(new Image(width_, height_, renderer_->GetPixelFormat()));
+				renderer_->CopyTexImage(snapshot);
+				snapshot->SaveTGA("fb.tga");
+			}
+			break;
 		}
 
 		if (update)
