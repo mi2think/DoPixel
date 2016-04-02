@@ -16,7 +16,7 @@ namespace dopixel
 	Texture::Texture()
 		: width_(0)
 		, height_(0)
-		, format_(ImageFormat::Unknown)
+		, format_(PixelFormat::Unknown)
 		, mipmapCount_(0)
 		, filterMin_(TextureFilter::NearestPoint)
 		, filterMag_(TextureFilter::NearestPoint)
@@ -25,7 +25,7 @@ namespace dopixel
 	{
 	}
 
-	Texture::Texture(int width, int height, ImageFormat::Type format)
+	Texture::Texture(int width, int height, PixelFormat::Type format)
 		: width_(width)
 		, height_(height)
 		, format_(format)
@@ -83,7 +83,7 @@ namespace dopixel
 		ASSERT(image->Valid());
 
 		// texture use float4(ARGB) for convenient
-		ImageRef destImage(new Image(width, height, ImageFormat::FLOAT4));
+		ImageRef destImage(new Image(width, height, PixelFormat::FLOAT4));
 		float* destData = (float*)destImage->GetData();
 		for (int y = 0; y < height; ++y)
 		{

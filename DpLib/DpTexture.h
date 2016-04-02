@@ -21,7 +21,7 @@ namespace dopixel
 	{
 	public:
 		Texture();
-		Texture(int width, int height, ImageFormat::Type format);
+		Texture(int width, int height, PixelFormat::Type format);
 		Texture(const string& path, bool mipmaps);
 		Texture(const ImageRef& image);
 		~Texture();
@@ -34,7 +34,7 @@ namespace dopixel
 
 		int GetWidth() const { return width_; }
 		int GetHeight() const { return height_; }
-		ImageFormat::Type GetFormat() const { return format_; }
+		PixelFormat::Type GetFormat() const { return format_; }
 
 		int GetMipmapCount() const { return mipmapCount_; }
 		bool HasMips() const { return mipmapCount_ > 1; }
@@ -56,7 +56,7 @@ namespace dopixel
 		string name_;
 		int width_;
 		int height_;
-		ImageFormat::Type format_;
+		PixelFormat::Type format_;
 		// mipmap
 		int mipmapCount_;
 		vector<ImageRef> mipmaps_;

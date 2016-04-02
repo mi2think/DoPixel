@@ -20,14 +20,14 @@ namespace dopixel
 	{
 	public:
 		Image();
-		Image(int width, int height, ImageFormat::Type format);
-		Image(const void* data, int length, ImageFormat::Type format);
+		Image(int width, int height, PixelFormat::Type format);
+		Image(const void* data, int length, PixelFormat::Type format);
 		~Image();
 
 		bool Valid() const { return data_ != nullptr; }
 		int GetWidth() const { return width_; }
 		int GetHeight() const { return height_; }
-		ImageFormat::Type GetFormat() const { return format_; }
+		PixelFormat::Type GetFormat() const { return format_; }
 
 		int GetBytesPerPixel() const { return bytesPerPixel_; }
 		int GetImageDataSize() const { return dataSize_; }
@@ -36,12 +36,12 @@ namespace dopixel
 		const void* GetData() const { return data_; }
 
 		void SaveTGA(const string& path);
-		static int GetBytesPerPixel(ImageFormat::Type format);
+		static int GetBytesPerPixel(PixelFormat::Type format);
 		static ImageRef FromFile(const string& path);
 	private:
 		int width_;
 		int height_;
-		ImageFormat::Type format_;
+		PixelFormat::Type format_;
 		int bytesPerPixel_;
 		int dataSize_;
 		void* data_;

@@ -45,7 +45,7 @@ namespace dopixel
 		}
 
 	// enum types
-	DECLARE_ENUM(ImageFormat)
+	DECLARE_ENUM(PixelFormat)
 		Unknown,
 		RGB,
 		RGBA,

@@ -19,14 +19,14 @@ namespace dopixel
 	Image::Image()
 		: width_(0)
 		, height_(0)
-		, format_(ImageFormat::Unknown)
+		, format_(PixelFormat::Unknown)
 		, bytesPerPixel_(0)
 		, dataSize_(0)
 		, data_(nullptr)
 	{
 	}
 
-	Image::Image(int width, int height, ImageFormat::Type format)
+	Image::Image(int width, int height, PixelFormat::Type format)
 		: width_(width)
 		, height_(height)
 		, format_(format)
@@ -36,7 +36,7 @@ namespace dopixel
 		data_ = malloc(dataSize_);
 	}
 
-	Image::Image(const void* data, int length, ImageFormat::Type format)
+	Image::Image(const void* data, int length, PixelFormat::Type format)
 	{
 		int comp = 0;
 		int result = stbi_info_from_memory((const stbi_uc*)data, length, &width_, &height_, &comp);
@@ -60,10 +60,10 @@ namespace dopixel
 
 	void Image::SaveTGA(const string& path)
 	{
-		ASSERT(format_ == ImageFormat::FLOAT4);
+		ASSERT(format_ == PixelFormat::FLOAT4);
 
 		// convert to RGBA
-		int writeSize = width_ * height_ * Image::GetBytesPerPixel(ImageFormat::RGBA);
+		int writeSize = width_ * height_ * Image::GetBytesPerPixel(PixelFormat::RGBA);
 		unsigned char* writeBuf = new unsigned char[writeSize];
 		ON_SCOPE_EXIT([&writeBuf]() { SAFE_DELETEARRAY(writeBuf); });
 
@@ -141,18 +141,18 @@ namespace dopixel
 		fs.Close();
 	}
 
-	int Image::GetBytesPerPixel(ImageFormat::Type format)
+	int Image::GetBytesPerPixel(PixelFormat::Type format)
 	{
 		switch (format)
 		{
-		case ImageFormat::RGB:
+		case PixelFormat::RGB:
 			return 3;
 			break;
-		case ImageFormat::RGBA:
-		case ImageFormat::ARGB:
+		case PixelFormat::RGBA:
+		case PixelFormat::ARGB:
 			return 4;
 			break;
-		case ImageFormat::FLOAT4:
+		case PixelFormat::FLOAT4:
 			return 16;
 			break;
 		default:
@@ -186,7 +186,7 @@ namespace dopixel
 			return ImageRef();
 		}
 
-		ImageRef image(new Image(width, height, ImageFormat::RGBA));
+		ImageRef image(new Image(width, height, PixelFormat::RGBA));
 		void* data = image->GetData();
 		memcpy(data, stbi_data, image->GetBytesPerPixel() * width * height);
 

@@ -83,7 +83,7 @@ void TextureWrapApp::OnCreate()
 
 void TextureWrapApp::CreateCheckerboardImage(int w, int h)
 {
-	ImageRef image(new Image(w, h, ImageFormat::FLOAT4));
+	ImageRef image(new Image(w, h, PixelFormat::FLOAT4));
 	float* data = (float*)image->GetData();
 	float* p = data;
 	for (int i = 0; i < h; ++i)
