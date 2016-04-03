@@ -90,8 +90,8 @@ namespace dopixel
 		void Interpolate(int newIndex, int index0, int index1, float k);
 		void ToCVV();
 		void ToViewport(int viewportWidth, int viewportHeight);
-		void DrawPrimitives(RasterizerRef& rasterizer, ShadeMode::Type shadeMode);
-		void DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, int index0, int index1, int index2);
+		void DrawPrimitives(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType);
+		void DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType, int index0, int index1, int index2);
 		void SetTexture(const TextureRef& texture);
 	private:
 		// cache buffer
@@ -816,7 +816,7 @@ namespace dopixel
 		}
 	}
 
-	void Renderer::Impl::DrawPrimitives(RasterizerRef& rasterizer, ShadeMode::Type shadeMode)
+	void Renderer::Impl::DrawPrimitives(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType)
 	{
 		if (indexBuf_)
 		{
@@ -829,7 +829,7 @@ namespace dopixel
 				auto index0 = *(indices + i);
 				auto index1 = *(indices + i + 1);
 				auto index2 = *(indices + i + 2);
-				DrawPrimitive(rasterizer, shadeMode, index0, index1, index2);
+				DrawPrimitive(rasterizer, shadeMode, zbufType, index0, index1, index2);
 			}
 		}
 		else
@@ -838,12 +838,12 @@ namespace dopixel
 			{
 				if (triangleCullBuff_[j])
 					continue;
-				DrawPrimitive(rasterizer, shadeMode, i, i + 1, i + 2);
+				DrawPrimitive(rasterizer, shadeMode, zbufType, i, i + 1, i + 2);
 			}
 		}
 	}
 
-	void Renderer::Impl::DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, int index0, int index1, int index2)
+	void Renderer::Impl::DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType, int index0, int index1, int index2)
 	{
 		auto pos = positions_->DataAs<math::Vector4f>();
 		auto& p0 = *(math::Vector3f*)(pos + index0);
@@ -879,24 +879,24 @@ namespace dopixel
 			break;
 		case ShadeMode::Constant:
 			if (usingStatus_ & UsingStatus::Texture)
-				rasterizer->DrawTriangle<PSFlatTexture, math::Vector2f, math::Vector3f>(p0, uv0, p1, uv1, p2, uv2, math::Vector3f(1.0f, 1.0f, 1.0f));
+				rasterizer->DrawTriangle<PSFlatTexture, math::Vector2f, math::Vector3f>(p0, uv0, p1, uv1, p2, uv2, math::Vector3f(1.0f, 1.0f, 1.0f), zbufType);
 			else
-				rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(0, 0, 255));
+				rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(0, 0, 255), zbufType);
 			break;
 		case ShadeMode::Flat:
 			if (usingStatus_ & UsingStatus::Texture)
-				rasterizer->DrawTriangle<PSFlatTexture, math::Vector2f, math::Vector3f>(p0, uv0, p1, uv1, p2, uv2, c0);
+				rasterizer->DrawTriangle<PSFlatTexture, math::Vector2f, math::Vector3f>(p0, uv0, p1, uv1, p2, uv2, c0, zbufType);
 			else
-				rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(c0));
+				rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(c0), zbufType);
 			break;
 		case ShadeMode::Gouraud:
 			if (usingStatus_ & UsingStatus::Texture)
 			{
 				typedef math::Vector2T<math::Vector2f, math::Vector3f> VectorT;
-				rasterizer->DrawTriangle<PSGouraudTexture, VectorT, float>(p0, VectorT(uv0, c0), p1, VectorT(uv1, c1), p2, VectorT(uv2, c2), 0.0f);
+				rasterizer->DrawTriangle<PSGouraudTexture, VectorT, float>(p0, VectorT(uv0, c0), p1, VectorT(uv1, c1), p2, VectorT(uv2, c2), 0.0f, zbufType);
 			}
 			else
-				rasterizer->DrawTriangle<PSGouraud, math::Vector3f, Color>(p0, c0, p1, c1, p2, c2, Color(c0));
+				rasterizer->DrawTriangle<PSGouraud, math::Vector3f, Color>(p0, c0, p1, c1, p2, c2, Color(c0), zbufType);
 			break;
 		}
 
@@ -1162,7 +1162,7 @@ namespace dopixel
 		impl_->ToViewport(width_, height_);
 
 		// draw triangle
-		impl_->DrawPrimitives(rasterizer_, shadeMode_);
+		impl_->DrawPrimitives(rasterizer_, shadeMode_, zbufType_);
 
 		// end
 	}
