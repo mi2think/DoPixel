@@ -14,6 +14,9 @@
 
 #include "DoPixel.h"
 #include "DpColor.h"
+#include "DpVector2.h"
+#include "DpVector3.h"
+#include "DpVectorT.h"
 #include "DpTextureSampler.h"
 
 namespace dopixel
@@ -258,6 +261,20 @@ namespace dopixel
 	{
 		unsigned int operator()(const math::Vector2f& uv, const math::Vector3f& color, const TextureSampler* textureSampler) const
 		{
+			math::Vector3f c = textureSampler->Sample(uv);
+			c.x *= color.x;
+			c.y *= color.y;
+			c.z *= color.z;
+			return Color(c).value;
+		}
+	};
+
+	struct PSGouraudTexture
+	{
+		unsigned int operator()(const math::Vector2T<math::Vector2f, math::Vector3f>& v, float t, const TextureSampler* textureSampler) const
+		{
+			const auto& uv = v.t0;
+			const auto& color = v.t1;
 			math::Vector3f c = textureSampler->Sample(uv);
 			c.x *= color.x;
 			c.y *= color.y;

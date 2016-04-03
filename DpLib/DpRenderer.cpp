@@ -18,6 +18,7 @@
 #include "DpIndexBuffer.h"
 #include "DpRasterizer.h"
 #include "DpTextureSampler.h"
+#include "DpVectorT.h"
 
 namespace dopixel
 {
@@ -889,7 +890,13 @@ namespace dopixel
 				rasterizer->DrawTriangle<PSFlat, float, Color>(p0, 0.0f, p1, 0.0f, p2, 0.0f, Color(c0));
 			break;
 		case ShadeMode::Gouraud:
-			rasterizer->DrawTriangle<PSGouraud, math::Vector3f, Color>(p0, c0, p1, c1, p2, c2, Color(c0));
+			if (usingStatus_ & UsingStatus::Texture)
+			{
+				typedef math::Vector2T<math::Vector2f, math::Vector3f> VectorT;
+				rasterizer->DrawTriangle<PSGouraudTexture, VectorT, float>(p0, VectorT(uv0, c0), p1, VectorT(uv1, c1), p2, VectorT(uv2, c2), 0.0f);
+			}
+			else
+				rasterizer->DrawTriangle<PSGouraud, math::Vector3f, Color>(p0, c0, p1, c1, p2, c2, Color(c0));
 			break;
 		}
 

@@ -41,9 +41,9 @@ void TextureWrapApp::OnCreate()
 		// color
 		Ref<VertexArray3f> colors(new VertexArray3f(4));
 		Vector3f* color = colors->DataAs<Vector3f>();
-		color[0] = Vector3f(1, 1, 1);
-		color[1] = Vector3f(1, 1, 1);
-		color[2] = Vector3f(1, 1, 1);
+		color[0] = Vector3f(1, 0, 0);
+		color[1] = Vector3f(0, 1, 0);
+		color[2] = Vector3f(0, 0, 1);
 		color[3] = Vector3f(1, 1, 1);
 		vb_->SetColors(colors);
 		// uvs
@@ -78,7 +78,7 @@ void TextureWrapApp::OnCreate()
 	renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
 	renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
 
-	renderer_->SetShadeMode(ShadeMode::Flat);
+	renderer_->SetShadeMode(ShadeMode::Gouraud);
 	renderer_->SetCameraNode(cameraNode_);
 	renderer_->SetTexture(texture_);
 }
