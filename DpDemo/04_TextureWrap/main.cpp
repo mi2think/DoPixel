@@ -33,17 +33,17 @@ void TextureWrapApp::OnCreate()
 		// position
 		Ref<VertexArray3f> positions(new VertexArray3f(4));
 		Vector3f* pos = positions->DataAs<Vector3f>();
-		pos[0] = Vector3f(-1.0f, 1.0f, 1.0f);
-		pos[1] = Vector3f(1.0f, 1.0f, 1.0f);
+		pos[0] = Vector3f(-1.0f, 1.0f, 2.0f);
+		pos[1] = Vector3f(1.0f, 1.0f, 2.0f);
 		pos[2] = Vector3f(1.0f, -1.0f, 1.0f);
 		pos[3] = Vector3f(-1.0f, -1.0f, 1.0f);
 		vb_->SetPositions(positions);
 		// color
 		Ref<VertexArray3f> colors(new VertexArray3f(4));
 		Vector3f* color = colors->DataAs<Vector3f>();
-		color[0] = Vector3f(1, 0, 0);
-		color[1] = Vector3f(0, 1, 0);
-		color[2] = Vector3f(0, 0, 1);
+		color[0] = Vector3f(1, 1, 1);
+		color[1] = Vector3f(1, 1, 1);
+		color[2] = Vector3f(1, 1, 1);
 		color[3] = Vector3f(1, 1, 1);
 		vb_->SetColors(colors);
 		// uvs
@@ -77,8 +77,9 @@ void TextureWrapApp::OnCreate()
 	cameraNode_->SetPosition(cameraPos_);
 	renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
 	renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
+	renderer_->SetZBufferType(ZBuffer::None);
 
-	renderer_->SetShadeMode(ShadeMode::Gouraud);
+	renderer_->SetShadeMode(ShadeMode::Flat);
 	renderer_->SetCameraNode(cameraNode_);
 	renderer_->SetTexture(texture_);
 }
@@ -104,6 +105,9 @@ void TextureWrapApp::CreateCheckerboardImage(int w, int h)
 		}
 	}
 
+	//image->SaveTGA("fb.tga");
+	//ImageRef image = Image::FromFile("sen.JPG");
+
 	texture_->SetImage(image);
 }
 
@@ -122,10 +126,11 @@ bool TextureWrapApp::OnEvent(const Event& event)
 bool TextureWrapApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 {
 	int key = keyEvent.GetKey();
-	// wrap
+
 	{
 		switch (key)
 		{
+			// wrap	
 		case KEY_KEY_1:
 			texture_->SetWrapS(TextureWrap::ClampToEdge);
 			texture_->SetWrapT(TextureWrap::ClampToEdge);
@@ -143,6 +148,7 @@ bool TextureWrapApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 			texture_->SetWrapT(TextureWrap::Mirror);
 			break;
 
+			// filter
 		case KEY_KEY_5:
 			texture_->SetFilterMin(TextureFilter::NearestPoint);
 			texture_->SetFilterMag(TextureFilter::NearestPoint);
@@ -150,6 +156,28 @@ bool TextureWrapApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 		case KEY_KEY_6:
 			texture_->SetFilterMin(TextureFilter::Bilinear);
 			texture_->SetFilterMag(TextureFilter::Bilinear);
+			break;
+
+			// z buf type
+		case KEY_KEY_7:
+			renderer_->SetZBufferType(ZBuffer::None);
+			break;
+		case KEY_KEY_8:
+			renderer_->SetZBufferType(ZBuffer::ZBuff);
+			break;
+		case KEY_KEY_9:
+			renderer_->SetZBufferType(ZBuffer::INVZBuff);
+			break;
+
+			// render type
+		case KEY_KEY_H:
+			renderer_->SetShadeMode(ShadeMode::Wireframe);
+			break;
+		case KEY_KEY_J:
+			renderer_->SetShadeMode(ShadeMode::Flat);
+			break;
+		case KEY_KEY_K:
+			renderer_->SetShadeMode(ShadeMode::Gouraud);
 			break;
 		}
 	}
@@ -168,6 +196,7 @@ bool TextureWrapApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 			update = true;
 			break;
 
+		// render to image
 		case KEY_KEY_R:
 			{
 				ImageRef snapshot(new Image(width_, height_, renderer_->GetPixelFormat()));

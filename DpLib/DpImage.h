@@ -37,7 +37,7 @@ namespace dopixel
 
 		void SaveTGA(const string& path);
 		static int GetBytesPerPixel(PixelFormat::Type format);
-		static ImageRef FromFile(const string& path);
+		static ImageRef FromFile(const string& path, PixelFormat::Type format = PixelFormat::FLOAT4);
 	private:
 		int width_;
 		int height_;

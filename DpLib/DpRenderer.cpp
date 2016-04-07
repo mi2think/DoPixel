@@ -760,13 +760,17 @@ namespace dopixel
 				continue;
 			math::Vector4f* p = pos + i;
 			ASSERT(!equal_t(p->w, 0.0f));
-			(*p) /= p->w;
+			float oneOverW = 1.0f / p->w;
+			(*p) *= oneOverW;
 			if (p->x < -1 || p->x > 1 ||
 				p->y < -1 || p->y > 1 ||
 				p->z < 0 || p->z > 1)
 			{
 				vertexCullBuf_[i] |= VertexCull::Frustum;
 			}
+
+			// save oneOverW for depth interpolate later
+			p->w = oneOverW;
 		}
 
 		if (indexBuf_)
@@ -846,9 +850,9 @@ namespace dopixel
 	void Renderer::Impl::DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType, int index0, int index1, int index2)
 	{
 		auto pos = positions_->DataAs<math::Vector4f>();
-		auto& p0 = *(math::Vector3f*)(pos + index0);
-		auto& p1 = *(math::Vector3f*)(pos + index1);
-		auto& p2 = *(math::Vector3f*)(pos + index2);
+		auto& p0 = *(pos + index0);
+		auto& p1 = *(pos + index1);
+		auto& p2 = *(pos + index2);
 
 		auto color = colors_->DataAs<math::Vector3f>();
 		auto& c0 = *(color + index0);
@@ -875,7 +879,7 @@ namespace dopixel
 		switch (shadeMode)
 		{
 		case ShadeMode::Wireframe:
-			rasterizer->DrawFrameTriangle(int(p0.x), int(p0.y), int(p1.x), int(p1.y), int(p2.x), int(p2.y), Color(c0));
+			rasterizer->DrawFrameTriangle(int(p0.x), int(p0.y), int(p1.x), int(p1.y), int(p2.x), int(p2.y), Color(255, 0, 0));
 			break;
 		case ShadeMode::Constant:
 			if (usingStatus_ & UsingStatus::Texture)
@@ -987,6 +991,11 @@ namespace dopixel
 		if (zbufType_ != ZBuffer::None)
 		{
 			zbuf_.resize(width_ * height_);
+
+			if (zbufType_ == ZBuffer::ZBuff)
+				zbuf_.assign(width_ * height_, 1.0f);
+			else
+				memset(&zbuf_[0], 0, width_ * height_ * sizeof(zbuf_[0]));
 		}
 
 		rasterizer_->SetBuffer(frameBuf_, width_, height_, pitch_, zbuf_.empty() ? nullptr : &zbuf_[0]);

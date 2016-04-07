@@ -145,7 +145,7 @@ namespace dopixel
 		return 0;
 	}
 
-	ImageRef Image::FromFile(const string& path)
+	ImageRef Image::FromFile(const string& path, PixelFormat::Type format)
 	{
 		FileStream fs(path, FileStream::BinaryRead);
 		size_t size = (size_t)fs.Size();
@@ -172,6 +172,12 @@ namespace dopixel
 		ImageRef image(new Image(width, height, PixelFormat::RGBA));
 		void* data = image->GetData();
 		memcpy(data, stbi_data, image->GetBytesPerPixel() * width * height);
+
+		if (format != PixelFormat::RGBA)
+		{
+			ImageConverter converter(image.Get());
+			image = converter.Convert(format);
+		}
 
 		stbi_image_free(stbi_data);
 
