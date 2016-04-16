@@ -56,6 +56,9 @@ namespace dopixel
 		
 		PixelFormat::Type GetPixelFormat() const;
 		void CopyTexImage(ImageRef& image);
+
+		void SetLight(int index, const LightRef& light);
+		void EnableLight(int index, bool enable);
 	private:
 		void UpdateTransform();
 
@@ -79,6 +82,8 @@ namespace dopixel
 		VertexBufferRef vertexBuffer_;
 		IndexBufferRef indexBuffer_;
 		Ref<VertexArray3f> triangleNormalsBuf_;
+
+		vector<pair<LightRef, bool>> lights_;
 
 		math::Matrix44f matrixs_[Transform::Max];
 		// view frustum

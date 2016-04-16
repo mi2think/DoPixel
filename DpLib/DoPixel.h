@@ -114,10 +114,13 @@ namespace dopixel
 		Projection
 	END_DECLARE_ENUM()
 
+	enum { MAX_LIGHTS = 8 };
+
 	using std::string;
 	using std::wstring;
 	using std::vector;
 	using std::map;
+	using std::pair;
 
 	class VertexBuffer;
 	class IndexBuffer;

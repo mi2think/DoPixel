@@ -19,6 +19,7 @@
 #include "DpRasterizer.h"
 #include "DpTextureSampler.h"
 #include "DpVectorT.h"
+#include "DpLight.h"
 
 namespace dopixel
 {
@@ -88,11 +89,13 @@ namespace dopixel
 		void CullPlanes(const vector<math::Plane>& clipPlanes);
 		void CutTriangle(const math::Plane& plane, int clipVertexCount, int i0, int i1, int i2);
 		void Interpolate(int newIndex, int index0, int index1, float k);
+		void Illuminate(const MaterialRef& material, const math::Vector3f& eyeWorldPos);
 		void ToCVV();
 		void ToViewport(int viewportWidth, int viewportHeight);
 		void DrawPrimitives(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType);
 		void DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType, int index0, int index1, int index2);
 		void SetTexture(const TextureRef& texture);
+		void SetLights(const vector<LightRef>& lights);
 	private:
 		// cache buffer
 		Ref<VertexArray4f> positions_;
@@ -117,6 +120,8 @@ namespace dopixel
 		int usingStatus_;
 
 		TextureSampler textureSampler_;
+
+		vector<LightRef> activeLights_;
 	};
 
 	Renderer::Impl::Impl()
@@ -254,15 +259,19 @@ namespace dopixel
 			const int indexCount = indexBuf_->GetIndexCount();
 			for (int i = 0, j = 0; i < indexCount; i += 3, ++j)
 			{
-				const auto& p0 = *(position + *(indices + i));
-				const auto& p1 = *(position + *(indices + i + 1));
-				const auto& p2 = *(position + *(indices + i + 2));
-				auto tp0 = p0.DivW();
-				auto tp1 = p1.DivW();
-				auto tp2 = p2.DivW();
+				const auto index0 = *(indices + i);
+				const auto index1 = *(indices + i + 1);
+				const auto index2 = *(indices + i + 2);
 
-				auto u = tp1 - tp0;
-				auto v = tp2 - tp0;
+				ASSERT(position[index0].w == 1.0f);
+				ASSERT(position[index1].w == 1.0f);
+				ASSERT(position[index2].w == 1.0f);
+				const math::Vector3f& p0 = *((const math::Vector3f*)(position + index0));
+				const math::Vector3f& p1 = *((const math::Vector3f*)(position + index1));
+				const math::Vector3f& p2 = *((const math::Vector3f*)(position + index2));
+
+				auto u = p1 - p0;
+				auto v = p2 - p0;
 				auto n = math::CrossProduct(u, v);
 				n.Normalize();
 				*(normal + j) = n;
@@ -272,15 +281,15 @@ namespace dopixel
 		{
 			for (int i = 0, j = 0; i < vertexCount_; i += 3, ++j)
 			{
-				const auto& p0 = *(position + i);
-				const auto& p1 = *(position + i + 1);
-				const auto& p2 = *(position + i + 2);
-				auto tp0 = p0.DivW();
-				auto tp1 = p1.DivW();
-				auto tp2 = p2.DivW();
+				ASSERT(position[i].w == 1.0f);
+				ASSERT(position[i + 1].w == 1.0f);
+				ASSERT(position[i + 2].w == 1.0f);
+				const math::Vector3f& p0 = *((const math::Vector3f*)(position + i));
+				const math::Vector3f& p1 = *((const math::Vector3f*)(position + i + 1));
+				const math::Vector3f& p2 = *((const math::Vector3f*)(position + i + 2));
 
-				auto u = tp1 - tp0;
-				auto v = tp2 - tp0;
+				auto u = p1 - p0;
+				auto v = p2 - p0;
 				auto n = math::CrossProduct(u, v);
 				n.Normalize();
 				*(normal + j) = n;
@@ -311,15 +320,16 @@ namespace dopixel
 				const auto index0 = *(indices + i);
 				const auto index1 = *(indices + i + 1);
 				const auto index2 = *(indices + i + 2);
-				const auto& p0 = *(position + index0);
-				const auto& p1 = *(position + index1);
-				const auto& p2 = *(position + index2);
-				auto tp0 = p0.DivW();
-				auto tp1 = p1.DivW();
-				auto tp2 = p2.DivW();
 
-				auto u = tp1 - tp0;
-				auto v = tp2 - tp0;
+				ASSERT(position[index0].w == 1.0f);
+				ASSERT(position[index1].w == 1.0f);
+				ASSERT(position[index2].w == 1.0f);
+				const math::Vector3f& p0 = *((const math::Vector3f*)(position + index0));
+				const math::Vector3f& p1 = *((const math::Vector3f*)(position + index1));
+				const math::Vector3f& p2 = *((const math::Vector3f*)(position + index2));
+
+				auto u = p1 - p0;
+				auto v = p2 - p0;
 				auto n = math::CrossProduct(u, v);
 				normal[index0] += n;
 				normal[index1] += n;
@@ -331,22 +341,19 @@ namespace dopixel
 			// compute each triangle normal
 			for (int i = 0; i < vertexCount; i += 3)
 			{
-				const auto index0 = i;
-				const auto index1 = i + 1;
-				const auto index2 = i + 2;
-				const auto& p0 = *(position + index0);
-				const auto& p1 = *(position + index1);
-				const auto& p2 = *(position + index2);
-				auto tp0 = p0.DivW();
-				auto tp1 = p1.DivW();
-				auto tp2 = p2.DivW();
+				ASSERT(position[i].w == 1.0f);
+				ASSERT(position[i + 1].w == 1.0f);
+				ASSERT(position[i + 2].w == 1.0f);
+				const math::Vector3f& p0 = *((const math::Vector3f*)(position + i));
+				const math::Vector3f& p1 = *((const math::Vector3f*)(position + i + 1));
+				const math::Vector3f& p2 = *((const math::Vector3f*)(position + i + 2));
 
-				auto u = tp1 - tp0;
-				auto v = tp2 - tp0;
+				auto u = p1 - p0;
+				auto v = p2 - p0;
 				auto n = math::CrossProduct(u, v);
-				normal[index0] += n;
-				normal[index1] += n;
-				normal[index2] += n;
+				normal[i] += n;
+				normal[i + 1] += n;
+				normal[i + 2] += n;
 			}
 			// may some vertex have same place
 
@@ -356,8 +363,8 @@ namespace dopixel
 			{
 				bool operator() (const math::Vector4f& lhs, const math::Vector4f& rhs) const
 				{
-					math::Vector3f a = lhs.DivW();
-					math::Vector3f b = rhs.DivW();
+					const math::Vector4f& a = lhs;
+					const math::Vector4f& b = rhs;
 					if (a.x != b.x)
 						return a.x < b.x;
 					if (a.y != b.y)
@@ -433,7 +440,9 @@ namespace dopixel
 					// normal do not need translate
 					math::Vector4f nt(n.x, n.y, n.z, 0.0f);
 					nt *= matrixINVT;
-					n = nt.DivW();
+					n.x = nt.x;
+					n.y = nt.y;
+					n.z = nt.z;
 				}
 			}
 
@@ -446,7 +455,9 @@ namespace dopixel
 					// normal do not need translate
 					math::Vector4f nt(n.x, n.y, n.z, 0.0f);
 					nt *= matrixINVT;
-					n = nt.DivW();
+					n.x = nt.x;
+					n.y = nt.y;
+					n.z = nt.z;
 				}
 			}
 		}
@@ -543,7 +554,7 @@ namespace dopixel
 
 	void Renderer::Impl::CullPlanes(const vector<math::Plane>& clipPlanes)
 	{
-		math::Vector4f* position = positions_->DataAs<math::Vector4f>();
+		const math::Vector4f* position = positions_->DataAs<math::Vector4f>();
 
 		for (const auto& plane : clipPlanes)
 		{
@@ -553,8 +564,9 @@ namespace dopixel
 				if (vertexRefBuf_[i] == 0)
 					continue;
 
-				math::Vector4f* pos = position + i;
-				if (plane.Distance(pos->DivW()) < 0)
+				ASSERT(position[i].w == 1.0f);
+				const math::Vector3f& pos = *((const math::Vector3f*)(position + i));
+				if (plane.Distance(pos) < 0)
 				{
 					vertexCullBuf_[i] |= VertexCull::ClipPlane;
 				}
@@ -697,13 +709,18 @@ namespace dopixel
 		}
 
 		// interpolate
-		math::Vector4f* pos = positions_->DataAs<math::Vector4f>();
-		math::Vector4f& pos0 = pos[triangle[0]];
-		math::Vector4f& pos1 = pos[triangle[1]];
-		math::Vector4f& pos2 = pos[triangle[2]];
-		float d0 = fabs(plane.Distance(pos0.DivW()));
-		float d1 = fabs(plane.Distance(pos1.DivW()));
-		float d2 = fabs(plane.Distance(pos2.DivW()));
+		const math::Vector4f* position = positions_->DataAs<math::Vector4f>();
+
+		ASSERT(position[triangle[0]].w == 1.0f);
+		ASSERT(position[triangle[1]].w == 1.0f);
+		ASSERT(position[triangle[2]].w == 1.0f);
+		const math::Vector3f& pos0 = *((const math::Vector3f*)(position + triangle[0]));
+		const math::Vector3f& pos1 = *((const math::Vector3f*)(position + triangle[1]));
+		const math::Vector3f& pos2 = *((const math::Vector3f*)(position + triangle[2]));
+
+		float d0 = fabs(plane.Distance(pos0));
+		float d1 = fabs(plane.Distance(pos1));
+		float d2 = fabs(plane.Distance(pos2));
 
 		if (clipVertexCount == 1)
 		{
@@ -748,6 +765,76 @@ namespace dopixel
 		{
 			math::Vector2f* texCoord = texCoords_->DataAs<math::Vector2f>();
 			texCoord[newIndex] = texCoord[index0] + (texCoord[index1] - texCoord[index0]) * k;
+		}
+	}
+
+	void Renderer::Impl::Illuminate(const MaterialRef& material, const math::Vector3f& eyeWorldPos)
+	{
+		// vertex lighting
+
+		for (auto& light : activeLights_)
+		{
+			light->BeginLighting(eyeWorldPos, material);
+		}
+
+		const math::Vector4f* position = positions_->DataAs<math::Vector4f>();
+		const math::Vector3f* normal = triangleNormals_->DataAs<math::Vector3f>();
+		math::Vector3f* color = colors_->DataAs<math::Vector3f>();
+
+		if (indexBuf_)
+		{
+			const unsigned int* indices = indexBuf_->GetData();
+			const int indexCount = indexBuf_->GetIndexCount();
+			// for each triangle
+			for (int i = 0, j = 0; i < indexCount; i +=3, ++j)
+			{
+				// for each vertex in triangle
+				for (int k = 0; k < 3; ++k)
+				{
+					auto index = *(indices + k);
+					if (vertexRefBuf_[index] != 0)
+					{
+						ASSERT(position[index].w == 1.0f);
+						const math::Vector3f& pos = *((const math::Vector3f*)(position + index));
+						const math::Vector3f& n = *((const math::Vector3f*)(normal + index));
+						math::Vector3f& c = *(color + index);
+
+						// for each light
+						math::Vector3f lightColor(0, 0, 0);
+						for (auto& light : activeLights_)
+						{
+							lightColor += light->Illuminate(pos, n);
+						}
+						c *= lightColor;
+					}
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0, j = 0; i < vertexCount_; ++i)
+			{
+				if (vertexRefBuf_[i] != 0)
+				{
+					ASSERT(position[i].w == 1.0f);
+					const math::Vector3f& pos = *((const math::Vector3f*)(position + i));
+					const math::Vector3f& n = *((const math::Vector3f*)(normal + i));
+					math::Vector3f& c = *(color + i);
+
+					// for each light
+					math::Vector3f lightColor(0, 0, 0);
+					for (auto& light : activeLights_)
+					{
+						lightColor += light->Illuminate(pos, n);
+					}
+					c *= lightColor;
+				}
+			}
+		}
+
+		for (auto& light : activeLights_)
+		{
+			light->EndLighting();
 		}
 	}
 
@@ -915,6 +1002,10 @@ namespace dopixel
 		textureSampler_.SetTexture(texture);
 	}
 
+	void Renderer::Impl::SetLights(const vector<LightRef>& lights)
+	{
+		activeLights_ = lights;
+	}
 	//////////////////////////////////////////////////////////////////////////
 
 	Renderer::Renderer()
@@ -1078,6 +1169,25 @@ namespace dopixel
 		}
 	}
 
+	void Renderer::SetLight(int index, const LightRef& light)
+	{
+		ASSERT(index < MAX_LIGHTS);
+
+		if (index >= lights_.size())
+		{
+			lights_.resize(index + 1);
+		}
+
+		lights_[index] = std::make_pair(light, true);
+	}
+
+	void Renderer::EnableLight(int index, bool enable)
+	{
+		ASSERT(index < lights_.size());
+
+		lights_[index].second = enable;
+	}
+
 	void Renderer::RenderSubMesh(const SubMeshRef& submesh)
 	{
 		triangleNormalsBuf_ = submesh->GetTriangleNormals();
@@ -1122,13 +1232,24 @@ namespace dopixel
 		impl_->SetPrimitiveType(vertexBuffer_->GetPrimitiveType());
 		impl_->SetTexture(texture_);
 
+		// active lights
+		vector<LightRef> lights;
+		for (auto& e : lights_)
+		{
+			if (e.second)
+			{
+				lights.push_back(e.first);
+			}
+		}
+		impl_->SetLights(lights);
+
 		// using status
 		int usingStatus = 0;
 		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant || vertexBuffer->GetColors())
 			usingStatus |= UsingStatus::VertexColor;
 		if ((vertexBuffer->GetVertexType() & VertexType::TexCoord) && texture != nullptr)
 			usingStatus |= UsingStatus::Texture;
-		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant)
+		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant && ! lights.empty())
 			usingStatus |= UsingStatus::Lighting;
 		if (cullMode_ != CullMode::None && vertexBuffer_->GetPrimitiveType() == PrimitiveType::Triangles)
 			usingStatus |= UsingStatus::Cull;
@@ -1160,6 +1281,10 @@ namespace dopixel
 		impl_->CullPlanes(planes);
 
 		// lighting for flat or gouraud shade mode here, phong will light in pixel shader
+		if ((usingStatus & UsingStatus::Lighting) && (shadeMode_ == ShadeMode::Flat || shadeMode_ == ShadeMode::Gouraud))
+		{
+			impl_->Illuminate(material_, eyeWorldPos_);
+		}
 
 		// transform vertex to projection space
 		impl_->Transform(viewProjMatrix_, false);
