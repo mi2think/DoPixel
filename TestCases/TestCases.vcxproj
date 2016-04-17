@@ -83,6 +83,7 @@
     <ClCompile Include="dptest_quaternion.cpp" />
     <ClCompile Include="dptest_ref.cpp" />
     <ClCompile Include="dptest_regex.cpp" />
+    <ClCompile Include="dptest_stringparser.cpp" />
     <ClCompile Include="dptest_strutility.cpp" />
     <ClCompile Include="dptest_vector2.cpp" />
     <ClCompile Include="dptest_vector3.cpp" />

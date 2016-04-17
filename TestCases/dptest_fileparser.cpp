@@ -34,12 +34,5 @@ DPTEST(FileParser)
 	EXPECT_TRUE((b = parser.GetLine(str)) && str == "end object");
 	// The Last line, read ""
 	EXPECT_FALSE((b = parser.GetLine(str)));
-
-	// Pattern match
-	bool match1 = parser.PatternMatch("vertex  34.234 56.34 12.4", "['vertex'] [f] [f] [f]");
-	EXPECT_TRUE(match1);
-
-	bool match2 = parser.PatternMatch("vertex  aaaa 56.34 12.4", "['vertex'] [s<5] [f] [f]");
-	EXPECT_TRUE(match2);
 }
 #pragma warning(pop)

@@ -17,5 +17,6 @@
     <ClCompile Include="dptest_event.cpp" />
     <ClCompile Include="dptest_vertexarray.cpp" />
     <ClCompile Include="dptest_vectorT.cpp" />
+    <ClCompile Include="dptest_stringparser.cpp" />
   </ItemGroup>
 </Project>
