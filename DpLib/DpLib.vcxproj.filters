@@ -42,9 +42,6 @@
     <ClInclude Include="DpFileStream.h">
       <Filter>DpLoadRes</Filter>
     </ClInclude>
-    <ClInclude Include="DpTga.h">
-      <Filter>DpLoadRes</Filter>
-    </ClInclude>
     <ClInclude Include="DpTimer.h">
       <Filter>DpCore</Filter>
     </ClInclude>
@@ -220,9 +217,6 @@
     </ClCompile>
     <ClCompile Include="..\Vendor\stb\stb_image.c">
       <Filter>Vendor\stb</Filter>
-    </ClCompile>
-    <ClCompile Include="DpTga.cpp">
-      <Filter>DpLoadRes</Filter>
     </ClCompile>
     <ClCompile Include="..\Vendor\stb\stb_image_write.c">
       <Filter>Vendor\stb</Filter>
