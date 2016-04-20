@@ -22,47 +22,25 @@ namespace dopixel
 	class Material
 	{
 	public:
+		Material();
 		Material(const string& name);
 		~Material();
 
 		const string& GetName() const;
-
-		void SetAmbientColor( const math::Vector3f& color);
-		void SetDiffuseColor( const math::Vector3f& color);
-		void SetEmissiveColor(const math::Vector3f& color);
-		void SetSpecularColor(const math::Vector3f& color);
+		
 		void SetShininess(float shininess);
-
-		const math::Vector3f& GetAmbientColor()  const;
-		const math::Vector3f& GetDiffuseColor()  const;
-		const math::Vector3f& GetEmissiveColor() const;
-		const math::Vector3f& GetSpecularColor() const;
 		const float& GetShininess() const;
 
-		void SetTexture(const TextureRef& texture);
-		const TextureRef& GetTexture() const;
+		void SetColor(ColorUsage::Type usage, const math::Vector3f& color);
+		const math::Vector3f& GetColor(ColorUsage::Type usage) const;
+
+		void SetTexture(TextureUsage::Type usage, const TextureRef& texture);
+		const TextureRef& GetTexture(TextureUsage::Type usage) const;
 	private:
 		string name_;
-		math::Vector3f ambientColor_;
-		math::Vector3f diffuseColor_;
-		math::Vector3f emissiveColor_;
-		math::Vector3f specularColor_;
 		float shininess_;
-		TextureRef texture_;
-	};
-
-	// material cache
-	class MaterialCache
-	{
-	public:
-		MaterialCache();
-		~MaterialCache();
-
-		void Clear();
-		MaterialRef Find(const string& name) const;
-		void Add(const MaterialRef& material);
-	private:
-		map<string, MaterialRef> materials_;
+		math::Vector3f colors_[ColorUsage::Max];
+		TextureRef texture_[TextureUsage::Max];
 	};
 }
 

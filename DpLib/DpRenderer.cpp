@@ -1220,7 +1220,7 @@ namespace dopixel
 		TextureRef texture = texture_;
 		if (! texture)
 		{
-			texture = (material_ != nullptr ? material_->GetTexture() : nullptr);
+			texture = (material_ != nullptr ? material_->GetTexture(TextureUsage::Diffuse) : nullptr);
 		}
 		if (!transformValid_)
 		{

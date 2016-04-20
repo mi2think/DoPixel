@@ -22,6 +22,7 @@ namespace dopixel
 		, filterMag_(TextureFilter::NearestPoint)
 		, wrapS_(TextureWrap::Reapeat)
 		, wrapT_(TextureWrap::Reapeat)
+		, usage_(TextureUsage::Diffuse)
 	{
 	}
 
@@ -34,6 +35,7 @@ namespace dopixel
 		, wrapS_(TextureWrap::Reapeat)
 		, wrapT_(TextureWrap::Reapeat)
 		, mipmapCount_(1)
+		, usage_(TextureUsage::Diffuse)
 	{
 		ImageRef image(new Image(width, height, format));
 		mipmaps_.push_back(image);
@@ -44,6 +46,7 @@ namespace dopixel
 		, filterMag_(TextureFilter::NearestPoint)
 		, wrapS_(TextureWrap::Reapeat)
 		, wrapT_(TextureWrap::Reapeat)
+		, usage_(TextureUsage::Diffuse)
 	{
 		Load(path, mipmaps);
 	}
@@ -119,6 +122,8 @@ namespace dopixel
 		mipmapCount_ = 0;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+
 	TextureCache::TextureCache()
 	{
 	}
@@ -128,22 +133,23 @@ namespace dopixel
 		Clear();
 	}
 
-	TextureRef TextureCache::Find(const string& name) const
+	TextureRef TextureCache::GetTexture(const string& path)
 	{
-		ASSERT(!name.empty());
-		auto it = textures_.find(name);
-		if (it != textures_.end())
-			return it->second;
-		return TextureRef();
-	}
+		ASSERT(!path.empty());
 
-	void TextureCache::Add(const TextureRef& texture)
-	{
-		const auto& name = texture->GetName();
-		TextureRef ref = Find(name);
-		if (!ref)
+		if (path.empty())
+			return TextureRef();
+
+		auto it = textures_.find(path);
+		if (it != textures_.end())
 		{
-			textures_[name] = ref;
+			return it->second;
+		}
+		else
+		{
+			TextureRef texture(new Texture(path, false));
+			textures_[path] = texture;
+			return texture;
 		}
 	}
 

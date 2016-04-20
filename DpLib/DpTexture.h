@@ -49,6 +49,9 @@ namespace dopixel
 		TextureWrap::Type GetWrapT() const { return wrapT_; }
 		void SetWrapS(TextureWrap::Type wrap) { wrapS_ = wrap; }
 		void SetWrapT(TextureWrap::Type wrap) { wrapT_ = wrap; }
+
+		void SetUsage(TextureUsage::Type usage) { usage_ = usage; }
+		TextureUsage::Type GetUsage() const { return usage_; }
 	private:
 		void GenMipmaps(ImageRef image);
 
@@ -57,6 +60,7 @@ namespace dopixel
 		int width_;
 		int height_;
 		PixelFormat::Type format_;
+		TextureUsage::Type usage_;
 		// mipmap
 		int mipmapCount_;
 		vector<ImageRef> mipmaps_;
@@ -72,12 +76,12 @@ namespace dopixel
 	class TextureCache
 	{
 	public:
+		static TextureCache& Instance() { static TextureCache cache; return cache; }
 		TextureCache();
 		~TextureCache();
 
 		void Clear();
-		TextureRef Find(const string& name) const;
-		void Add(const TextureRef& texture);
+		TextureRef GetTexture(const string& path);
 	private:
 		map<string, TextureRef> textures_;
 	};

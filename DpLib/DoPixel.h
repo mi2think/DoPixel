@@ -66,6 +66,19 @@ namespace dopixel
 		ClampToBorder
 	END_DECLARE_ENUM()
 
+	DECLARE_ENUM(TextureUsage)
+		Diffuse,
+		Specular,
+		Normal
+	END_DECLARE_ENUM()
+
+	DECLARE_ENUM(ColorUsage)
+		Ambient,
+		Diffuse,
+		Specular,
+		Emissive
+	END_DECLARE_ENUM()
+
 	DECLARE_ENUM(VertexType)
 		Position = BIT(0),
 		Normal = BIT(1),

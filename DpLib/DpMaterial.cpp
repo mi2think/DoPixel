@@ -14,12 +14,13 @@
 
 namespace dopixel
 {
+	Material::Material()
+		: shininess_(0.0f)
+	{
+	}
+
 	Material::Material(const string& name)
 		: name_(name)
-		, ambientColor_(0.0f, 0.0f, 0.0f)
-		, diffuseColor_(0.0f, 0.0f, 0.0f)
-		, emissiveColor_(0.0f, 0.0f, 0.0f)
-		, specularColor_(0.0f, 0.0f, 0.0f)
 		, shininess_(0.0f)
 	{
 	}
@@ -33,49 +34,9 @@ namespace dopixel
 		return name_;
 	}
 
-	void Material::SetAmbientColor(const math::Vector3f& color)
-	{
-		ambientColor_ = color;
-	}
-
-	void Material::SetDiffuseColor(const math::Vector3f& color)
-	{
-		diffuseColor_ = color;
-	}
-
-	void Material::SetEmissiveColor(const math::Vector3f& color)
-	{
-		emissiveColor_ = color;
-	}
-
-	void Material::SetSpecularColor(const math::Vector3f& color)
-	{
-		specularColor_ = color; 
-	}
-
 	void Material::SetShininess(float shininess)
 	{
 		shininess_ = shininess;
-	}
-
-	const math::Vector3f& Material::GetAmbientColor() const
-	{
-		return ambientColor_;
-	}
-
-	const math::Vector3f& Material::GetDiffuseColor() const
-	{
-		return diffuseColor_;
-	}
-
-	const math::Vector3f& Material::GetEmissiveColor() const
-	{
-		return emissiveColor_;
-	}
-
-	const math::Vector3f& Material::GetSpecularColor() const
-	{
-		return specularColor_;
 	}
 
 	const float& Material::GetShininess() const
@@ -83,45 +44,27 @@ namespace dopixel
 		return shininess_;
 	}
 
-	void Material::SetTexture(const TextureRef& texture)
+	void Material::SetColor(ColorUsage::Type usage, const math::Vector3f& color)
 	{
-		texture_ = texture;
+		ASSERT(usage < ColorUsage::Max);
+		colors_[usage] = color;
 	}
 
-	const TextureRef& Material::GetTexture() const
+	const math::Vector3f& Material::GetColor(ColorUsage::Type usage) const
 	{
-		return texture_;
+		ASSERT(usage < ColorUsage::Max);
+		return colors_[usage];
 	}
 
-	MaterialCache::MaterialCache()
+	void Material::SetTexture(TextureUsage::Type usage, const TextureRef& texture)
 	{
+		ASSERT(usage < TextureUsage::Max);
+		texture_[usage] = texture;
 	}
 
-	MaterialCache::~MaterialCache()
+	const TextureRef& Material::GetTexture(TextureUsage::Type usage) const
 	{
-		Clear();
-	}
-
-	MaterialRef MaterialCache::Find(const string& name) const
-	{
-		auto it = materials_.find(name);
-		if (it != materials_.end())
-			return it->second;
-		return MaterialRef();
-	}
-
-	void MaterialCache::Add(const MaterialRef& material)
-	{
-		const auto& name = material->GetName();
-		MaterialRef ref = Find(name);
-		if (! ref)
-		{
-			materials_[name] = material;
-		}
-	}
-
-	void MaterialCache::Clear()
-	{
-		materials_.clear();
+		ASSERT(usage < TextureUsage::Max);
+		return texture_[usage];
 	}
 }

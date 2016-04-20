@@ -59,14 +59,14 @@ namespace dopixel
 	math::Vector3f DirectionalLight::Illuminate(const math::Vector3f& pos, const math::Vector3f& normal) const
 	{
 		// ambient color
-		math::Vector3f color = material_->GetAmbientColor();
+		math::Vector3f color = material_->GetColor(ColorUsage::Ambient);
 		color *= ambient_;
 
 		float dp = DotProduct(invLightWorldDir_, normal);
 		if (dp > EPSILON_E5)
 		{
 			// diffuse color
-			math::Vector3f diffuseColor = material_->GetDiffuseColor();
+			math::Vector3f diffuseColor = material_->GetColor(ColorUsage::Diffuse);
 			diffuseColor *= diffuse_;
 
 			color += diffuseColor * dp;
@@ -77,14 +77,14 @@ namespace dopixel
 	math::Vector3f DirectionalLight::IlluminateWithSpecular(const math::Vector3f& pos, const math::Vector3f& normal) const
 	{
 		// ambient color
-		math::Vector3f color = material_->GetAmbientColor();
+		math::Vector3f color = material_->GetColor(ColorUsage::Ambient);
 		color *= ambient_;
 
 		float dp = DotProduct(invLightWorldDir_, normal);
 		if (dp > EPSILON_E5)
 		{
 			// diffuse color
-			math::Vector3f diffuseColor = material_->GetDiffuseColor();
+			math::Vector3f diffuseColor = material_->GetColor(ColorUsage::Diffuse);
 			diffuseColor *= diffuse_;
 
 			color += diffuseColor * dp;
@@ -98,7 +98,7 @@ namespace dopixel
 			if (k > EPSILON_E5)
 			{
 				k = pow(k, material_->GetShininess());
-				math::Vector3f specularColor = material_->GetSpecularColor();
+				math::Vector3f specularColor = material_->GetColor(ColorUsage::Specular);
 				specularColor *= specular_;
 
 				color += specularColor * k;
@@ -144,14 +144,14 @@ namespace dopixel
 		lightWorldDir.Normalize();
 
 		// ambient color
-		math::Vector3f color = material_->GetAmbientColor();
+		math::Vector3f color = material_->GetColor(ColorUsage::Ambient);
 		color *= ambient_;
 
 		float dp = DotProduct(-lightWorldDir, normal);
 		if (dp > EPSILON_E5)
 		{
 			// diffuse color
-			math::Vector3f diffuseColor = material_->GetDiffuseColor();
+			math::Vector3f diffuseColor = material_->GetColor(ColorUsage::Diffuse);
 			diffuseColor *= diffuse_;
 
 			color += diffuseColor * dp;
@@ -169,14 +169,14 @@ namespace dopixel
 		lightToPos.Normalize();
 
 		// ambient color
-		math::Vector3f color = material_->GetAmbientColor();
+		math::Vector3f color = material_->GetColor(ColorUsage::Ambient);
 		color *= ambient_;
 
 		float dp = DotProduct(-lightToPos, normal);
 		if (dp > EPSILON_E5)
 		{
 			// diffuse color
-			math::Vector3f diffuseColor = material_->GetDiffuseColor();
+			math::Vector3f diffuseColor = material_->GetColor(ColorUsage::Diffuse);
 			diffuseColor *= diffuse_;
 
 			color += diffuseColor * dp;
@@ -190,7 +190,7 @@ namespace dopixel
 			if (k > EPSILON_E5)
 			{
 				k = pow(k, material_->GetShininess());
-				math::Vector3f specularColor = material_->GetSpecularColor();
+				math::Vector3f specularColor = material_->GetColor(ColorUsage::Specular);
 				specularColor *= specular_;
 
 				color += specularColor * k;
@@ -248,7 +248,7 @@ namespace dopixel
 		float atten = attenuation_.x + attenuation_.y * distance + attenuation_.z * distance * distance;
 
 		// ambient color
-		math::Vector3f color = material_->GetAmbientColor();
+		math::Vector3f color = material_->GetColor(ColorUsage::Ambient);
 		color *= ambient_;
 
 		float dp = DotProduct(lightToPos, lightWorldDir_);
@@ -262,7 +262,7 @@ namespace dopixel
 			if (k > EPSILON_E5)
 			{
 				// diffuse color
-				math::Vector3f diffuseColor = material_->GetDiffuseColor();
+				math::Vector3f diffuseColor = material_->GetColor(ColorUsage::Diffuse);
 				diffuseColor *= diffuse_;
 				diffuseColor *= k;
 
@@ -290,7 +290,7 @@ namespace dopixel
 		float atten = attenuation_.x + attenuation_.y * distance + attenuation_.z * distance * distance;
 
 		// ambient color
-		math::Vector3f color = material_->GetAmbientColor();
+		math::Vector3f color = material_->GetColor(ColorUsage::Ambient);
 		color *= ambient_;
 
 		float dp = DotProduct(lightToPos, lightWorldDir_);
@@ -304,7 +304,7 @@ namespace dopixel
 			if (k > EPSILON_E5)
 			{
 				// diffuse color
-				math::Vector3f diffuseColor = material_->GetDiffuseColor();
+				math::Vector3f diffuseColor = material_->GetColor(ColorUsage::Diffuse);
 				diffuseColor *= diffuse_;
 				diffuseColor *= k;
 
@@ -326,7 +326,7 @@ namespace dopixel
 				if (w > EPSILON_E5)
 				{
 					w = pow(w, material_->GetShininess());
-					math::Vector3f specularColor = material_->GetSpecularColor();
+					math::Vector3f specularColor = material_->GetColor(ColorUsage::Specular);
 					specularColor *= specular_;
 
 					color += specularColor * w;
