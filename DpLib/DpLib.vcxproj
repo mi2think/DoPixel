@@ -76,6 +76,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Vendor\assimp\ai_assert.h" />
+    <ClInclude Include="..\Vendor\assimp\anim.h" />
+    <ClInclude Include="..\Vendor\assimp\camera.h" />
+    <ClInclude Include="..\Vendor\assimp\cexport.h" />
+    <ClInclude Include="..\Vendor\assimp\cfileio.h" />
+    <ClInclude Include="..\Vendor\assimp\cimport.h" />
+    <ClInclude Include="..\Vendor\assimp\color4.h" />
+    <ClInclude Include="..\Vendor\assimp\config.h" />
+    <ClInclude Include="..\Vendor\assimp\DefaultLogger.hpp" />
+    <ClInclude Include="..\Vendor\assimp\defs.h" />
+    <ClInclude Include="..\Vendor\assimp\Exporter.hpp" />
+    <ClInclude Include="..\Vendor\assimp\Importer.hpp" />
+    <ClInclude Include="..\Vendor\assimp\importerdesc.h" />
+    <ClInclude Include="..\Vendor\assimp\IOStream.hpp" />
+    <ClInclude Include="..\Vendor\assimp\IOSystem.hpp" />
+    <ClInclude Include="..\Vendor\assimp\light.h" />
+    <ClInclude Include="..\Vendor\assimp\Logger.hpp" />
+    <ClInclude Include="..\Vendor\assimp\LogStream.hpp" />
+    <ClInclude Include="..\Vendor\assimp\material.h" />
+    <ClInclude Include="..\Vendor\assimp\matrix3x3.h" />
+    <ClInclude Include="..\Vendor\assimp\matrix4x4.h" />
+    <ClInclude Include="..\Vendor\assimp\mesh.h" />
+    <ClInclude Include="..\Vendor\assimp\NullLogger.hpp" />
+    <ClInclude Include="..\Vendor\assimp\postprocess.h" />
+    <ClInclude Include="..\Vendor\assimp\ProgressHandler.hpp" />
+    <ClInclude Include="..\Vendor\assimp\quaternion.h" />
+    <ClInclude Include="..\Vendor\assimp\scene.h" />
+    <ClInclude Include="..\Vendor\assimp\texture.h" />
+    <ClInclude Include="..\Vendor\assimp\types.h" />
+    <ClInclude Include="..\Vendor\assimp\vector2.h" />
+    <ClInclude Include="..\Vendor\assimp\vector3.h" />
+    <ClInclude Include="..\Vendor\assimp\version.h" />
     <ClInclude Include="..\Vendor\rapidjson\allocators.h" />
     <ClInclude Include="..\Vendor\rapidjson\document.h" />
     <ClInclude Include="..\Vendor\rapidjson\encodedstream.h" />
@@ -110,6 +142,7 @@
     <ClInclude Include="DpKeyEvent.h" />
     <ClInclude Include="DpInputState.h" />
     <ClInclude Include="DpLight.h" />
+    <ClInclude Include="DpLoader.h" />
     <ClInclude Include="DpLog.h" />
     <ClInclude Include="DpMaterial.h" />
     <ClInclude Include="DpMath.h" />
@@ -126,6 +159,7 @@
     <ClInclude Include="DpSceneManager.h" />
     <ClInclude Include="DpSceneNode.h" />
     <ClInclude Include="DpSceneNodeAnimator.h" />
+    <ClInclude Include="DpStringParser.h" />
     <ClInclude Include="DpTexture.h" />
     <ClInclude Include="DpTextureSampler.h" />
     <ClInclude Include="DpTimer.h" />
@@ -165,10 +199,21 @@
     <ClCompile Include="DpSceneManager.cpp" />
     <ClCompile Include="DpSceneNode.cpp" />
     <ClCompile Include="DpSceneNodeAnimator.cpp" />
+    <ClCompile Include="DpStringParser.cpp" />
     <ClCompile Include="DpTexture.cpp" />
     <ClCompile Include="DpTextureSampler.cpp" />
     <ClCompile Include="DpTimer.cpp" />
     <ClCompile Include="DpUnitTest.cpp" />
+    <ClCompile Include="DpLoader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Vendor\assimp\color4.inl" />
+    <None Include="..\Vendor\assimp\material.inl" />
+    <None Include="..\Vendor\assimp\matrix3x3.inl" />
+    <None Include="..\Vendor\assimp\matrix4x4.inl" />
+    <None Include="..\Vendor\assimp\quaternion.inl" />
+    <None Include="..\Vendor\assimp\vector2.inl" />
+    <None Include="..\Vendor\assimp\vector3.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

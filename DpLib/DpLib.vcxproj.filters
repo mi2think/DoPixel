@@ -22,6 +22,9 @@
     <Filter Include="DpCore">
       <UniqueIdentifier>{ab084571-0c16-45a5-a838-df80dec3e080}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vendor\assimp">
+      <UniqueIdentifier>{bb28ee4f-68c0-4146-85a8-8711f5eb8522}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DpUnitTest.h">
@@ -207,6 +210,108 @@
     <ClInclude Include="DpVectorT.h">
       <Filter>DpMath</Filter>
     </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\ai_assert.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\anim.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\camera.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\cexport.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\cfileio.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\cimport.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\color4.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\config.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\DefaultLogger.hpp">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\defs.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\Exporter.hpp">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\Importer.hpp">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\importerdesc.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\IOStream.hpp">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\IOSystem.hpp">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\light.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\Logger.hpp">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\LogStream.hpp">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\material.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\matrix3x3.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\matrix4x4.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\mesh.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\NullLogger.hpp">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\postprocess.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\ProgressHandler.hpp">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\quaternion.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\scene.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\texture.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\types.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\vector2.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\vector3.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\assimp\version.h">
+      <Filter>Vendor\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="DpStringParser.h">
+      <Filter>DpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="DpLoader.h">
+      <Filter>DpLoadRes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DpColor.cpp">
@@ -299,5 +404,34 @@
     <ClCompile Include="DpTextureSampler.cpp">
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
+    <ClCompile Include="DpStringParser.cpp">
+      <Filter>DpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="DpLoader.cpp">
+      <Filter>DpLoadRes</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Vendor\assimp\color4.inl">
+      <Filter>Vendor\assimp</Filter>
+    </None>
+    <None Include="..\Vendor\assimp\material.inl">
+      <Filter>Vendor\assimp</Filter>
+    </None>
+    <None Include="..\Vendor\assimp\matrix3x3.inl">
+      <Filter>Vendor\assimp</Filter>
+    </None>
+    <None Include="..\Vendor\assimp\matrix4x4.inl">
+      <Filter>Vendor\assimp</Filter>
+    </None>
+    <None Include="..\Vendor\assimp\quaternion.inl">
+      <Filter>Vendor\assimp</Filter>
+    </None>
+    <None Include="..\Vendor\assimp\vector2.inl">
+      <Filter>Vendor\assimp</Filter>
+    </None>
+    <None Include="..\Vendor\assimp\vector3.inl">
+      <Filter>Vendor\assimp</Filter>
+    </None>
   </ItemGroup>
 </Project>

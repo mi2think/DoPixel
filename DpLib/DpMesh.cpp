@@ -16,6 +16,12 @@
 
 namespace dopixel
 {
+	SubMesh::SubMesh()
+		: mesh_(nullptr)
+		, visible_(true)
+	{
+	}
+
 	SubMesh::SubMesh(Mesh* mesh)
 		: mesh_(mesh)
 		, visible_(true)
@@ -164,6 +170,12 @@ namespace dopixel
 		ASSERT(i < (int)submeshs_.size());
 		return submeshs_[i];
 	}
+
+	void Mesh::AddSubMesh(const SubMeshRef& submesh)
+	{
+		submeshs_.push_back(submesh);
+	}
+	//////////////////////////////////////////////////////////////////////////
 
 	MeshCache::MeshCache()
 	{

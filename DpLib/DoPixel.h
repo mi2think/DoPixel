@@ -142,6 +142,7 @@ namespace dopixel
 	class Material;
 	class Mesh;
 	class SubMesh;
+	class Loader;
 	class SceneNode;
 	class CameraSceneNode;
 	class SceneNodeAnimator;
@@ -159,6 +160,7 @@ namespace dopixel
 	typedef Ref<Material> MaterialRef;
 	typedef Ref<Mesh> MeshRef;
 	typedef Ref<SubMesh> SubMeshRef;
+	typedef Ref<Loader> LoaderRef;
 	typedef Ref<SceneNode> SceneNodeRef;
 	typedef Ref<CameraSceneNode> CameraSceneNodeRef;
 	typedef Ref<SceneNodeAnimator> SceneNodeAnimatorRef;

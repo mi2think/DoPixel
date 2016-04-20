@@ -21,9 +21,11 @@ namespace dopixel
 	class SubMesh
 	{
 	public:
+		SubMesh();
 		SubMesh(Mesh* mesh);
 		~SubMesh();
 
+		void SetMesh(Mesh* mesh) { mesh_ = mesh; }
 		Mesh* GetMesh() const { return mesh_; }
 
 		const math::AABB& GetBoundingBox() const { return aabb_; }
@@ -78,6 +80,8 @@ namespace dopixel
 
 		int GetSubMeshCount() const { return submeshs_.size(); }
 		const SubMeshRef& GetSubMesh(int i) const;
+
+		void AddSubMesh(const SubMeshRef& submesh);
 	private:
 		string name_;
 		vector<SubMeshRef> submeshs_;
