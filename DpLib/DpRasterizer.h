@@ -250,22 +250,17 @@ namespace dopixel
 				
 				if (zbufType != ZBuffer::None)
 				{
-					if (zbufType == ZBuffer::ZBuff)
+					float zreal = zs;
+					if (zbufType == ZBuffer::INVZBuff)
 					{
-						float& zcomp = zbuf[x];
-						if (zs < zcomp)
-							zcomp = zs;
-						else
-							draw = false;
+						zreal = zs / ws;
 					}
-					else if (zbufType == ZBuffer::INVZBuff)
-					{
-						float& zcomp = zbuf[x];
-						if (zs > zcomp)
-							zcomp = zs;
-						else
-							draw = false;
-					}
+
+					float& zcomp = zbuf[x];
+					if (zreal < zcomp)
+						zcomp = zreal;
+					else
+						draw = false;
 				}
 
 				if (draw)
@@ -413,22 +408,17 @@ namespace dopixel
 
 				if (zbufType != ZBuffer::None)
 				{
-					if (zbufType == ZBuffer::ZBuff)
+					float zreal = zs;
+					if (zbufType == ZBuffer::INVZBuff)
 					{
-						float& zcomp = zbuf[x];
-						if (zs < zcomp)
-							zcomp = zs;
-						else
-							draw = false;
+						zreal = zs / ws;
 					}
-					else if (zbufType == ZBuffer::INVZBuff)
-					{
-						float& zcomp = zbuf[x];
-						if (zs > zcomp)
-							zcomp = zs;
-						else
-							draw = false;
-					}
+					
+					float& zcomp = zbuf[x];
+					if (zreal < zcomp)
+						zcomp = zreal;
+					else
+						draw = false;
 				}
 
 				if (draw)
@@ -483,6 +473,11 @@ namespace dopixel
 		{
 			return Color(v).value;
 		}
+	};
+
+	struct PSPhong
+	{
+		//unsigned int operator()() const
 	};
 
 	struct PSFlatTexture

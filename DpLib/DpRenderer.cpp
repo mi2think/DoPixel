@@ -1082,11 +1082,7 @@ namespace dopixel
 		if (zbufType_ != ZBuffer::None)
 		{
 			zbuf_.resize(width_ * height_);
-
-			if (zbufType_ == ZBuffer::ZBuff)
-				zbuf_.assign(width_ * height_, 1.0f);
-			else
-				memset(&zbuf_[0], 0, width_ * height_ * sizeof(zbuf_[0]));
+			zbuf_.assign(width_ * height_, 1.0f);
 		}
 
 		rasterizer_->SetBuffer(frameBuf_, width_, height_, pitch_, zbuf_.empty() ? nullptr : &zbuf_[0]);
