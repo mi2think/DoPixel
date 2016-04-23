@@ -25,6 +25,8 @@
 
 namespace dopixel
 {
+	Mesh* loadmesh = nullptr;
+
 	Loader::Loader()
 	{
 	}
@@ -33,8 +35,15 @@ namespace dopixel
 	{
 	}
 
-	MeshRef Loader::Load(const string& path)
+	bool Loader::Load(MeshRef& mesh, const string& path)
 	{
+		return Load(mesh.Get(), path);
+	}
+
+	bool Loader::Load(Mesh* mesh, const string& path)
+	{
+		loadmesh = mesh;
+
 		auto slashIndex = path.find_last_of("/");
 		if (slashIndex == string::npos)
 			dir_ = ".";
@@ -43,29 +52,17 @@ namespace dopixel
 		else
 			dir_ = path.substr(0, slashIndex);
 
-		FileStream fs(path, FileStream::BinaryRead);
-		size_t size = (size_t)fs.Size();
-		unsigned char* buffer = new unsigned char[size];
-		ON_SCOPE_EXIT([&buffer]() { SAFE_DELETEARRAY(buffer); });
-
-		size_t readSize = fs.Read(buffer, size);
-		if (readSize != size)
-		{
-			LOG_ERROR("error: load %s failed!\n", path.c_str());
-			return MeshRef();
-		}
-
-		Assimp::Importer* importer = nullptr;
-		const aiScene* scene = importer->ReadFileFromMemory(buffer, size, aiProcess_Triangulate | aiProcess_GenNormals);
+		Assimp::Importer importer;
+		const aiScene* scene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenNormals);
 		if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			LOG_ERROR("error: ASSIMP read %s failed!\n", path.c_str());
-			return MeshRef();
+			return false;
 		}
 
 		LoadNode(scene->mRootNode, scene);
 
-		return loadedMesh_;
+		return true;
 	}
 
 	void Loader::LoadNode(aiNode* node, const aiScene* scene)
@@ -75,7 +72,7 @@ namespace dopixel
 			int meshIndex = node->mMeshes[i];
 			aiMesh* mesh = scene->mMeshes[meshIndex];
 			SubMeshRef subMesh = LoadMesh(mesh, scene);
-			loadedMesh_->AddSubMesh(subMesh);
+			loadmesh->AddSubMesh(subMesh);
 		}
 
 		for (unsigned int i = 0; i < node->mNumChildren; ++i)
@@ -161,27 +158,23 @@ namespace dopixel
 			
 			// shininess
 			float shininess = 0.0f;
-			e = mat->Get<float>(AI_MATKEY_SHININESS, shininess);
+			e = aiGetMaterialFloat(mat, AI_MATKEY_SHININESS, &shininess);
 			ASSERT(e == aiReturn_SUCCESS);
 			material->SetShininess(shininess);
 
 			// color
-			math::Vector3f color;
-			e = mat->Get<math::Vector3f>(AI_MATKEY_COLOR_AMBIENT, &color, nullptr);
+			aiColor4D color;
+			e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &color);
 			ASSERT(e == aiReturn_SUCCESS);
-			material->SetColor(ColorUsage::Ambient, color);
+			material->SetColor(ColorUsage::Ambient, math::Vector3f(color.r, color.g, color.b));
 
-			e = mat->Get<math::Vector3f>(AI_MATKEY_COLOR_DIFFUSE, &color, nullptr);
+			e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_SPECULAR, &color);
 			ASSERT(e == aiReturn_SUCCESS);
-			material->SetColor(ColorUsage::Diffuse, color);
+			material->SetColor(ColorUsage::Specular, math::Vector3f(color.r, color.g, color.b));
 
-			e = mat->Get<math::Vector3f>(AI_MATKEY_COLOR_SPECULAR, &color, nullptr);
+			e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_EMISSIVE, &color);
 			ASSERT(e == aiReturn_SUCCESS);
-			material->SetColor(ColorUsage::Specular, color);
-
-			e = mat->Get<math::Vector3f>(AI_MATKEY_COLOR_EMISSIVE, &color, nullptr);
-			ASSERT(e == aiReturn_SUCCESS);
-			material->SetColor(ColorUsage::Emissive, color);
+			material->SetColor(ColorUsage::Emissive, math::Vector3f(color.r, color.g, color.b));
 
 			submesh->SetMaterial(material);
 		}

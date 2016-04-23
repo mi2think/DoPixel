@@ -27,14 +27,14 @@ namespace dopixel
 		Loader();
 		~Loader();
 
-		MeshRef Load(const string& path);
+		bool Load(MeshRef& mesh, const string& path);
+		bool Load(Mesh* mesh, const string& path);
 	private:
 		void LoadNode(aiNode* node, const aiScene* scene);
 		SubMeshRef LoadMesh(aiMesh* mesh, const aiScene* scene);
 		TextureRef LoadTexture(aiMaterial* mat, TextureUsage::Type usage);
 
 		string dir_;
-		MeshRef loadedMesh_;
 	};
 }
 
