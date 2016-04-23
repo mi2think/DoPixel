@@ -941,10 +941,14 @@ namespace dopixel
 		auto& p1 = *(pos + index1);
 		auto& p2 = *(pos + index2);
 
-		auto color = colors_->DataAs<math::Vector3f>();
-		auto& c0 = *(color + index0);
-		auto& c1 = *(color + index1);
-		auto& c2 = *(color + index2);
+		math::Vector3f c0, c1, c2;
+		if (colors_ != nullptr)
+		{
+			math::Vector3f* color = colors_->DataAs<math::Vector3f>();
+			c0 = *(color + index0);
+			c1 = *(color + index1);
+			c2 = *(color + index2);
+		}
 
 		math::Vector2f uv0, uv1, uv2;
 		if (usingStatus_ & UsingStatus::Texture)
@@ -1226,7 +1230,7 @@ namespace dopixel
 		eyeWorldPos_ = cameraNode->GetWorldPosition();
 		viewFrustum_ = cameraNode->GetViewFrustum();
 		impl_->SetPrimitiveType(vertexBuffer_->GetPrimitiveType());
-		impl_->SetTexture(texture_);
+		impl_->SetTexture(texture);
 
 		// active lights
 		vector<LightRef> lights;
