@@ -143,42 +143,58 @@ namespace dopixel
 		// material
 		if (mesh->mMaterialIndex >= 0)
 		{
-			MaterialRef material(new Material());
 			aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
-
-			// texture
-			TextureRef diffuseTex = LoadTexture(mat, TextureUsage::Diffuse);
-			TextureRef specularTex = LoadTexture(mat, TextureUsage::Specular);
-			TextureRef normalTex = LoadTexture(mat, TextureUsage::Normal);
-			material->SetTexture(TextureUsage::Diffuse, diffuseTex);
-			material->SetTexture(TextureUsage::Specular, specularTex);
-			material->SetTexture(TextureUsage::Normal, normalTex);
-
-			aiReturn e = aiReturn_SUCCESS;
-			
-			// shininess
-			float shininess = 0.0f;
-			e = aiGetMaterialFloat(mat, AI_MATKEY_SHININESS, &shininess);
-			ASSERT(e == aiReturn_SUCCESS);
-			material->SetShininess(shininess);
-
-			// color
-			aiColor4D color;
-			e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &color);
-			ASSERT(e == aiReturn_SUCCESS);
-			material->SetColor(ColorUsage::Ambient, math::Vector3f(color.r, color.g, color.b));
-
-			e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_SPECULAR, &color);
-			ASSERT(e == aiReturn_SUCCESS);
-			material->SetColor(ColorUsage::Specular, math::Vector3f(color.r, color.g, color.b));
-
-			e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_EMISSIVE, &color);
-			ASSERT(e == aiReturn_SUCCESS);
-			material->SetColor(ColorUsage::Emissive, math::Vector3f(color.r, color.g, color.b));
-
+			MaterialRef material = LoadMaterial(mat);
 			submesh->SetMaterial(material);
 		}
 		return submesh;
+	}
+
+	MaterialRef Loader::LoadMaterial(aiMaterial* mat)
+	{
+		aiString matName;
+		aiGetMaterialString(mat, AI_MATKEY_NAME, &matName);
+
+		MaterialRef material = MaterialCache::Instance().GetMaterial(matName.C_Str());
+		if (material != nullptr)
+		{
+			return material;
+		}
+		
+		material = new Material();
+
+		// texture
+		TextureRef diffuseTex = LoadTexture(mat, TextureUsage::Diffuse);
+		TextureRef specularTex = LoadTexture(mat, TextureUsage::Specular);
+		TextureRef normalTex = LoadTexture(mat, TextureUsage::Normal);
+		material->SetTexture(TextureUsage::Diffuse, diffuseTex);
+		material->SetTexture(TextureUsage::Specular, specularTex);
+		material->SetTexture(TextureUsage::Normal, normalTex);
+
+		aiReturn e = aiReturn_SUCCESS;
+
+		// shininess
+		float shininess = 0.0f;
+		e = aiGetMaterialFloat(mat, AI_MATKEY_SHININESS, &shininess);
+		ASSERT(e == aiReturn_SUCCESS);
+		material->SetShininess(shininess);
+
+		// color
+		aiColor4D color;
+		e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &color);
+		ASSERT(e == aiReturn_SUCCESS);
+		material->SetColor(ColorUsage::Ambient, math::Vector3f(color.r, color.g, color.b));
+
+		e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_SPECULAR, &color);
+		ASSERT(e == aiReturn_SUCCESS);
+		material->SetColor(ColorUsage::Specular, math::Vector3f(color.r, color.g, color.b));
+
+		e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_EMISSIVE, &color);
+		ASSERT(e == aiReturn_SUCCESS);
+		material->SetColor(ColorUsage::Emissive, math::Vector3f(color.r, color.g, color.b));
+
+		MaterialCache::Instance().AddMaterial(matName.C_Str(), material);
+		return material;
 	}
 
 	TextureRef Loader::LoadTexture(aiMaterial* mat, TextureUsage::Type usage)

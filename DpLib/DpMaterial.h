@@ -42,6 +42,21 @@ namespace dopixel
 		math::Vector3f colors_[ColorUsage::Max];
 		TextureRef texture_[TextureUsage::Max];
 	};
+
+	// material cache
+	class MaterialCache
+	{
+	public:
+		static MaterialCache& Instance() { static MaterialCache cache; return cache; }
+		MaterialCache();
+		~MaterialCache();
+
+		void Clear();
+		void AddMaterial(const string& name, const MaterialRef& material);
+		MaterialRef GetMaterial(const string& name);
+	private:
+		map<string, MaterialRef> materials_;
+	};
 }
 
 #endif

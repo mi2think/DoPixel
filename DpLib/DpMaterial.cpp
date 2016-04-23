@@ -67,4 +67,41 @@ namespace dopixel
 		ASSERT(usage < TextureUsage::Max);
 		return texture_[usage];
 	}
+
+	//////////////////////////////////////////////////////////////////////////
+
+	MaterialCache::MaterialCache()
+	{
+	}
+
+	MaterialCache::~MaterialCache()
+	{
+		Clear();
+	}
+
+	void MaterialCache::AddMaterial(const string& name, const MaterialRef& material)
+	{
+		materials_[name] = material;
+	}
+
+	MaterialRef MaterialCache::GetMaterial(const string& name)
+	{
+		ASSERT(!name.empty());
+
+		if (name.empty())
+			return MaterialRef();
+
+		auto it = materials_.find(name);
+		if (it != materials_.end())
+		{
+			return it->second;
+		}
+
+		return MaterialRef();
+	}
+
+	void MaterialCache::Clear()
+	{
+		materials_.clear();
+	}
 }

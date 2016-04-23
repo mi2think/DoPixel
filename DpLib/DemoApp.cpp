@@ -57,7 +57,12 @@ namespace dopixel
 
 	bool DemoApp::Loop()
 	{
-		return window_->Loop();
+		bool b = window_->Loop();
+		// release cache
+		MeshCache::Instance().Clear();
+		MaterialCache::Instance().Clear();
+		TextureCache::Instance().Clear();
+		return b;
 	}
 
 	void DemoApp::Draw(const Timestep& timestep, unsigned char* buffer, int width, int height, int pitch)

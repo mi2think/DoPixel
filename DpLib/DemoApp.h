@@ -22,6 +22,9 @@
 #include "DpVertexBuffer.h"
 #include "DpIndexBuffer.h"
 #include "DpTexture.h"
+#include "DpMaterial.h"
+#include "DpMesh.h"
+#include "DpLoader.h"
 #include "DpSceneManager.h"
 #include "DpRenderer.h"
 

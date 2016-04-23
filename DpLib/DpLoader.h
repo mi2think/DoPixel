@@ -32,6 +32,7 @@ namespace dopixel
 	private:
 		void LoadNode(aiNode* node, const aiScene* scene);
 		SubMeshRef LoadMesh(aiMesh* mesh, const aiScene* scene);
+		MaterialRef LoadMaterial(aiMaterial* mat);
 		TextureRef LoadTexture(aiMaterial* mat, TextureUsage::Type usage);
 
 		string dir_;

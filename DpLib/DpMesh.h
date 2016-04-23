@@ -82,6 +82,8 @@ namespace dopixel
 		const SubMeshRef& GetSubMesh(int i) const;
 
 		void AddSubMesh(const SubMeshRef& submesh);
+
+		void OnRender(RendererRef& renderer);
 	private:
 		string name_;
 		vector<SubMeshRef> submeshs_;

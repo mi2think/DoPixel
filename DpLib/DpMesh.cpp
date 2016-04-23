@@ -13,6 +13,8 @@
 #include "DpMaterial.h"
 #include "DpIndexBuffer.h"
 #include "DpVertexBuffer.h"
+#include "DpLoader.h"
+#include "DpRenderer.h"
 
 namespace dopixel
 {
@@ -77,6 +79,8 @@ namespace dopixel
 	{
 		ASSERT(vertexBuffer_);
 
+		CalculateBoundingBox();
+
 		int vertexType = vertexBuffer_->GetVertexType();
 		if ((vertexType & VertexType::Position))
 		{
@@ -104,7 +108,7 @@ namespace dopixel
 	{
 		SubMeshRef submesh(new SubMesh(this));
 		submesh->SetVertexBuffer(vertexBuffer);
-		submesh->CalculateBoundingBox();
+		submesh->OnLoaded();
 		submeshs_.push_back(submesh);
 	}
 
@@ -113,7 +117,7 @@ namespace dopixel
 		SubMeshRef submesh(new SubMesh(this));
 		submesh->SetVertexBuffer(vertexBuffer);
 		submesh->SetIndexBuffer(indexBuffer);
-		submesh->CalculateBoundingBox();
+		submesh->OnLoaded();
 		submeshs_.push_back(submesh);
 	}
 
@@ -123,7 +127,7 @@ namespace dopixel
 		submesh->SetVertexBuffer(vertexBuffer);
 		submesh->SetIndexBuffer(indexBuffer);
 		submesh->SetMaterial(material);
-		submesh->CalculateBoundingBox();
+		submesh->OnLoaded();
 		submeshs_.push_back(submesh);
 	}
 
@@ -140,12 +144,17 @@ namespace dopixel
 
 	bool Mesh::Load(const string& path)
 	{
-		//TODO: load mesh from model file
+		LoaderRef loader(new Loader);
 
-		// alloc vertex buffer, index buffer and material
-		// build submesh
+		if (loader->Load(this, path))
+		{
+			for (auto& submesh : submeshs_)
+			{
+				submesh->OnLoaded();
+			}
+		}
 
-		// notify load finished
+		CalculateBoundingBox();
 
 		return true;
 	}
@@ -175,6 +184,20 @@ namespace dopixel
 	{
 		submeshs_.push_back(submesh);
 	}
+
+	void Mesh::OnRender(RendererRef& renderer)
+	{
+		int submeshCount = submeshs_.size();
+		for (int i = 0; i < submeshCount; ++i)
+		{
+			const auto& submesh = GetSubMesh(i);
+			if (submesh->GetVisible())
+			{
+				renderer->RenderSubMesh(submesh);
+			}
+		}
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 
 	MeshCache::MeshCache()
