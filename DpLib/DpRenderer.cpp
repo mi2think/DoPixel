@@ -149,9 +149,8 @@ namespace dopixel
 		if (usingStatus_ & UsingStatus::VertexColor)
 			AllocColors(vertexCount, copy);
 		if (usingStatus_ & UsingStatus::Lighting)
-			AllocNormals(vertexCount);
 		if (usingStatus_ & UsingStatus::Texture)
-			AllocTexCoords(vertexCount);
+			AllocTexCoords(vertexCount, copy);
 	}
 	
 	void Renderer::Impl::PrepareBuf(const VertexBufferRef& vertexBuf, const IndexBufferRef& indexBuf, const Ref<VertexArray3f>& triangleNormalsBuf, int usingStatus)
