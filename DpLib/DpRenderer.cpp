@@ -149,6 +149,7 @@ namespace dopixel
 		if (usingStatus_ & UsingStatus::VertexColor)
 			AllocColors(vertexCount, copy);
 		if (usingStatus_ & UsingStatus::Lighting)
+			AllocNormals(vertexCount, copy);
 		if (usingStatus_ & UsingStatus::Texture)
 			AllocTexCoords(vertexCount, copy);
 	}
