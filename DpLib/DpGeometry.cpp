@@ -130,10 +130,10 @@ namespace dopixel
 			const auto& m = viewProj.m;
 
 			// Near clipping plane
-			planes_[Frustum::PlaneNear] = Plane(m[0][3],
-				m[1][3],
-				m[2][3],
-				m[3][3]);
+			planes_[Frustum::PlaneNear] = Plane(m[0][2],
+				m[1][2],
+				m[2][2],
+				m[3][2]);
 
 			// Far clipping plane
 			planes_[Frustum::PlaneFar] = Plane(m[0][3] - m[0][2],

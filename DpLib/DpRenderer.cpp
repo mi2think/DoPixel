@@ -479,6 +479,7 @@ namespace dopixel
 
 		if (indexBuf_)
 		{
+			indexBuf_->Resize(triangleCount);
 			memset(&vertexRefBuf_[0], 0, sizeof(int) * vertexCount);
 
 			const unsigned int* indices = indexBuf_->GetData();
@@ -604,7 +605,7 @@ namespace dopixel
 					// this triangle need cut to 1 or 2 triangles
 					CutTriangle(plane, clipVertexCount, index0, index1, index2);
 					indices = indexBuf_->GetData();
-					indexCount = indexBuf_->GetIndexCount();
+				indexCount = indexBuf_->GetIndexCount();
 				}
 			}
 			else
@@ -658,8 +659,6 @@ namespace dopixel
 			// i3 <- interpolate between i0 and i1
 			// i4 <- interpolate between i0 and i2
 			// then new triangle: i0-i3-i4
-
-			int triangle[3] = { i0, i1, i2 };
 			if (vertexCullBuf_[i1] != 0)
 			{
 				if (vertexCullBuf_[i0] != 0)
@@ -702,6 +701,7 @@ namespace dopixel
 			p1[0] = triangle[0]; p1[1] = i3; p1[2] = i4;
 
 			triangleCullBuff_[t1] = 0;
+			vertexRefBuf_[triangle[0]] = 1;
 			vertexRefBuf_[i3] = 1;
 			vertexRefBuf_[i4] = 1;
 			vertexCullBuf_[i3] = 0;
@@ -724,22 +724,22 @@ namespace dopixel
 
 		if (clipVertexCount == 1)
 		{
-			// i3: i3 = i0 + k * i0i1
-			float k3 = d0 / (d0 + d1);
-			Interpolate(i3, i0, i1, k3);
-			// i4: i4 = i2 + k * i2i1
-			float k4 = d2 / (d1 + d2);
-			Interpolate(i4, i2, i1, k4);
+			// i3: i3 = [i1] + k * i0i1
+			float k3 = d1 / (d0 + d1);
+			Interpolate(i3, triangle[1], triangle[0], k3);
+			// i4: i4 = [i1] + k * i1i2
+			float k4 = d1 / (d1 + d2);
+			Interpolate(i4, triangle[1], triangle[2], k4);
 
 		}
 		else
 		{
-			// i3: i3 = i0 + k * i0i1
-			float k3 = d0 / (d0 + d1);
-			Interpolate(i3, i0, i1, k3);
-			// i4: i4 = i0 + k * i0i2
-			float k4 = d0 / (d0 + d2);
-			Interpolate(i4, i0, i2, k4);
+			// i3: i3 = [i0] + k * i0i1
+			float k3 = d1 / (d0 + d1);
+			Interpolate(i3, triangle[1], triangle[0], k3);
+			// i4: i4 = [i1] + k * i1i2
+			float k4 = d2 / (d0 + d2);
+			Interpolate(i4, triangle[2], triangle[0], k4);
 		}
 	}
 
@@ -748,6 +748,8 @@ namespace dopixel
 		// pos
 		math::Vector4f* pos = positions_->DataAs<math::Vector4f>();
 		pos[newIndex] = pos[index0] + (pos[index1] - pos[index0]) * k;
+		ASSERT(equal_t(pos[index0].w, 1.0f) && equal_t(pos[index1].w, 1.0f));
+		pos[newIndex].w = 1.0f;
 		// normal
 		if (usingStatus_ & UsingStatus::Lighting)
 		{

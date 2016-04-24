@@ -43,7 +43,7 @@ namespace dopixel
 			if (vertexCount_ < vertexCount)
 			{
 				T* old_data = data_;
-				data_ = new T[vertexCount];
+				data_ = new T[vertexCount * Count];
 				if (copy)
 				{
 					memcpy(data_, old_data, dataStride_ * vertexCount_);
