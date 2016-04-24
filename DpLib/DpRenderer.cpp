@@ -605,8 +605,8 @@ namespace dopixel
 					// this triangle need cut to 1 or 2 triangles
 					CutTriangle(plane, clipVertexCount, index0, index1, index2);
 					indices = indexBuf_->GetData();
-				indexCount = indexBuf_->GetIndexCount();
 				}
+				indexCount = indexBuf_->GetIndexCount();
 			}
 			else
 			{
