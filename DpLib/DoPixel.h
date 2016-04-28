@@ -148,10 +148,16 @@ namespace dopixel
 	class SceneNodeAnimator;
 	class SceneManager;
 	class Camera;
-	class Event;
 	class Light;
 	class Renderer;
 	class Rasterizer;
+	class Event;
+	class MouseMoveEvent;
+	class MousePressEvent;
+	class MouseReleaseEvent;
+	class MouseWheelEvent;
+	class KeyPressEvent;
+	class KeyReleaseEvent;
 
 	typedef Ref<VertexBuffer> VertexBufferRef;
 	typedef Ref<IndexBuffer> IndexBufferRef;

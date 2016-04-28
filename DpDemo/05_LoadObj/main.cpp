@@ -10,6 +10,8 @@ public:
 
 	virtual void OnCreate() override;
 
+	virtual void OnUpdate(const Timestep& timestep) override;
+
 	virtual void OnRender(const Timestep& timestep) override;
 
 	virtual bool OnEvent(const Event& event) override;
@@ -18,6 +20,9 @@ public:
 private:
 	MeshRef mesh_;
 	Vector3f cameraPos_;
+	Vector3f transPos_;
+	ArcBall arcBall_;
+	bool update_;
 };
 
 void LoadObjApp::OnCreate()
@@ -26,13 +31,19 @@ void LoadObjApp::OnCreate()
 
 	mesh_ = new Mesh("box.obj");
 
+	arcBall_.SetWidth(width_);
+	arcBall_.SetHeight(height_);
+
+	update_ = false;
+
 	// camera
-	cameraPos_ = Vector3f(0, 2, -1);
+	cameraPos_ = Vector3f(0, 0, -2);
 	cameraNode_->SetPosition(cameraPos_);
+
+	transPos_ = math::Vector3f(0, 0, 0);
 	math::Matrix44f mat;
-	mat.Identity();
-	mat.SetTranslation(math::Vector3f(0, 0, 1));
-	renderer_->SetTransform(Transform::World, mat);
+	math::MaxtrixTranslation(mat, transPos_);
+	renderer_->SetTransform(Transform::World, mat);	
 	renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
 	renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
 
@@ -40,6 +51,26 @@ void LoadObjApp::OnCreate()
 
 	renderer_->SetShadeMode(ShadeMode::Flat);
 	renderer_->SetCameraNode(cameraNode_);
+}
+
+void LoadObjApp::OnUpdate(const Timestep& timestep)
+{
+	if (update_)
+	{
+		math::Matrix44f m = arcBall_.GetRotationMatrix();
+		m.SetTranslation(transPos_);
+
+		Vector3f* pXBasis = (Vector3f*)&m.m11;
+		Vector3f* pYBasis = (Vector3f*)&m.m21;
+		Vector3f* pZBasis = (Vector3f*)&m.m31;
+		pXBasis->Normalize();
+		*pYBasis = CrossProduct(*pZBasis, *pXBasis);
+		pYBasis->Normalize();
+		*pZBasis = CrossProduct(*pXBasis, *pYBasis);
+
+		renderer_->SetTransform(Transform::World, m);
+		update_ = false;
+	}
 }
 
 void LoadObjApp::OnRender(const Timestep& timestep)
@@ -53,6 +84,8 @@ void LoadObjApp::OnRender(const Timestep& timestep)
 
 bool LoadObjApp::OnEvent(const Event& event)
 {
+	update_ |= arcBall_.OnEvent(event);
+
 	EventDispatch dispatch(event);
 	dispatch.Dispatch(this, &LoadObjApp::OnKeyPressEvent);
 	return dispatch.GetResult();
@@ -103,13 +136,22 @@ bool LoadObjApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 				snapshot->SaveTGA("fb.tga");
 			}
 			break;
+		case KEY_KEY_C:
+			{
+				math::Matrix44f mat;
+				mat.Identity();
+				mat.SetTranslation(math::Vector3f(0, 0, 0));
+				renderer_->SetTransform(Transform::World, mat);
+
+				arcBall_.Reset();
+			}
+			break;
 		}
 
 		if (update)
 		{
 			cameraNode_->SetPosition(cameraPos_);
 			renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
-			renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
 		}
 	}
 

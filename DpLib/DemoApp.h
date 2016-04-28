@@ -18,6 +18,7 @@
 #include "DpInputState.h"
 #include "DpColor.h"
 #include "DpCamera.h"
+#include "DpArcBall.h"
 #include "DpVertexArray.h"
 #include "DpVertexBuffer.h"
 #include "DpIndexBuffer.h"

@@ -127,6 +127,7 @@
     <ClInclude Include="DemoApp.h" />
     <ClInclude Include="DoPixel.h" />
     <ClInclude Include="DpAABB.h" />
+    <ClInclude Include="DpArcBall.h" />
     <ClInclude Include="DpCamera.h" />
     <ClInclude Include="DpColor.h" />
     <ClInclude Include="DpDXUtils.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="..\Vendor\stb\stb_image_write.c" />
     <ClCompile Include="DemoApp.cpp" />
     <ClCompile Include="DoPixel.cpp" />
+    <ClCompile Include="DpArcBall.cpp" />
     <ClCompile Include="DpCamera.cpp" />
     <ClCompile Include="DpColor.cpp" />
     <ClCompile Include="DpDXUtils.cpp" />
