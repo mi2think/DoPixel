@@ -15,8 +15,8 @@
 
 #include "DpMath.h"
 #include "DpVector3.h"
-#include <cassert>
-#include <cstring>
+#include "DpMatrix43.h"
+#include "DpMatrix44.h"
 
 namespace dopixel
 {
@@ -58,9 +58,9 @@ namespace dopixel
 				Quaternion _q;
 
 				_q.w = w * q.w - x * q.x - y * q.y - z * q.z;
-				_q.x = w * q.x + x * q.w + y * q.z - z * q.y;
-				_q.y = w * q.y + y * q.w + z * q.x - x * q.z;
-				_q.z = w * q.z + z * q.w + x * q.y - y * q.x;
+				_q.x = w * q.x + x * q.w + z * q.y - y * q.z;
+				_q.y = w * q.y + y * q.w + x * q.z - z * q.x;
+				_q.z = w * q.z + z * q.w + y * q.x - x * q.y;
 				return _q;
 			}
 
@@ -221,7 +221,7 @@ namespace dopixel
 		// v must be normal Vector
 		inline Quaternion QuaternionRotationAxis(const Vector3f& v, float radian)
 		{
-			assert(Equal(v.LengthSQ(), 1.0f));
+			ASSERT(Equal(v.LengthSQ(), 1.0f));
 
 			float thetaOver2 = radian * 0.5f;
 			float sinThetaOver2 = Sin(thetaOver2);
@@ -230,7 +230,7 @@ namespace dopixel
 			q.w = Cos(thetaOver2);
 			q.x = v.x * sinThetaOver2;
 			q.y = v.y * sinThetaOver2;
-			q.z = v.z  * sinThetaOver2;
+			q.z = v.z * sinThetaOver2;
 			return q;
 		}
 
@@ -290,10 +290,88 @@ namespace dopixel
 		}
 
 		// From matrix
-		template <typename T> class Matrix43;
-		typedef Matrix43<float> Matrix43f;
-
 		Quaternion QuaternionRotationMatrix(const Matrix43f& _m);
+
+		// To Matrix
+		template <typename T>
+		inline Matrix43<T>& MatrixRotationQuaternion(Matrix43<T>& n, const Quaternion& q)
+		{
+			// Common expr
+
+			float _2x = 2.0f * q.x;
+			float _2y = 2.0f * q.y;
+			float _2z = 2.0f * q.z;
+
+			float _2xy = _2x * q.y;
+			float _2yz = _2y * q.z;
+			float _2xz = _2z * q.x;
+
+			float _2wx = _2x * q.w;
+			float _2wy = _2y * q.w;
+			float _2wz = _2z * q.w;
+
+			n.ZeroTranslation();
+
+			n.m11 = 1.0f - _2y * q.y - _2z * q.z;
+			n.m12 = _2xy + _2wz;
+			n.m13 = _2xz - _2wy;
+
+			n.m21 = _2xy - _2wz;
+			n.m22 = 1.0f - _2x * q.x - _2z * q.z;
+			n.m23 = _2yz + _2wx;
+
+			n.m31 = _2xz + _2wy;
+			n.m32 = _2yz - _2wx;
+			n.m33 = 1.0f - _2x * q.x - _2y * q.y;
+
+			return n;
+		}
+
+		template <typename T>
+		inline Matrix44<T>& MatrixRotationQuaternion(Matrix44<T>& n, const Quaternion& q)
+		{
+			// Common expr
+
+			float _2x = 2.0f * q.x;
+			float _2y = 2.0f * q.y;
+			float _2z = 2.0f * q.z;
+
+			float _2xy = _2x * q.y;
+			float _2yz = _2y * q.z;
+			float _2xz = _2z * q.x;
+
+			float _2wx = _2x * q.w;
+			float _2wy = _2y * q.w;
+			float _2wz = _2z * q.w;
+
+			n.ZeroTranslation();
+
+			n.m11 = 1.0f - _2y * q.y - _2z * q.z;
+			n.m12 = _2xy + _2wz;
+			n.m13 = _2xz - _2wy;
+			n.m14 = 0.0f;
+
+			n.m21 = _2xy - _2wz;
+			n.m22 = 1.0f - _2x * q.x - _2z * q.z;
+			n.m23 = _2yz + _2wx;
+			n.m24 = 0.0f;
+
+			n.m31 = _2xz + _2wy;
+			n.m32 = _2yz - _2wx;
+			n.m33 = 1.0f - _2x * q.x - _2y * q.y;
+			n.m34 = 0.0f;
+
+			n.m44 = 1.0f;
+
+			return n;
+		}
+
+		template <typename OS>
+		inline OS& operator << (OS& os, const Quaternion& q)
+		{
+			os << "(" << q.x << "," << q.y << "," << q.z << "," << q.w << ")";
+			return os;
+		}
 	}
 }
 

@@ -14,7 +14,6 @@
 
 #include "DpMath.h"
 #include "DpVector3.h"
-#include "DpQuaternion.h"
 
 namespace dopixel
 {
@@ -578,50 +577,12 @@ namespace dopixel
 			return v;
 		}
 
-		// From Quaternion
-
-		template <typename T>
-		inline Matrix43<T>& MatrixRotationQuaternion(Matrix43<T>& n, const Quaternion& q)
-		{
-			// Common expr
-
-			float _2x = 2.0f * q.x;
-			float _2y = 2.0f * q.y;
-			float _2z = 2.0f * q.z;
-
-			float _2xy = _2x * q.y;
-			float _2yz = _2y * q.z;
-			float _2xz = _2z * q.x;
-
-			float _2wx = _2x * q.w;
-			float _2wy = _2y * q.w;
-			float _2wz = _2z * q.w;
-
-			n.ZeroTranslation();	
-
-			n.m11 = 1.0f - _2y * q.y - _2z * q.z;
-			n.m12 = _2xy + _2wz;
-			n.m13 = _2xz - _2wy;
-
-			n.m21 = _2xy - _2wz;
-			n.m22 = 1.0f - _2x * q.x - _2z * q.z;
-			n.m23 = _2yz + _2wx;
-
-			n.m31 = _2xz + _2wy;
-			n.m32 = _2yz - _2wx;
-			n.m33 = 1.0f - _2x * q.x - _2y * q.y;
-
-			return n;
-		}
-
-		// From Yaw-Pitch-Roll
+		// TODO: From Yaw-Pitch-Roll
 		// Yaw around the Y axis, a pitch around the X axis, and a roll around the Z axis.
-	/*	template <typename T>
-		inline Matrix43<T> MatrixRotationYawPitchRoll(float yaw, float pitch, float roll)
-		{
-
-		}
-		*/
+		//template <typename T>
+		//inline Matrix43<T> MatrixRotationYawPitchRoll(float yaw, float pitch, float roll)
+		//{
+		//}
 	}
 }
 

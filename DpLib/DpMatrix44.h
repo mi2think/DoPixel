@@ -503,9 +503,6 @@ namespace dopixel
 			n.m33 = az * v.z + c;
 			n.m34 = 0.0f;
 
-			n.m41 = 0.0f;
-			n.m42 = 0.0f;
-			n.m43 = 0.0f;
 			n.m44 = 1.0f;
 
 			return n;

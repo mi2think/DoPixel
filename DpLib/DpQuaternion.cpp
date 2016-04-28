@@ -9,10 +9,7 @@
 	
 	purpose:	For Dependence
 *********************************************************************/
-
-
 #include "DpQuaternion.h"
-#include "DpMatrix43.h"
 
 namespace dopixel
 {

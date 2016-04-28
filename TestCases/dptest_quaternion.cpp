@@ -29,22 +29,14 @@ DPTEST(Quaternion)
 		Vector3f v(1, 0, 0);
 
 		Vector3f _v = RotateVector(v, axis, angle2radian(90));
-		EXPECT_EQ(_v, Vector3f(0, 0, -1));
+		EXPECT_EQ(_v, Vector3f(0, 0, 1));
 	}
 
 	{
-		Vector3f axis(0, 1, 0);
-		Vector3f v(1, 0, 0);
-
-		Vector3f _v = RotateVector(v, axis, angle2radian(45));
-		//EXPECT_EQ(_v, Vector3f(0, 0, -1));
-	}
-
-	{
-		Vector3f axis(0, 1, 0);
-		Vector3f v(1, 0, 0);
-
-		Vector3f _v = RotateVector(v, axis, angle2radian(135));
-		//EXPECT_EQ(_v, Vector3f(0, 0, -1));
+		Quaternion q1(-0.448117137f, -0.604671359f, -0.420344472f, 0.506828427f);
+		Quaternion q2(-0.0860005245f, -0.00377009483f, -0.00102233898f, 0.996287525f);
+		Quaternion q3 = q1 * q2;
+		Quaternion q4(-0.48907447f, -0.64002907f, -0.36898950f, 0.46369913f);
+		EXPECT_EQ(q3, q4);
 	}
 }
