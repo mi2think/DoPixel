@@ -66,7 +66,7 @@ namespace dopixel
 		eye_ = eye;
 		lookAt_ = lookAt;
 		up_ = up;
-		dirtyBits_ |= (ViewMarixDirty | ProjMarixDirty);
+		dirtyBits_ |= (ViewMarixDirty | ViewFrustumDirty);
 
 		PostSetView();
 	}
@@ -219,7 +219,7 @@ namespace dopixel
 
 		if (arcBall_.OnEvent(event) || dispatch.GetResult())
 		{
-			dirtyBits_ |= (ViewMarixDirty | ProjMarixDirty);
+			dirtyBits_ |= (ViewMarixDirty | ViewFrustumDirty);
 			update_ = true;
 		}
 		return true;
