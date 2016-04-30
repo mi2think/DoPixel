@@ -37,58 +37,43 @@ void LoadObjApp::OnCreate()
 	update_ = false;
 
 	// camera
-	cameraPos_ = Vector3f(0, 0, -2);
-	cameraNode_->SetPosition(cameraPos_);
+	cameraPos_ = Vector3f(0, 0, -3);
+	cameraController_ = new ModelViewCameraController();
+	cameraController_->Attach(camera_);
+	cameraController_->SetWindow(width_, height_);
+	cameraController_->SetView(cameraPos_, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
 
 	transPos_ = math::Vector3f(0, 0, 0);
 	math::Matrix44f mat;
 	math::MaxtrixTranslation(mat, transPos_);
 	renderer_->SetTransform(Transform::World, mat);	
-	renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
-	renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
+	renderer_->SetTransform(Transform::View, cameraController_->GetViewMatrix());
+	renderer_->SetTransform(Transform::Projection, cameraController_->GetProjMatrix());
 
 	renderer_->SetZBufferType(ZBuffer::INVZBuff);
 
 	renderer_->SetShadeMode(ShadeMode::Flat);
-	renderer_->SetCameraNode(cameraNode_);
+	renderer_->SetCameraController(cameraController_);
 }
 
 void LoadObjApp::OnUpdate(const Timestep& timestep)
 {
-	if (update_)
-	{
-		math::Matrix44f m = arcBall_.GetRotationMatrix();
-		m.SetTranslation(transPos_);
-
-		Vector3f* pXBasis = (Vector3f*)&m.m11;
-		Vector3f* pYBasis = (Vector3f*)&m.m21;
-		Vector3f* pZBasis = (Vector3f*)&m.m31;
-		pXBasis->Normalize();
-		*pYBasis = CrossProduct(*pZBasis, *pXBasis);
-		pYBasis->Normalize();
-		*pZBasis = CrossProduct(*pXBasis, *pYBasis);
-
-		renderer_->SetTransform(Transform::World, m);
-		update_ = false;
-	}
+	cameraController_->OnUpdate(timestep);
+	renderer_->SetTransform(Transform::View, cameraController_->GetViewMatrix());
 }
 
 void LoadObjApp::OnRender(const Timestep& timestep)
 {
 	mesh_->OnRender(renderer_);
 
-	renderer_->SetShadeMode(ShadeMode::Wireframe);
-	mesh_->OnRender(renderer_);
-	renderer_->SetShadeMode(ShadeMode::Flat);
 }
 
 bool LoadObjApp::OnEvent(const Event& event)
 {
-	update_ |= arcBall_.OnEvent(event);
-
 	EventDispatch dispatch(event);
 	dispatch.Dispatch(this, &LoadObjApp::OnKeyPressEvent);
-	return dispatch.GetResult();
+
+	return cameraController_->OnEvent(event);
 }
 
 bool LoadObjApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
@@ -96,6 +81,7 @@ bool LoadObjApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 	int key = keyEvent.GetKey();
 
 	{
+		cameraPos_ = cameraController_->GetEyePos();
 		bool update = false;
 		switch (key)
 		{
@@ -136,22 +122,13 @@ bool LoadObjApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 				snapshot->SaveTGA("fb.tga");
 			}
 			break;
-		case KEY_KEY_C:
-			{
-				math::Matrix44f mat;
-				mat.Identity();
-				mat.SetTranslation(math::Vector3f(0, 0, 0));
-				renderer_->SetTransform(Transform::World, mat);
-
-				arcBall_.Reset();
-			}
-			break;
 		}
 
 		if (update)
 		{
-			cameraNode_->SetPosition(cameraPos_);
-			renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
+			cameraController_->SetEyePos(cameraPos_);
+
+			LOG_INFO("eye:%f,%f,%f", cameraPos_.x, cameraPos_.y, cameraPos_.z);
 		}
 	}
 

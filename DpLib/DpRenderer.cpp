@@ -10,7 +10,7 @@
 	purpose:	Renderer
 *********************************************************************/
 #include "DpRenderer.h"
-#include "DpSceneManager.h"
+#include "DpCameraController.h"
 #include "DpMesh.h"
 #include "DpTexture.h"
 #include "DpMaterial.h"
@@ -1113,9 +1113,9 @@ namespace dopixel
 		texture_ = texture;
 	}
 
-	void Renderer::SetCameraNode(CameraSceneNodeRef cameraNode)
+	void Renderer::SetCameraController(const CameraControllerRef& cameraController)
 	{
-		cameraNode_ = cameraNode;
+		cameraController_ = cameraController;
 	}
 
 	void Renderer::SetTransform(Transform::Type type, const math::Matrix44f& matrix)
@@ -1228,9 +1228,9 @@ namespace dopixel
 		{
 			UpdateTransform();
 		}
-		auto cameraNode = cameraNode_;
-		eyeWorldPos_ = cameraNode->GetWorldPosition();
-		viewFrustum_ = cameraNode->GetViewFrustum();
+
+		eyeWorldPos_ = cameraController_->GetEyePos();
+		viewFrustum_ = cameraController_->GetViewFrustum();
 		impl_->SetPrimitiveType(vertexBuffer_->GetPrimitiveType());
 		impl_->SetTexture(texture);
 

@@ -129,6 +129,7 @@
     <ClInclude Include="DpAABB.h" />
     <ClInclude Include="DpArcBall.h" />
     <ClInclude Include="DpCamera.h" />
+    <ClInclude Include="DpCameraController.h" />
     <ClInclude Include="DpColor.h" />
     <ClInclude Include="DpDXUtils.h" />
     <ClInclude Include="DpEvent.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="DoPixel.cpp" />
     <ClCompile Include="DpArcBall.cpp" />
     <ClCompile Include="DpCamera.cpp" />
+    <ClCompile Include="DpCameraController.cpp" />
     <ClCompile Include="DpColor.cpp" />
     <ClCompile Include="DpDXUtils.cpp" />
     <ClCompile Include="DpEvent.cpp" />

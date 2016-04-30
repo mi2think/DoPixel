@@ -148,6 +148,7 @@ namespace dopixel
 	class SceneNodeAnimator;
 	class SceneManager;
 	class Camera;
+	class CameraController;
 	class Light;
 	class Renderer;
 	class Rasterizer;
@@ -172,6 +173,7 @@ namespace dopixel
 	typedef Ref<SceneNodeAnimator> SceneNodeAnimatorRef;
 	typedef Ref<SceneManager> SceneManagerRef;
 	typedef Ref<Camera> CameraRef;
+	typedef Ref<CameraController> CameraControllerRef;
 	typedef Ref<Event> EventRef;
 	typedef Ref<Light> LightRef;
 	typedef Ref<Renderer> RendererRef;

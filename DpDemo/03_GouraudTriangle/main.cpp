@@ -100,8 +100,12 @@ void GouraudTriangle::OnCreate()
 
 
 	// camera
-	cameraNode_->SetPosition(Vector3f(0, 0, 0));
-	renderer_->SetCameraNode(cameraNode_);
+	cameraController_ = new ModelViewCameraController();
+	cameraController_->Attach(camera_);
+	cameraController_->SetWindow(width_, height_);
+	cameraController_->SetView(Vector3f(0, 0, 0), Vector3f(0, 0, 1), Vector3f(0, 1, 0));
+
+	renderer_->SetCameraController(cameraController_);
 
 	angleX_ = 0.0f;
 	angleY_ = 0.0f;
@@ -114,8 +118,8 @@ void GouraudTriangle::OnCreate()
 	rotateMatrix_.Identity();
 
 	renderer_->SetTransform(Transform::World, transMatrix_);
-	renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
-	renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
+	renderer_->SetTransform(Transform::View, cameraController_->GetViewMatrix());
+	renderer_->SetTransform(Transform::Projection, cameraController_->GetProjMatrix());
 
 	renderer_->SetCullMode(CullMode::None);
 }

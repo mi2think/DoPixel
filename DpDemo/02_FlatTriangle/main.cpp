@@ -40,17 +40,20 @@ void FlatTriangle::OnCreate()
 	vb_->SetColors(colors);
 
 	// camera
-	cameraNode_->SetPosition(Vector3f(0, 0, -100));
+	cameraController_ = new ModelViewCameraController();
+	cameraController_->Attach(camera_);
+	cameraController_->SetWindow(width_, height_);
+	cameraController_->SetView(Vector3f(0, 0, -100), Vector3f(0, 0, 0), Vector3f(0, 1, 0));
 
 	renderer_->SetShadeMode(ShadeMode::Flat);
-	renderer_->SetCameraNode(cameraNode_);
+	renderer_->SetCameraController(cameraController_);
 
 	angleY_ = 0.0f;
 	MaxtrixTranslation(transMatrix_, Vector3f(0, 0, 100));
 
 	renderer_->SetTransform(Transform::World, transMatrix_);
-	renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
-	renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
+	renderer_->SetTransform(Transform::View, cameraController_->GetViewMatrix());
+	renderer_->SetTransform(Transform::Projection, cameraController_->GetProjMatrix());
 
 	renderer_->SetCullMode(CullMode::None);
 }

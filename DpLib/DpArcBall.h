@@ -30,6 +30,7 @@ namespace dopixel
 
 		void SetWidth(int width);
 		void SetHeight(int height);
+		void SetRadius(float radius);
 
 		const math::Matrix44f& GetRotationMatrix() const;
 

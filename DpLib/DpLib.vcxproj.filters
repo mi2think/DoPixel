@@ -312,6 +312,9 @@
     <ClInclude Include="DpLoader.h">
       <Filter>DpLoadRes</Filter>
     </ClInclude>
+    <ClInclude Include="DpCameraController.h">
+      <Filter>Dp3DEngine</Filter>
+    </ClInclude>
     <ClInclude Include="DpArcBall.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
@@ -412,6 +415,9 @@
     </ClCompile>
     <ClCompile Include="DpLoader.cpp">
       <Filter>DpLoadRes</Filter>
+    </ClCompile>
+    <ClCompile Include="DpCameraController.cpp">
+      <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpArcBall.cpp">
       <Filter>Dp3DEngine</Filter>

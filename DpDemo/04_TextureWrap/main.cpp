@@ -73,14 +73,18 @@ void TextureWrapApp::OnCreate()
 	texture_->SetWrapT(TextureWrap::ClampToEdge);
 
 	// camera
+	cameraController_ = new ModelViewCameraController();
+	cameraController_->Attach(camera_);
+	cameraController_->SetWindow(width_, height_);
+	cameraController_->SetView(Vector3f(0, 0, 0), Vector3f(0, 0, 1), Vector3f(0, 1, 0));
+	
 	cameraPos_ = Vector3f(0, 0, 0);
-	cameraNode_->SetPosition(cameraPos_);
-	renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
-	renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
+	renderer_->SetTransform(Transform::View, cameraController_->GetViewMatrix());
+	renderer_->SetTransform(Transform::Projection, cameraController_->GetProjMatrix());
 	renderer_->SetZBufferType(ZBuffer::None);
 
 	renderer_->SetShadeMode(ShadeMode::Flat);
-	renderer_->SetCameraNode(cameraNode_);
+	renderer_->SetCameraController(cameraController_);
 	renderer_->SetTexture(texture_);
 }
 
@@ -208,9 +212,9 @@ bool TextureWrapApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 
 		if (update)
 		{
-			cameraNode_->SetPosition(cameraPos_);
-			renderer_->SetTransform(Transform::View, cameraNode_->GetViewMatrix());
-			renderer_->SetTransform(Transform::Projection, cameraNode_->GetProjectionMatrix());
+			cameraController_->SetView(cameraPos_, Vector3f(0, 0, 1), Vector3f(0, 1, 0));
+			renderer_->SetTransform(Transform::View, cameraController_->GetViewMatrix());
+			renderer_->SetTransform(Transform::Projection, cameraController_->GetProjMatrix());
 		}
 	}
 

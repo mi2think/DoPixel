@@ -19,6 +19,7 @@
 #include "DpColor.h"
 #include "DpCamera.h"
 #include "DpArcBall.h"
+#include "DpCameraController.h"
 #include "DpVertexArray.h"
 #include "DpVertexBuffer.h"
 #include "DpIndexBuffer.h"
@@ -26,7 +27,6 @@
 #include "DpMaterial.h"
 #include "DpMesh.h"
 #include "DpLoader.h"
-#include "DpSceneManager.h"
 #include "DpRenderer.h"
 
 namespace dopixel
@@ -60,7 +60,7 @@ namespace dopixel
 		Window* window_;
 		RendererRef renderer_;
 		CameraRef camera_;
-		CameraSceneNodeRef cameraNode_;
+		CameraControllerRef cameraController_;
 	};
 }
 

@@ -35,6 +35,8 @@ namespace dopixel
 		pressBtnQuat_.Identity();
 		currentQuat_.Identity();
 		rotationMatrix_.Identity();
+		drag_ = false;
+		radius_ = 1.0f;
 	}
 
 	void ArcBall::SetWidth(int width)
@@ -45,6 +47,11 @@ namespace dopixel
 	void ArcBall::SetHeight(int height)
 	{
 		height_ = height;
+	}
+
+	void ArcBall::SetRadius(float radius)
+	{
+		radius_ = radius;
 	}
 
 	bool ArcBall::OnEvent(const Event& event)
@@ -67,11 +74,11 @@ namespace dopixel
 		// begin to drag
 		if (event.GetButtonType() == MOUSE_LBUTTON)
 		{
-			if (x < width_ && y < height_)
+			if (x >= 0 && x < width_ && y >= 0 && y < height_)
 			{
 				drag_ = true;
 				pressBtnQuat_ = currentQuat_;
-				pressBtnPos_ = ScreenToVector(math::Point(x, y));
+				pressBtnPos_ = ScreenToVector(clickPos_);
 			}
 		}
 
@@ -88,8 +95,9 @@ namespace dopixel
 			currentPos_ = ScreenToVector(math::Point(x, y));
 			currentQuat_ = pressBtnQuat_ * QuatFromBallPoints(pressBtnPos_, currentPos_);
 			matrixValid_ = false;
+			return true;
 		}
-		return drag_;
+		return false;
 	}
 
 	bool ArcBall::OnMouseReleaseEvent(const MouseReleaseEvent& event)

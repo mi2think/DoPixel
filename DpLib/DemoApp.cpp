@@ -51,8 +51,6 @@ namespace dopixel
 		camera_->SetNearClip(1);
 		camera_->SetFarClip(1000);
 		camera_->SetAspectRatio((float)width_ / height_);
-
-		cameraNode_ = new CameraSceneNode("camera", camera_);
 	}
 
 	bool DemoApp::Loop()
