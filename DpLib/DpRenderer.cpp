@@ -842,6 +842,11 @@ namespace dopixel
 
 	void Renderer::Impl::ToCVV()
 	{
+		// In CullPlanes, it only clip near plane
+		// also, here vertex may clipped by other planes, and we do not interpolate 
+		// so may be triangle disappear suddenly when you move camera forward!!!
+		// finally, we let clip in screen space.
+
 		math::Vector4f* pos = positions_->DataAs<math::Vector4f>();
 		for (int i = 0; i < vertexCount_; ++i)
 		{
@@ -851,38 +856,38 @@ namespace dopixel
 			ASSERT(!equal_t(p->w, 0.0f));
 			float oneOverW = 1.0f / p->w;
 			(*p) *= oneOverW;
-			if (p->x < -1 || p->x > 1 ||
-				p->y < -1 || p->y > 1 ||
-				p->z < 0 || p->z > 1)
-			{
-				vertexCullBuf_[i] |= VertexCull::Frustum;
-			}
+			//if (p->x < -1 || p->x > 1 ||
+			//	p->y < -1 || p->y > 1 ||
+			//	p->z < 0 || p->z > 1)
+			//{
+			//	vertexCullBuf_[i] |= VertexCull::Frustum;
+			//}
 
 			// save oneOverW for depth interpolate later
 			p->w = oneOverW;
 		}
 
-		if (indexBuf_)
-		{
-			unsigned int* indices = indexBuf_->GetData();
-			int indexCount = indexBuf_->GetIndexCount();
-			for (int i = 0, j = 0; i < indexCount; i += 3, ++j)
-			{
-				if (triangleCullBuff_[j])
-					continue;
+		//if (indexBuf_)
+		//{
+		//	unsigned int* indices = indexBuf_->GetData();
+		//	int indexCount = indexBuf_->GetIndexCount();
+		//	for (int i = 0, j = 0; i < indexCount; i += 3, ++j)
+		//	{
+		//		if (triangleCullBuff_[j])
+		//			continue;
 
-				auto index0 = *(indices + i);
-				auto index1 = *(indices + i + 1);
-				auto index2 = *(indices + i + 2);
-				if (vertexCullBuf_[index0] && vertexCullBuf_[index1] && vertexCullBuf_[index2])
-				{
-					triangleCullBuff_[j] |= TriangleCull::Frustum;
-					--vertexRefBuf_[index0];
-					--vertexRefBuf_[index1];
-					--vertexRefBuf_[index2];
-				}
-			}
-		}
+		//		auto index0 = *(indices + i);
+		//		auto index1 = *(indices + i + 1);
+		//		auto index2 = *(indices + i + 2);
+		//		if (vertexCullBuf_[index0] && vertexCullBuf_[index1] && vertexCullBuf_[index2])
+		//		{
+		//			triangleCullBuff_[j] |= TriangleCull::Frustum;
+		//			--vertexRefBuf_[index0];
+		//			--vertexRefBuf_[index1];
+		//			--vertexRefBuf_[index2];
+		//		}
+		//	}
+		//}
 	}
 
 	void Renderer::Impl::ToViewport(int viewportWidth, int viewportHeight)
