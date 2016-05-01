@@ -555,10 +555,9 @@ namespace dopixel
 
 	void Renderer::Impl::CullPlanes(const vector<math::Plane>& clipPlanes)
 	{
-		const math::Vector4f* position = positions_->DataAs<math::Vector4f>();
-
 		for (const auto& plane : clipPlanes)
 		{
+			const math::Vector4f* position = positions_->DataAs<math::Vector4f>();
 			// mark vertex culled by clip plane
 			for (int i = 0; i < vertexCount_; ++i)
 			{
@@ -659,16 +658,21 @@ namespace dopixel
 			// i3 <- interpolate between i0 and i1
 			// i4 <- interpolate between i0 and i2
 			// then new triangle: i0-i3-i4
-			if (vertexCullBuf_[i1] != 0)
+			if (vertexCullBuf_[i0] != 0)
 			{
-				if (vertexCullBuf_[i0] != 0)
+				if (vertexCullBuf_[i1] != 0)
 				{
 					// [i0]-[i1]-i2
 					swap_t(triangle[0], triangle[2]);
 					swap_t(triangle[1], triangle[2]);
 				}
+				else
+				{
+					// [i0]-i1-[i2]
+					swap_t(triangle[0], triangle[1]);
+					swap_t(triangle[1], triangle[2]);
+				}
 			}
-			else ASSERT(0);
 		}
 
 		// index and counter of new triangle index
