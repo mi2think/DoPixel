@@ -29,7 +29,7 @@ void LoadObjApp::OnCreate()
 {
 	DemoApp::OnCreate();
 
-	mesh_ = new Mesh("box.obj");
+	mesh_ = new Mesh("cube/cube.obj");
 
 	arcBall_.SetWidth(width_);
 	arcBall_.SetHeight(height_);
@@ -37,11 +37,12 @@ void LoadObjApp::OnCreate()
 	update_ = false;
 
 	// camera
-	cameraPos_ = Vector3f(0, 0, -3);
+	cameraPos_ = Vector3f(0, 0, -5);
 	cameraController_ = new ModelViewCameraController();
 	cameraController_->Attach(camera_);
 	cameraController_->SetWindow(width_, height_);
 	cameraController_->SetView(cameraPos_, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
+	cameraController_->SetPerspective(45, (float)width_ / height_, 1, 5000);
 
 	transPos_ = math::Vector3f(0, 0, 0);
 	math::Matrix44f mat;
@@ -65,7 +66,6 @@ void LoadObjApp::OnUpdate(const Timestep& timestep)
 void LoadObjApp::OnRender(const Timestep& timestep)
 {
 	mesh_->OnRender(renderer_);
-
 }
 
 bool LoadObjApp::OnEvent(const Event& event)
@@ -85,6 +85,29 @@ bool LoadObjApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 		bool update = false;
 		switch (key)
 		{
+			// cube
+		case KEY_KEY_1:
+			{
+				mesh_ = new Mesh("cube/cube.obj");
+				cameraPos_ = Vector3f(0, 0, -5);
+				cameraController_->SetView(cameraPos_, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
+			}
+			break;
+		case KEY_KEY_2:
+			{
+				mesh_ = new Mesh("utah-teapot-obj/utah-teapot.obj");
+				cameraPos_ = Vector3f(32, 23, -76);
+				cameraController_->SetView(cameraPos_, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
+			}
+			break;
+		case KEY_KEY_3:
+			{
+				mesh_ = new Mesh("jeep/jeep.obj");
+				cameraPos_ = Vector3f(63, 0, -1329);
+				cameraController_->SetView(cameraPos_, Vector3f(0, 0, 0), Vector3f(0, 1, 0));
+			}
+			break;
+
 			// move on axis
 			// z
 		case KEY_KEY_W:

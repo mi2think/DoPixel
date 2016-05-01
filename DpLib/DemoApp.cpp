@@ -49,7 +49,7 @@ namespace dopixel
 		// default camera
 		camera_->SetFovy(90);
 		camera_->SetNearClip(1);
-		camera_->SetFarClip(1000);
+		camera_->SetFarClip(5000);
 		camera_->SetAspectRatio((float)width_ / height_);
 	}
 
