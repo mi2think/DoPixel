@@ -145,6 +145,17 @@ bool LoadObjApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 				snapshot->SaveTGA("fb.tga");
 			}
 			break;
+
+			// render type
+		case KEY_KEY_H:
+			renderer_->SetShadeMode(ShadeMode::Wireframe);
+			break;
+		case KEY_KEY_J:
+			renderer_->SetShadeMode(ShadeMode::Flat);
+			break;
+		case KEY_KEY_K:
+			renderer_->SetShadeMode(ShadeMode::Gouraud);
+			break;
 		}
 
 		if (update)

@@ -55,7 +55,7 @@ namespace dopixel
 			dir_ = path.substr(0, slashIndex);
 
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenNormals);
+		const aiScene* scene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_ConvertToLeftHanded);
 		if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			LOG_ERROR("error: ASSIMP read %s failed!\n", path.c_str());
