@@ -25,6 +25,7 @@
 #include "DpIndexBuffer.h"
 #include "DpTexture.h"
 #include "DpMaterial.h"
+#include "DpLight.h"
 #include "DpMesh.h"
 #include "DpLoader.h"
 #include "DpRenderer.h"

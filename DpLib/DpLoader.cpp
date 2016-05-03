@@ -183,9 +183,13 @@ namespace dopixel
 
 		// color
 		aiColor4D color;
-		e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &color);
+		e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &color);
 		ASSERT(e == aiReturn_SUCCESS);
 		material->SetColor(ColorUsage::Ambient, math::Vector3f(color.r, color.g, color.b));
+
+		e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &color);
+		ASSERT(e == aiReturn_SUCCESS);
+		material->SetColor(ColorUsage::Diffuse, math::Vector3f(color.r, color.g, color.b));
 
 		e = aiGetMaterialColor(mat, AI_MATKEY_COLOR_SPECULAR, &color);
 		ASSERT(e == aiReturn_SUCCESS);

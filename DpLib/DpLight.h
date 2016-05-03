@@ -26,8 +26,7 @@ namespace dopixel
 			const math::Vector3f& ambient,
 			const math::Vector3f& diffuse,
 			const math::Vector3f& specular,
-			const math::Vector3f& attenuation,
-			float range);
+			float range = FLT_MAX);
 		virtual ~Light() = 0;
 
 		virtual void BeginLighting(const math::Vector3f& eyeWorldPos, const MaterialRef& material) const = 0;
@@ -38,7 +37,6 @@ namespace dopixel
 		math::Vector3f ambient_;
 		math::Vector3f diffuse_;
 		math::Vector3f specular_;
-		math::Vector3f attenuation_;
 		float range_;
 	};
 
@@ -50,8 +48,7 @@ namespace dopixel
 			const math::Vector3f& ambient,
 			const math::Vector3f& diffuse,
 			const math::Vector3f& specular,
-			const math::Vector3f& attenuation,
-			float range);
+			float range = FLT_MAX);
 		~DirectionalLight();
 
 		void BeginLighting(const math::Vector3f& eyeWorldPos, const MaterialRef& material) const;
@@ -70,11 +67,11 @@ namespace dopixel
 	public:
 		PointLight(
 			const math::Vector3f& lightWorldPos,
+			const math::Vector3f& attenuation,
 			const math::Vector3f& ambient,
 			const math::Vector3f& diffuse,
 			const math::Vector3f& specular,
-			const math::Vector3f& attenuation,
-			float range);
+			float range = FLT_MAX);
 		~PointLight();
 
 		void BeginLighting(const math::Vector3f& eyeWorldPos, const MaterialRef& material) const;
@@ -82,6 +79,7 @@ namespace dopixel
 		math::Vector3f IlluminateWithSpecular(const math::Vector3f& pos, const math::Vector3f& normal) const;
 		void EndLighting() const;
 	private:
+		math::Vector3f attenuation_;
 		math::Vector3f lightWorldPos_;
 		mutable math::Vector3f eyeWorldPos_;
 		mutable const Material* material_;
@@ -93,14 +91,14 @@ namespace dopixel
 		SpotLight(
 			const math::Vector3f& lightWorldDir,
 			const math::Vector3f& lightWorldPos,
+			const math::Vector3f& attenuation,
 			float theta,
 			float phi,
 			float pf,
 			const math::Vector3f& ambient,
 			const math::Vector3f& diffuse,
 			const math::Vector3f& specular,
-			const math::Vector3f& attenuation,
-			float range);
+			float range = FLT_MAX);
 		~SpotLight();
 
 		void BeginLighting(const math::Vector3f& eyeWorldPos, const MaterialRef& material) const;
@@ -108,6 +106,7 @@ namespace dopixel
 		math::Vector3f IlluminateWithSpecular(const math::Vector3f& pos, const math::Vector3f& normal) const;
 		void EndLighting() const;
 	private:
+		math::Vector3f attenuation_;
 		math::Vector3f lightWorldDir_;
 		math::Vector3f lightWorldPos_;
 		float theta_;	// penumbra angle

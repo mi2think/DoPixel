@@ -207,14 +207,14 @@ namespace dopixel
 		{
 			const auto& raw_normals_ref = vertexBuf->GetNormals();
 			genVertexNormals_ = !raw_normals_ref;
-			if (!genVertexNormals_)
+			if (raw_normals_ref)
 			{
 				math::Vector3f* raw_normal = raw_normals_ref->DataAs<math::Vector3f>();
-				math::Vector4f* normal = normals_->DataAs<math::Vector4f>();
+				math::Vector3f* normal = normals_->DataAs<math::Vector3f>();
 				for (int i = 0; i < vertexCount_; ++i)
 				{
 					const auto& n = *(raw_normal + i);
-					*(normal + i) = math::Vector4f(n.x, n.y, n.z, 1.0f);
+					*(normal + i) = math::Vector3f(n.x, n.y, n.z);
 				}
 			}
 		}
@@ -784,7 +784,7 @@ namespace dopixel
 		}
 
 		const math::Vector4f* position = positions_->DataAs<math::Vector4f>();
-		const math::Vector3f* normal = triangleNormals_->DataAs<math::Vector3f>();
+		const math::Vector3f* normal = normals_->DataAs<math::Vector3f>();
 		math::Vector3f* color = colors_->DataAs<math::Vector3f>();
 
 		if (indexBuf_)
@@ -795,9 +795,10 @@ namespace dopixel
 			for (int i = 0, j = 0; i < indexCount; i +=3, ++j)
 			{
 				// for each vertex in triangle
+				int triangle[3] = { i, i + 1, i + 2 };
 				for (int k = 0; k < 3; ++k)
 				{
-					auto index = *(indices + k);
+					auto index = *(indices + triangle[k]);
 					if (vertexRefBuf_[index] != 0)
 					{
 						ASSERT(position[index].w == 1.0f);
@@ -1199,6 +1200,13 @@ namespace dopixel
 		lights_[index].second = enable;
 	}
 
+	bool Renderer::GetLightEnable(int index)
+	{
+		ASSERT(index < lights_.size());
+
+		return lights_[index].second;
+	}
+
 	void Renderer::RenderSubMesh(const SubMeshRef& submesh)
 	{
 		triangleNormalsBuf_ = submesh->GetTriangleNormals();
@@ -1260,7 +1268,7 @@ namespace dopixel
 			usingStatus |= UsingStatus::VertexColor;
 		if ((vertexBuffer->GetVertexType() & VertexType::TexCoord) && texture != nullptr)
 			usingStatus |= UsingStatus::Texture;
-		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant && ! lights.empty())
+		if (shadeMode_ != ShadeMode::Wireframe && shadeMode_ != ShadeMode::Constant && material != nullptr && ! lights.empty())
 			usingStatus |= UsingStatus::Lighting;
 		if (cullMode_ != CullMode::None && vertexBuffer_->GetPrimitiveType() == PrimitiveType::Triangles)
 			usingStatus |= UsingStatus::Cull;

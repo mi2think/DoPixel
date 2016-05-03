@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DpLib", "DpLib\DpLib.vcxproj", "{4C95835D-13E9-4AD4-9311-0112334FEE13}"
 EndProject
@@ -88,6 +88,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "25_SkyBox", "DpOpenGLDemo\25_SkyBox\25_SkyBox.vcxproj", "{1A53C3B0-BEC8-41A5-BE30-518107D63666}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "05_LoadObj", "DpDemo\05_LoadObj\05_LoadObj.vcxproj", "{ED7BACD9-C8AB-4D31-BB35-B299B20D7CF0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "06_LightingCube", "DpDemo\06_LightingCube\06_LightingCube.vcxproj", "{0B9E97B1-A7C7-45BF-B9B6-FB2A791BD634}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -381,6 +383,14 @@ Global
 		{ED7BACD9-C8AB-4D31-BB35-B299B20D7CF0}.Release|Win32.Build.0 = Release|Win32
 		{ED7BACD9-C8AB-4D31-BB35-B299B20D7CF0}.Release|x64.ActiveCfg = Release|x64
 		{ED7BACD9-C8AB-4D31-BB35-B299B20D7CF0}.Release|x64.Build.0 = Release|x64
+		{0B9E97B1-A7C7-45BF-B9B6-FB2A791BD634}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0B9E97B1-A7C7-45BF-B9B6-FB2A791BD634}.Debug|Win32.Build.0 = Debug|Win32
+		{0B9E97B1-A7C7-45BF-B9B6-FB2A791BD634}.Debug|x64.ActiveCfg = Debug|x64
+		{0B9E97B1-A7C7-45BF-B9B6-FB2A791BD634}.Debug|x64.Build.0 = Debug|x64
+		{0B9E97B1-A7C7-45BF-B9B6-FB2A791BD634}.Release|Win32.ActiveCfg = Release|Win32
+		{0B9E97B1-A7C7-45BF-B9B6-FB2A791BD634}.Release|Win32.Build.0 = Release|Win32
+		{0B9E97B1-A7C7-45BF-B9B6-FB2A791BD634}.Release|x64.ActiveCfg = Release|x64
+		{0B9E97B1-A7C7-45BF-B9B6-FB2A791BD634}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -419,5 +429,6 @@ Global
 		{6CCE5E6C-4ECD-479A-8C86-1938D071AD38} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{1A53C3B0-BEC8-41A5-BE30-518107D63666} = {492FEE1D-F038-4594-847F-8790D133612D}
 		{ED7BACD9-C8AB-4D31-BB35-B299B20D7CF0} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
+		{0B9E97B1-A7C7-45BF-B9B6-FB2A791BD634} = {20F5F43E-7F39-4068-BFA7-22F4B4FAC25F}
 	EndGlobalSection
 EndGlobal

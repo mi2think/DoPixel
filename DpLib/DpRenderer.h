@@ -59,6 +59,7 @@ namespace dopixel
 
 		void SetLight(int index, const LightRef& light);
 		void EnableLight(int index, bool enable);
+		bool GetLightEnable(int index);
 	private:
 		void UpdateTransform();
 

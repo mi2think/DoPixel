@@ -18,12 +18,10 @@ namespace dopixel
 		const math::Vector3f& ambient,
 		const math::Vector3f& diffuse,
 		const math::Vector3f& specular,
-		const math::Vector3f& attenuation,
 		float range)
 		: ambient_(ambient)
 		, diffuse_(diffuse)
 		, specular_(specular)
-		, attenuation_(attenuation)
 		, range_(range)
 	{
 	}
@@ -37,12 +35,11 @@ namespace dopixel
 		const math::Vector3f& ambient,
 		const math::Vector3f& diffuse,
 		const math::Vector3f& specular,
-		const math::Vector3f& attenuation,
 		float range)
-		: Light(ambient, diffuse, specular, attenuation, range)
+		: Light(ambient, diffuse, specular, range)
 		, lightWorldDir_(lightWorldDir)
 	{
-		ASSERT(lightWorldDir_.IsNormalized());
+		lightWorldDir_.Normalize();
 	}
 
 	DirectionalLight::~DirectionalLight()
@@ -115,13 +112,14 @@ namespace dopixel
 
 	PointLight::PointLight(
 		const math::Vector3f& lightWorldPos,
+		const math::Vector3f& attenuation,
 		const math::Vector3f& ambient,
 		const math::Vector3f& diffuse,
 		const math::Vector3f& specular,
-		const math::Vector3f& attenuation,
 		float range)
-		: Light(ambient, diffuse, specular, attenuation, range)
+		: Light(ambient, diffuse, specular, range)
 		, lightWorldPos_(lightWorldPos)
+		, attenuation_(attenuation)
 	{
 	}
 
@@ -208,17 +206,18 @@ namespace dopixel
 	SpotLight::SpotLight(
 		const math::Vector3f& lightWorldDir,
 		const math::Vector3f& lightWorldPos,
+		const math::Vector3f& attenuation,
 		float theta,
 		float phi,
 		float pf,
 		const math::Vector3f& ambient,
 		const math::Vector3f& diffuse,
 		const math::Vector3f& specular,
-		const math::Vector3f& attenuation,
 		float range)
-		: Light(ambient, diffuse, specular, attenuation, range)
+		: Light(ambient, diffuse, specular, range)
 		, lightWorldPos_(lightWorldPos)
 		, lightWorldDir_(lightWorldDir)
+		, attenuation_(attenuation)
 		, theta_(theta)
 		, phi_(phi)
 		, pf_(pf)
