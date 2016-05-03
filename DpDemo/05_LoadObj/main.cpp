@@ -21,8 +21,6 @@ private:
 	MeshRef mesh_;
 	Vector3f cameraPos_;
 	Vector3f transPos_;
-	ArcBall arcBall_;
-	bool update_;
 };
 
 void LoadObjApp::OnCreate()
@@ -30,11 +28,6 @@ void LoadObjApp::OnCreate()
 	DemoApp::OnCreate();
 
 	mesh_ = new Mesh("cube/cube.obj");
-
-	arcBall_.SetWidth(width_);
-	arcBall_.SetHeight(height_);
-
-	update_ = false;
 
 	// camera
 	cameraPos_ = Vector3f(0, 0, -5);
