@@ -23,7 +23,7 @@
 
 namespace dopixel
 {
-	DECLARE_ENUM(TriangleCull)
+	DECLARE_ENUM(PrimitiveCull)
 		Face = BIT(0),
 		ClipPlane = BIT(1),
 		Frustum = BIT(2)
@@ -48,8 +48,6 @@ namespace dopixel
 		Impl();
 		virtual ~Impl() {}
 
-		void SetPrimitiveType(int primitiveType) { primitiveType_ = primitiveType; }
-
 		Ref<VertexArray4f>& Posotions() { return positions_; }
 		Ref<VertexArray3f>& Normals() { return normals_; }
 		Ref<VertexArray3f>& Colors() { return colors_; }
@@ -71,28 +69,32 @@ namespace dopixel
 
 		int* VertexRefBuf() { return &vertexRefBuf_[0]; }
 		int* VertexCullBuf() { return &vertexCullBuf_[0]; }
-		int* TriangleCullBuf() { return &triangleCullBuff_[0]; }
+		int* PrimitiveCullBuf() { return &primitiveCullBuff_[0]; }
 		int* VertexRefBuf(int count) { vertexRefBuf_.resize(count); return &vertexRefBuf_[0];}
 		int* VertexCullBuf(int count) { vertexCullBuf_.resize(count); return &vertexCullBuf_[0]; }
-		int* TriangleCullBuf(int count) { triangleCullBuff_.resize(count); return &triangleCullBuff_[0];}
+		int* PrimitiveCullBuf(int count) { primitiveCullBuff_.resize(count); return &primitiveCullBuff_[0];}
 
+		void SetPrimitiveType(int primitiveType);
 		void AllocVertexBuf(int vertexCount, bool copy);
 		void AllocIndexBuf(int vertexCount, bool copy);
 		void PrepareBuf(const VertexBufferRef& vertexBuf, const IndexBufferRef& indexBuf, const Ref<VertexArray3f>& triangleNormalsBuf, int usingStatus);
-		void AllocCounter(int vertexCount, int triangleCount);
-		void ResetCounter(int vertexCount, int triangleCount);
+		void AllocCounter(int vertexCount, int primitiveCount);
+		void ResetCounter(int vertexCount, int primitiveCount);
 		void Transform(const math::Matrix44f& matrix, bool transNormal);
 		void GenTriangleNormals();
 		void GenVertexNormals();
 		void GenNormals();
 		void CullFace(const math::Vector3f& eyeWorldPos, CullMode::Type cullMode);
 		void CullPlanes(const vector<math::Plane>& clipPlanes);
-		void CutTriangle(const math::Plane& plane, int clipVertexCount, int i0, int i1, int i2);
+		void CutPimitive(const math::Plane& plane, int clipVertexCount, const Ref<int>& indexArray);
+		void CutTriangle(const math::Plane& plane, int clipVertexCount, const Ref<int>& indexArray);
+		void CutLine(const math::Plane& plane, int clipVertexCount, const Ref<int>& indexArray);
 		void Interpolate(int newIndex, int index0, int index1, float k);
 		void Illuminate(const MaterialRef& material, const math::Vector3f& eyeWorldPos);
 		void ToCVV();
 		void ToViewport(int viewportWidth, int viewportHeight);
 		void DrawPrimitives(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType);
+		void DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType, int index0, int index1);
 		void DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType, int index0, int index1, int index2);
 		void SetTexture(const TextureRef& texture);
 		void SetLights(const vector<LightRef>& lights);
@@ -108,11 +110,12 @@ namespace dopixel
 		int vertexCount_;
 		int primitiveCount_;
 		int primitiveType_;
+		int vertexNumPerPrimitive_;
 
 		// counter
 		vector<int> vertexRefBuf_;
 		vector<int> vertexCullBuf_;
-		vector<int> triangleCullBuff_;
+		vector<int> primitiveCullBuff_;
 
 		bool genVertexNormals_;
 		bool genTriangleNormals_;
@@ -129,9 +132,16 @@ namespace dopixel
 		, genTriangleNormals_(false)
 		, vertexCount_(0)
 		, primitiveCount_(0)
+		, vertexNumPerPrimitive_(0)
 		, primitiveType_(PrimitiveType::Triangles)
 		, usingStatus_(0)
 	{
+	}
+
+	void Renderer::Impl::SetPrimitiveType(int primitiveType)
+	{
+		primitiveType_ = primitiveType;
+		vertexNumPerPrimitive_ = GetVertexNumByPerPrimitive(primitiveType_);
 	}
 
 	void Renderer::Impl::AllocIndexBuf(int primitiveCount, bool copy)
@@ -257,7 +267,7 @@ namespace dopixel
 
 			const unsigned int* indices = indexBuf_->GetData();
 			const int indexCount = indexBuf_->GetIndexCount();
-			for (int i = 0, j = 0; i < indexCount; i += 3, ++j)
+			for (int i = 0, j = 0; i < indexCount; i += vertexNumPerPrimitive_, ++j)
 			{
 				const auto index0 = *(indices + i);
 				const auto index1 = *(indices + i + 1);
@@ -279,7 +289,7 @@ namespace dopixel
 		}
 		else
 		{
-			for (int i = 0, j = 0; i < vertexCount_; i += 3, ++j)
+			for (int i = 0, j = 0; i < vertexCount_; i += vertexNumPerPrimitive_, ++j)
 			{
 				ASSERT(position[i].w == 1.0f);
 				ASSERT(position[i + 1].w == 1.0f);
@@ -315,7 +325,7 @@ namespace dopixel
 
 			const unsigned int* indices = indexBuf_->GetData();
 			const int indexCount = indexBuf_->GetIndexCount();
-			for (int i = 0; i < indexCount; i += 3)
+			for (int i = 0; i < indexCount; i += vertexNumPerPrimitive_)
 			{
 				const auto index0 = *(indices + i);
 				const auto index1 = *(indices + i + 1);
@@ -339,7 +349,7 @@ namespace dopixel
 		else
 		{
 			// compute each triangle normal
-			for (int i = 0; i < vertexCount; i += 3)
+			for (int i = 0; i < vertexCount; i += vertexNumPerPrimitive_)
 			{
 				ASSERT(position[i].w == 1.0f);
 				ASSERT(position[i + 1].w == 1.0f);
@@ -463,36 +473,34 @@ namespace dopixel
 		}
 	}
 
-	void Renderer::Impl::AllocCounter(int vertexCount, int triangleCount)
+	void Renderer::Impl::AllocCounter(int vertexCount, int primitiveCount)
 	{
 		VertexRefBuf(vertexCount);
 		VertexCullBuf(vertexCount);
-		TriangleCullBuf(triangleCount);
+		PrimitiveCullBuf(primitiveCount);
 	}
 
-	void Renderer::Impl::ResetCounter(int vertexCount, int triangleCount)
+	void Renderer::Impl::ResetCounter(int vertexCount, int primitiveCount)
 	{
-		AllocCounter(vertexCount, triangleCount);
+		AllocCounter(vertexCount, primitiveCount);
 
 		memset(&vertexCullBuf_[0], 0, sizeof(int) * vertexCount);
-		memset(&triangleCullBuff_[0], 0, sizeof(int) * triangleCount);
+		memset(&primitiveCullBuff_[0], 0, sizeof(int) * primitiveCount);
 
 		if (indexBuf_)
 		{
-			indexBuf_->Resize(triangleCount);
+			indexBuf_->Resize(primitiveCount);
 			memset(&vertexRefBuf_[0], 0, sizeof(int) * vertexCount);
 
 			const unsigned int* indices = indexBuf_->GetData();
 			const int indexCount = indexBuf_->GetIndexCount();
-			for (int i = 0; i < indexCount; i += 3)
+			for (int i = 0; i < indexCount; i += vertexNumPerPrimitive_)
 			{
-				auto index0 = *(indices + i);
-				auto index1 = *(indices + i + 1);
-				auto index2 = *(indices + i + 2);
-
-				++vertexRefBuf_[index0];
-				++vertexRefBuf_[index1];
-				++vertexRefBuf_[index2];
+				for (int j = 0; j < vertexNumPerPrimitive_; ++j)
+				{
+					auto index = *(indices + i + j);
+					++vertexRefBuf_[index];
+				}
 			}
 		}
 		else
@@ -513,7 +521,7 @@ namespace dopixel
 		{
 			const unsigned int* indices = indexBuf_->GetData();
 			const int indexCount = indexBuf_->GetIndexCount();
-			for (int i = 0 , j = 0; i < indexCount; i += 3, ++j)
+			for (int i = 0 , j = 0; i < indexCount; i += vertexNumPerPrimitive_, ++j)
 			{
 				auto index0 = *(indices + i);
 				auto index1 = *(indices + i + 1);
@@ -524,7 +532,7 @@ namespace dopixel
 				float dp = math::DotProduct(vertexToEye, *(normal + j));
 				if (dp <= 0 && cullMode == CullMode::Back || dp >= 0 && cullMode == CullMode::Front)
 				{
-					triangleCullBuff_[j] |= TriangleCull::Face;
+					primitiveCullBuff_[j] |= PrimitiveCull::Face;
 					--vertexRefBuf_[index0];
 					--vertexRefBuf_[index1];
 					--vertexRefBuf_[index2];
@@ -533,7 +541,7 @@ namespace dopixel
 		}
 		else
 		{
-			for (int i = 0, j = 0; i < vertexCount_; i += 3, ++j)
+			for (int i = 0, j = 0; i < vertexCount_; i += vertexNumPerPrimitive_, ++j)
 			{
 				auto index0 = i;
 				auto index1 = i + 1;
@@ -544,7 +552,7 @@ namespace dopixel
 				float dp = math::DotProduct(vertexToEye, *(normal + j));
 				if (dp <= 0 && cullMode == CullMode::Back || dp >= 0 && cullMode == CullMode::Front)
 				{
-					triangleCullBuff_[j] |= TriangleCull::Face;
+					primitiveCullBuff_[j] |= PrimitiveCull::Face;
 					--vertexRefBuf_[index0];
 					--vertexRefBuf_[index1];
 					--vertexRefBuf_[index2];
@@ -576,33 +584,39 @@ namespace dopixel
 			{
 				unsigned int* indices = indexBuf_->GetData();
 				int indexCount = indexBuf_->GetIndexCount();
-				for (int i = 0, j = 0; i < indexCount; i += 3, ++j)
+
+				for (int i = 0, j = 0; i < indexCount; i += vertexNumPerPrimitive_, ++j)
 				{
-					if (triangleCullBuff_[j] != 0)
+					if (primitiveCullBuff_[j] != 0)
 						continue;
 
-					auto index0 = *(indices + i);
-					auto index1 = *(indices + i + 1);
-					auto index2 = *(indices + i + 2);
-
+					// how many vertex clipped by plane?
 					int clipVertexCount = 0;
-					if (vertexCullBuf_[index0] != 0) ++clipVertexCount;
-					if (vertexCullBuf_[index1] != 0) ++clipVertexCount;
-					if (vertexCullBuf_[index2] != 0) ++clipVertexCount;
+					Ref<int> indexArray(new int[vertexNumPerPrimitive_], &default_array_destory<int>);
+					for (int k = 0; k < vertexNumPerPrimitive_; ++k)
+					{
+						int index = *(indices + i + k);
+						if (vertexCullBuf_[index] != 0)
+							++clipVertexCount;
+						indexArray[k] = index;
+					}
 
+					// nothing, go next.
 					if (clipVertexCount == 0)
 						continue;
 
-					triangleCullBuff_[j] |= TriangleCull::ClipPlane;
-					--vertexRefBuf_[index0];
-					--vertexRefBuf_[index1];
-					--vertexRefBuf_[index2];
+					// need clip, clear old primitive, generate new primitive if need.
+					primitiveCullBuff_[j] |= PrimitiveCull::ClipPlane;
+					for (int k = 0; k < vertexNumPerPrimitive_; ++k)
+					{
+						int index = indexArray[k];
+						--vertexRefBuf_[index];
+					}
 
-					if (clipVertexCount == 3)
+					if (clipVertexCount == vertexNumPerPrimitive_)
 						continue;
 
-					// this triangle need cut to 1 or 2 triangles
-					CutTriangle(plane, clipVertexCount, index0, index1, index2);
+					CutPimitive(plane, clipVertexCount, indexArray);
 					indices = indexBuf_->GetData();
 				}
 				indexCount = indexBuf_->GetIndexCount();
@@ -614,10 +628,74 @@ namespace dopixel
 		}
 	}
 
-	void Renderer::Impl::CutTriangle(const math::Plane& plane, int clipVertexCount, int i0, int i1, int i2)
+	void Renderer::Impl::CutPimitive(const math::Plane& plane, int clipVertexCount, const Ref<int>& indexArray)
 	{
-		// resize buffer for add 2 vertex and 1 or 2 triangles, 
-		// since we marked old vertex and triangle as clipped
+		if (primitiveType_ == PrimitiveType::Triangles)
+		{
+			// this triangle need cut to 1 or 2 triangles
+			CutTriangle(plane, clipVertexCount, indexArray);
+		}
+		else if (primitiveType_ == PrimitiveType::Lines)
+		{
+			CutLine(plane, clipVertexCount, indexArray);
+		}
+	}
+
+	void Renderer::Impl::CutLine(const math::Plane& plane, int clipVertexCount, const Ref<int>& indexArray)
+	{
+		ASSERT(clipVertexCount == 1);
+
+		int i0 = indexArray[0];
+		int i1 = indexArray[1];
+
+		// resize buffer for add 1 vertex and 1 Line, since we marked old vertex and line as clipped.
+		vertexCount_ += 1;
+		primitiveCount_ += 1;
+		AllocVertexBuf(vertexCount_, true);
+		AllocIndexBuf(primitiveCount_, true);
+		AllocCounter(vertexCount_, primitiveCount_);
+
+		int line[2] = { i0, i1 };
+		if (vertexCullBuf_[i0])
+		{
+			// i0 - [i1]
+			swap_t(line[0], line[1]);
+		}
+
+		int i2 = vertexCount_ - 1;
+		auto* indices = indexBuf_->GetData();
+
+		int t = primitiveCount_ - 1;
+		auto* p = indices + t * vertexNumPerPrimitive_;
+		p[0] = line[0]; p[1] = i2;
+
+		primitiveCullBuff_[t] = 0;
+		vertexRefBuf_[p[0]] = 1;
+		vertexRefBuf_[p[1]] = 1;
+		vertexCullBuf_[p[0]] = 0;
+		vertexCullBuf_[p[1]] = 0;
+
+		// interpolate
+		const math::Vector4f* position = positions_->DataAs<math::Vector4f>();
+		ASSERT(position[line[0]].w == 1.0f);
+		ASSERT(position[line[1]].w == 1.0f);
+		const math::Vector3f& pos0 = *((const math::Vector3f*)(position + line[0]));
+		const math::Vector3f& pos1 = *((const math::Vector3f*)(position + line[1]));
+		float d0 = fabs(plane.Distance(pos0));
+		float d1 = fabs(plane.Distance(pos1));
+
+		// i2 = [i0] + k * i0i1
+		float k = d0 / (d0 + d1);
+		Interpolate(i2, line[0], line[1], k);
+	}
+
+	void Renderer::Impl::CutTriangle(const math::Plane& plane, int clipVertexCount, const Ref<int>& indexArray)
+	{
+		int i0 = indexArray[0];
+		int i1 = indexArray[1];
+		int i2 = indexArray[2];
+
+		// resize buffer for add 2 vertex and 1 or 2 triangles, since we marked old vertex and triangle as clipped.
 		vertexCount_ += 2;
 		primitiveCount_ += (clipVertexCount == 1 ? 2 : 1);
 		AllocVertexBuf(vertexCount_, true);
@@ -689,8 +767,8 @@ namespace dopixel
 			p1[0] = triangle[0]; p1[1] = i3; p1[2] = triangle[2];
 			p2[0] = i3; p2[1] = i4; p2[2] = triangle[2];
 
-			triangleCullBuff_[t1] = 0;
-			triangleCullBuff_[t2] = 0;
+			primitiveCullBuff_[t1] = 0;
+			primitiveCullBuff_[t2] = 0;
 			vertexRefBuf_[triangle[0]] += 1;
 			vertexRefBuf_[triangle[2]] += 2;
 			vertexRefBuf_[i3] = 2;
@@ -704,7 +782,7 @@ namespace dopixel
 			auto* p1 = indices + t1 * 3;
 			p1[0] = triangle[0]; p1[1] = i3; p1[2] = i4;
 
-			triangleCullBuff_[t1] = 0;
+			primitiveCullBuff_[t1] = 0;
 			vertexRefBuf_[triangle[0]] = 1;
 			vertexRefBuf_[i3] = 1;
 			vertexRefBuf_[i4] = 1;
@@ -876,7 +954,7 @@ namespace dopixel
 		//{
 		//	unsigned int* indices = indexBuf_->GetData();
 		//	int indexCount = indexBuf_->GetIndexCount();
-		//	for (int i = 0, j = 0; i < indexCount; i += 3, ++j)
+		//	for (int i = 0, j = 0; i < indexCount; i += vertexNumPerPrimitive_, ++j)
 		//	{
 		//		if (triangleCullBuff_[j])
 		//			continue;
@@ -886,7 +964,7 @@ namespace dopixel
 		//		auto index2 = *(indices + i + 2);
 		//		if (vertexCullBuf_[index0] && vertexCullBuf_[index1] && vertexCullBuf_[index2])
 		//		{
-		//			triangleCullBuff_[j] |= TriangleCull::Frustum;
+		//			triangleCullBuff_[j] |= PrimitiveCull::Frustum;
 		//			--vertexRefBuf_[index0];
 		//			--vertexRefBuf_[index1];
 		//			--vertexRefBuf_[index2];
@@ -921,29 +999,74 @@ namespace dopixel
 
 	void Renderer::Impl::DrawPrimitives(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType)
 	{
-		if (indexBuf_)
+		if (primitiveType_ == PrimitiveType::Triangles)
 		{
-			unsigned int* indices = indexBuf_->GetData();
-			int indexCount = indexBuf_->GetIndexCount();
-			for (int i = 0, j = 0; i < indexCount; i += 3, ++j)
+			if (indexBuf_)
 			{
-				if (triangleCullBuff_[j])
-					continue;
-				auto index0 = *(indices + i);
-				auto index1 = *(indices + i + 1);
-				auto index2 = *(indices + i + 2);
-				DrawPrimitive(rasterizer, shadeMode, zbufType, index0, index1, index2);
+				unsigned int* indices = indexBuf_->GetData();
+				int indexCount = indexBuf_->GetIndexCount();
+				for (int i = 0, j = 0; i < indexCount; i += vertexNumPerPrimitive_, ++j)
+				{
+					if (primitiveCullBuff_[j])
+						continue;
+					auto index0 = *(indices + i);
+					auto index1 = *(indices + i + 1);
+					auto index2 = *(indices + i + 2);
+					DrawPrimitive(rasterizer, shadeMode, zbufType, index0, index1, index2);
+				}
+			}
+			else
+			{
+				for (int i = 0, j = 0; i < vertexCount_; i += vertexNumPerPrimitive_, ++j)
+				{
+					if (primitiveCullBuff_[j])
+						continue;
+					DrawPrimitive(rasterizer, shadeMode, zbufType, i, i + 1, i + 2);
+				}
 			}
 		}
-		else
+		else if (primitiveType_ == PrimitiveType::Lines)
 		{
-			for (int i = 0, j = 0; i < vertexCount_; i += 3, ++j)
+			if (indexBuf_)
 			{
-				if (triangleCullBuff_[j])
-					continue;
-				DrawPrimitive(rasterizer, shadeMode, zbufType, i, i + 1, i + 2);
+				unsigned int* indices = indexBuf_->GetData();
+				int indexCount = indexBuf_->GetIndexCount();
+				for (int i = 0, j = 0; i < indexCount; i += vertexNumPerPrimitive_, ++j)
+				{
+					if (primitiveCullBuff_[j])
+						continue;
+					auto index0 = *(indices + i);
+					auto index1 = *(indices + i + 1);
+					DrawPrimitive(rasterizer, shadeMode, zbufType, index0, index1);
+				}
+			}
+			else
+			{
+				for (int i = 0, j = 0; i < vertexCount_; i += vertexNumPerPrimitive_, ++j)
+				{
+					if (primitiveCullBuff_[j])
+						continue;
+					DrawPrimitive(rasterizer, shadeMode, zbufType, i, i + 1);
+				}
 			}
 		}
+	}
+
+	void Renderer::Impl::DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType, int index0, int index1)
+	{
+		auto pos = positions_->DataAs<math::Vector4f>();
+		auto& p0 = *(pos + index0);
+		auto& p1 = *(pos + index1);
+
+		math::Vector3f c0, c1;
+		if (colors_ != nullptr)
+		{
+			math::Vector3f* color = colors_->DataAs<math::Vector3f>();
+			c0 = *(color + index0);
+			c1 = *(color + index1);
+		}
+
+		rasterizer->DrawLine(int(p0.x), int(p0.y), int(p1.x), int(p1.y), Color(c0));
 	}
 
 	void Renderer::Impl::DrawPrimitive(RasterizerRef& rasterizer, ShadeMode::Type shadeMode, ZBuffer::Type zbufType, int index0, int index1, int index2)
@@ -1274,13 +1397,13 @@ namespace dopixel
 			usingStatus |= UsingStatus::Cull;
 
 		const int  vertexCount = vertexBuffer_->GetVertexCount();
-		const int  triangleCount = (indexBuffer_ ? indexBuffer_->GetPrimitiveCount() : vertexCount / 3);
-
-		// counter
-		impl_->ResetCounter(vertexCount, triangleCount);
+		const int  primitiveCount = (indexBuffer_ ? indexBuffer_->GetPrimitiveCount() : vertexCount / GetVertexNumByPerPrimitive(vertexBuffer_->GetPrimitiveType()));
 
 		// prepare buffer
 		impl_->PrepareBuf(vertexBuffer_, indexBuffer_, triangleNormalsBuf_, usingStatus);
+
+		// counter
+		impl_->ResetCounter(vertexCount, primitiveCount);
 
 		// transform vertex from model to world
 		impl_->Transform(matrixs_[Transform::World], true);

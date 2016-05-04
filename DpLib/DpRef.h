@@ -118,6 +118,7 @@ namespace dopixel
 
 		T& operator*() const { return *ptr; }
 		T* operator->() const { return ptr; }
+		T& operator[](int index) const { return *(ptr + index); }
 		operator bool() const { return ptr != nullptr; }
 		T* Get() const { return ptr; }
 		int Count() const { return counter ? *counter : 0; }

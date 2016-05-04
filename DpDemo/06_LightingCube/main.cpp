@@ -45,6 +45,8 @@ void LightingCubeApp::OnCreate()
 	LightRef directionalLight(new DirectionalLight(Vector3f(1, -1, 1), Vector3f(0.2, 0.2, 0.2), Vector3f(1, 1, 1), Vector3f(1, 1, 1)));
 	renderer_->SetLight(0, directionalLight);
 	renderer_->EnableLight(0, true);
+
+	drawGridLine_ = true;
 }
 
 void LightingCubeApp::OnUpdate(const Timestep& timestep)

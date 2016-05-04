@@ -56,12 +56,17 @@ namespace dopixel
 
 		virtual bool OnEvent(const Event& event) { return false; }
 	protected:
+		void GenGridLine();
+
 		int width_;
 		int height_;
 		Window* window_;
 		RendererRef renderer_;
 		CameraRef camera_;
 		CameraControllerRef cameraController_;
+		VertexBufferRef gridLineVBuf_;
+		IndexBufferRef gridLineIBuf_;
+		bool drawGridLine_;
 	};
 }
 
