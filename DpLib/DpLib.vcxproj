@@ -158,9 +158,6 @@
     <ClInclude Include="DpRectangle.h" />
     <ClInclude Include="DpRef.h" />
     <ClInclude Include="DpRenderer.h" />
-    <ClInclude Include="DpSceneManager.h" />
-    <ClInclude Include="DpSceneNode.h" />
-    <ClInclude Include="DpSceneNodeAnimator.h" />
     <ClInclude Include="DpStringParser.h" />
     <ClInclude Include="DpTexture.h" />
     <ClInclude Include="DpTextureSampler.h" />
@@ -200,9 +197,6 @@
     <ClCompile Include="DpQuaternion.cpp" />
     <ClCompile Include="DpRasterizer.cpp" />
     <ClCompile Include="DpRenderer.cpp" />
-    <ClCompile Include="DpSceneManager.cpp" />
-    <ClCompile Include="DpSceneNode.cpp" />
-    <ClCompile Include="DpSceneNodeAnimator.cpp" />
     <ClCompile Include="DpStringParser.cpp" />
     <ClCompile Include="DpTexture.cpp" />
     <ClCompile Include="DpTextureSampler.cpp" />

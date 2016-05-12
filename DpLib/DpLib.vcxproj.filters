@@ -171,17 +171,8 @@
     <ClInclude Include="DpMesh.h">
       <Filter>Dp3DEngine</Filter>
     </ClInclude>
-    <ClInclude Include="DpSceneNode.h">
-      <Filter>Dp3DEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="DpSceneManager.h">
-      <Filter>Dp3DEngine</Filter>
-    </ClInclude>
     <ClInclude Include="DpGeometry.h">
       <Filter>DpMath</Filter>
-    </ClInclude>
-    <ClInclude Include="DpSceneNodeAnimator.h">
-      <Filter>Dp3DEngine</Filter>
     </ClInclude>
     <ClInclude Include="DpRenderer.h">
       <Filter>Dp3DEngine</Filter>
@@ -366,15 +357,6 @@
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpMesh.cpp">
-      <Filter>Dp3DEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="DpSceneManager.cpp">
-      <Filter>Dp3DEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="DpSceneNode.cpp">
-      <Filter>Dp3DEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="DpSceneNodeAnimator.cpp">
       <Filter>Dp3DEngine</Filter>
     </ClCompile>
     <ClCompile Include="DpRenderer.cpp">
