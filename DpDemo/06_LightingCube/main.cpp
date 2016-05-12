@@ -85,7 +85,7 @@ bool LightingCubeApp::OnKeyPressEvent(const KeyPressEvent& keyEvent)
 int main()
 {
 	Ref<LightingCubeApp> app(new LightingCubeApp);
-	app->Create(512, 512, "Load Obj");
+	app->Create(512, 512, "Lighting Cube");
 	app->Loop();
 
 	return 0;
