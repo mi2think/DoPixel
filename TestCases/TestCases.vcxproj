@@ -74,7 +74,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dptest_event.cpp" />
-    <ClCompile Include="dptest_fileparser.cpp" />
     <ClCompile Include="dptest_json.cpp" />
     <ClCompile Include="dptest_main.cpp" />
     <ClCompile Include="dptest_matrix33.cpp" />
