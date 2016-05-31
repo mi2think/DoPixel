@@ -314,9 +314,32 @@ namespace dopixel
 		template <typename T>
 		inline float MatrixDeterminant(const Matrix44<T>& _m)
 		{
-			Matrix44<T> t;
-			MatrixAlgebraicCofactor(t, _m);
-			return _m.m11 * t.m11 + _m.m12 * t.m12 + _m.m13 * t.m13 + _m.m14 * t.m14;
+			//Matrix44<T> t;
+			//MatrixAlgebraicCofactor(t, _m);
+			//return _m.m11 * t.m11 + _m.m12 * t.m12 + _m.m13 * t.m13 + _m.m14 * t.m14;
+
+			// for improve precision
+			auto& m = _m.m;
+			return  m[0][0] * (
+				        m[1][1] * (m[2][2] * m[3][3] - m[2][3] * m[3][2]) -
+					    m[2][1] * (m[1][2] * m[3][3] - m[1][3] * m[3][2]) +
+					    m[3][1] * (m[1][2] * m[2][3] - m[1][3] * m[2][2])
+					) -
+					m[1][0] * (
+						m[0][1] * (m[2][2] * m[3][3] - m[2][3] * m[3][2]) -
+						m[2][1] * (m[0][2] * m[3][3] - m[0][3] * m[3][2]) +
+						m[3][1] * (m[0][2] * m[2][3] - m[0][3] * m[2][2])
+					) +
+					m[2][0] * (
+						m[0][1] * (m[1][2] * m[3][3] - m[1][3] * m[3][2]) -
+						m[1][1] * (m[0][2] * m[3][3] - m[0][3] * m[3][2]) +
+						m[3][1] * (m[0][2] * m[1][3] - m[0][3] * m[1][2])
+					) -
+					m[3][0] * (
+						m[0][1] * (m[1][2] * m[2][3] - m[1][3] * m[2][2]) -
+						m[1][1] * (m[0][2] * m[2][3] - m[0][3] * m[2][2]) +
+						m[2][1] * (m[0][2] * m[1][3] - m[0][3] * m[1][2])
+					);
 		}
 
 		template <typename T>
